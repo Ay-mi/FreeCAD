@@ -1,0 +1,4 @@
+/** \defgroup MbDFEM MbDFEM
+ *  \ingroup PYTHONWORKBENCHES
+ *  \brief Tools to build assemblies
+ */

@@ -1,0 +1,42 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/MbDFEM_ActivateMbDFEM.svg</file>
+        <file>icons/MbDFEM_MbDFEMLink.svg</file>
+        <file>icons/MbDFEM_MbDFEMLinkRigid.svg</file>
+        <file>icons/MbDFEM_InsertLink.svg</file>
+        <file>icons/preferences-MbDFEM.svg</file>
+        <file>icons/MbDFEM_ToggleGrounded.svg</file>
+        <file>icons/MbDFEM_BillOfMaterials.svg</file>
+        <file>icons/MbDFEM_BillOfMaterialsGroup.svg</file>
+        <file>icons/MbDFEM_CreateJointAngle.svg</file>
+        <file>icons/MbDFEM_CreateJointBall.svg</file>
+        <file>icons/MbDFEM_CreateJointCylindrical.svg</file>
+        <file>icons/MbDFEM_CreateJointFixed.svg</file>
+        <file>icons/MbDFEM_CreateJointParallel.svg</file>
+        <file>icons/MbDFEM_CreateJointPerpendicular.svg</file>
+        <file>icons/MbDFEM_CreateJointPlanar.svg</file>
+        <file>icons/MbDFEM_CreateJointRevolute.svg</file>
+        <file>icons/MbDFEM_CreateJointSlider.svg</file>
+        <file>icons/MbDFEM_CreateJointTangent.svg</file>
+        <file>icons/MbDFEM_CreateJointGears.svg</file>
+        <file>icons/MbDFEM_CreateJointPulleys.svg</file>
+        <file>icons/MbDFEM_CreateJointRackPinion.svg</file>
+        <file>icons/MbDFEM_CreateJointScrew.svg</file>
+        <file>icons/MbDFEM_ExportASMT.svg</file>
+        <file>icons/MbDFEM_SelectJointsOfComponent.svg</file>
+        <file>icons/MbDFEM_SolveMbDFEM.svg</file>
+        <file>icons/MbDFEM_JointGroup.svg</file>
+        <file>icons/MbDFEM_ExplodedView.svg</file>
+        <file>icons/MbDFEM_ExplodedViewGroup.svg</file>
+        <file>icons/MbDFEM_CreateSimulation.svg</file>
+        <file>icons/MbDFEM_SimulationGroup.svg</file>
+        <file>panels/TaskMbDFEMCreateBom.ui</file>
+        <file>panels/TaskMbDFEMCreateJoint.ui</file>
+        <file>panels/TaskMbDFEMInsertLink.ui</file>
+        <file>panels/TaskMbDFEMCreateView.ui</file>
+        <file>panels/TaskMbDFEMCreateSimulation.ui</file>
+        <file>preferences/MbDFEM.ui</file>
+        <file>icons/MbDFEM_CreateJointDistance.svg</file>
+        <file>icons/MbDFEMWorkbench.svg</file>
+    </qresource>
+</RCC>

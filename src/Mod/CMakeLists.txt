@@ -14,6 +14,10 @@ if(BUILD_ASSEMBLY)
   add_subdirectory(Assembly)
 endif(BUILD_ASSEMBLY)
 
+if(BUILD_ASSEMBLY)
+  add_subdirectory(MbDFEM)
+endif(BUILD_ASSEMBLY)
+
 if(BUILD_CLOUD)
     add_subdirectory(Cloud)
 endif(BUILD_CLOUD)
