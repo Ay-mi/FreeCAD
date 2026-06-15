@@ -10,9 +10,11 @@ set(MbDFEM_LIBS
 
 generate_from_py(MbDAssembly)
 generate_from_py(MbDAssemblyLink)
+generate_from_py(MbDPart)
 generate_from_py(BomObject)
 generate_from_py(BomGroup)
 generate_from_py(JointGroup)
+generate_from_py(PartsGroup)
 generate_from_py(ViewGroup)
 generate_from_py(SimulationGroup)
 
@@ -22,12 +24,16 @@ SET(Python_SRCS
     MbDAssemblyPyImp.cpp
     MbDAssemblyLink.pyi
     MbDAssemblyLinkPyImp.cpp
+    MbDPart.pyi
+    MbDPartPyImp.cpp
     BomObject.pyi
     BomObjectPyImp.cpp
     BomGroup.pyi
     BomGroupPyImp.cpp
     JointGroup.pyi
     JointGroupPyImp.cpp
+    PartsGroup.pyi
+    PartsGroupPyImp.cpp
     ViewGroup.pyi
     ViewGroupPyImp.cpp
     SimulationGroup.pyi
@@ -49,12 +55,16 @@ SET(MbDFEM_SRCS
     MbDAssemblyLink.h
     MbDAssemblyUtils.cpp
     MbDAssemblyUtils.h
+    MbDPart.cpp
+    MbDPart.h
     BomObject.cpp
     BomObject.h
     BomGroup.cpp
     BomGroup.h
     JointGroup.cpp
     JointGroup.h
+    PartsGroup.cpp
+    PartsGroup.h
     ViewGroup.cpp
     ViewGroup.h
     SimulationGroup.cpp

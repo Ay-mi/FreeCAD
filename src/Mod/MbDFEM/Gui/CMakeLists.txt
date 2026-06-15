@@ -49,12 +49,16 @@ SET(MbDFEMGui_SRCS_Module
     ViewProviderMbDFEM.h
     ViewProviderMbDAssemblyLink.cpp
     ViewProviderMbDAssemblyLink.h
+    ViewProviderMbDPart.cpp
+    ViewProviderMbDPart.h
     ViewProviderBom.cpp
     ViewProviderBom.h
     ViewProviderBomGroup.cpp
     ViewProviderBomGroup.h
     ViewProviderJointGroup.cpp
     ViewProviderJointGroup.h
+    ViewProviderPartsGroup.cpp
+    ViewProviderPartsGroup.h
     ViewProviderViewGroup.cpp
     ViewProviderViewGroup.h
     ViewProviderSimulationGroup.cpp

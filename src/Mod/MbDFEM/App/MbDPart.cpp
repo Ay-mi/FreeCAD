@@ -1,7 +1,7 @@
-﻿// SPDX-License-Identifier: LGPL-2.1-or-later
+// SPDX-License-Identifier: LGPL-2.1-or-later
 /****************************************************************************
  *                                                                          *
- *   Copyright (c) 2023 Ondsel <development@ondsel.com>                     *
+ *   Copyright (c) 2024 Ondsel <development@ondsel.com>                     *
  *                                                                          *
  *   This file is part of FreeCAD.                                          *
  *                                                                          *
@@ -21,58 +21,59 @@
  *                                                                          *
  ***************************************************************************/
 
-
+#include <App/Application.h>
+#include <App/Document.h>
+#include <App/FeaturePythonPyImp.h>
+#include <App/PropertyPythonObject.h>
 #include <Base/Console.h>
-#include <Base/Interpreter.h>
-#include <Base/PyObjectBase.h>
+#include <Base/Placement.h>
 
-#include "MbDAssembly.h"
-#include "MbDAssemblyLink.h"
 #include "MbDPart.h"
-#include "PartsGroup.h"
-#include "BomObject.h"
-#include "BomGroup.h"
-#include "JointGroup.h"
-#include "ViewGroup.h"
-#include "SimulationGroup.h"
+#include "MbDPartPy.h"
+
+using namespace MbDFEM;
 
 
-namespace MbDFEM
+PROPERTY_SOURCE(MbDFEM::MbDPart, App::GeoFeature)
+
+MbDPart::MbDPart()
 {
-extern PyObject* initModule();
+    ADD_PROPERTY_TYPE(
+        cadPart,
+        (nullptr),
+        "General",
+        (App::PropertyType)(App::Prop_None),
+        "The CAD body or part whose motion this MbDPart tracks."
+    );
 }
 
-/* Python entry */
-PyMOD_INIT_FUNC(MbDFEMApp)
+MbDPart::~MbDPart() = default;
+
+PyObject* MbDPart::getPyObject()
 {
-    // load dependent module
-    try {
-        Base::Interpreter().runString("import Part");
-        Base::Interpreter().runString("import Spreadsheet");
+    if (PythonObject.is(Py::_None())) {
+        PythonObject = Py::Object(new MbDPartPy(this), true);
     }
-    catch (const Base::Exception& e) {
-        PyErr_SetString(PyExc_ImportError, e.what());
-        PyMOD_Return(nullptr);
+    return Py::new_reference_to(PythonObject);
+}
+
+App::DocumentObjectExecReturn* MbDPart::execute()
+{
+    auto* obj = cadPart.getValue();
+    if (!obj) {
+        return nullptr;
     }
 
-    PyObject* mod = MbDFEM::initModule();
-    Base::Console().log("Loading MbDFEM module... done\n");
+    auto* placementProperty =
+        dynamic_cast<App::PropertyPlacement*>(obj->getPropertyByName("Placement"));
+    if (placementProperty) {
+        placementProperty->setValue(Placement.getValue());
+    }
 
+    return App::GeoFeature::execute();
+}
 
-    // NOTE: To finish the initialization of our own type objects we must
-    // call PyType_Ready, otherwise we run into a segmentation fault, later on.
-    // This function is responsible for adding inherited slots from a type's base class.
-
-    MbDFEM::MbDAssembly ::init();
-    MbDFEM::MbDAssemblyLink ::init();
-    MbDFEM::MbDPart::init();
-    MbDFEM::BomObject ::init();
-
-    MbDFEM::PartsGroup::init();
-    MbDFEM::BomGroup ::init();
-    MbDFEM::JointGroup ::init();
-    MbDFEM::ViewGroup ::init();
-    MbDFEM::SimulationGroup ::init();
-
-    PyMOD_Return(mod);
+App::DocumentObject* MbDPart::getCadPart() const
+{
+    return cadPart.getValue();
 }

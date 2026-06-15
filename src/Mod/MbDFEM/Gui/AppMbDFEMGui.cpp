@@ -29,7 +29,9 @@
 #include "Commands.h"
 #include "ViewProviderMbDFEM.h"
 #include "ViewProviderMbDAssemblyLink.h"
+#include "ViewProviderMbDPart.h"
 #include "ViewProviderBom.h"
+#include "ViewProviderPartsGroup.h"
 #include "ViewProviderBomGroup.h"
 #include "ViewProviderJointGroup.h"
 #include "ViewProviderViewGroup.h"
@@ -63,7 +65,9 @@ PyMOD_INIT_FUNC(MbDFEMGui)
 
     MbDFEMGui::ViewProviderMbDFEM::init();
     MbDFEMGui::ViewProviderMbDAssemblyLink::init();
+    MbDFEMGui::ViewProviderMbDPart::init();
     MbDFEMGui::ViewProviderBom::init();
+    MbDFEMGui::ViewProviderPartsGroup::init();
     MbDFEMGui::ViewProviderBomGroup::init();
     MbDFEMGui::ViewProviderJointGroup::init();
     MbDFEMGui::ViewProviderViewGroup::init();

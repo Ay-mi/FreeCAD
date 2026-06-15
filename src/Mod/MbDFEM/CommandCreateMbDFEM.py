@@ -83,7 +83,8 @@ class CommandCreateMbDFEM:
             )
 
         commands = commands + 'MbDFEM.Type = "MbDAssembly"\n'
-        commands = commands + 'MbDFEM.newObject("MbDFEM::JointGroup", "Joints")'
+        commands = commands + 'MbDFEM.newObject("MbDFEM::JointGroup", "Joints")\n'
+        commands = commands + 'MbDFEM.newObject("MbDFEM::PartsGroup", "Parts")'
 
         Gui.doCommand(commands)
         if not activeMbDFEM:
