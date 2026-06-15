@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: LGPL-2.1-or-later
+﻿// SPDX-License-Identifier: LGPL-2.1-or-later
 /****************************************************************************
  *                                                                          *
  *   Copyright (c) 2024 Ondsel <development@ondsel.com>                     *
@@ -38,20 +38,20 @@ namespace MbDFEM
 class MbDAssembly;
 class JointGroup;
 
-class MbDFEMExport MbDFEMLink: public App::Part
+class MbDFEMExport MbDAssemblyLink: public App::Part
 {
-    PROPERTY_HEADER_WITH_OVERRIDE(MbDFEM::MbDFEMLink);
+    PROPERTY_HEADER_WITH_OVERRIDE(MbDFEM::MbDAssemblyLink);
 
 public:
-    MbDFEMLink();
-    ~MbDFEMLink() override;
+    MbDAssemblyLink();
+    ~MbDAssemblyLink() override;
 
     PyObject* getPyObject() override;
 
     /// returns the type name of the ViewProvider
     const char* getViewProviderName() const override
     {
-        return "MbDFEMGui::ViewProviderMbDFEMLink";
+        return "MbDFEMGui::ViewProviderMbDAssemblyLink";
     }
 
     App::DocumentObjectExecReturn* execute() override;

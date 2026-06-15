@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: LGPL-2.1-or-later
+﻿// SPDX-License-Identifier: LGPL-2.1-or-later
 /****************************************************************************
  *                                                                          *
  *   Copyright (c) 2023 Ondsel <development@ondsel.com>                     *
@@ -44,7 +44,7 @@
 #include <Mod/Spreadsheet/App/Cell.h>
 
 #include "MbDAssembly.h"
-#include "MbDFEMLink.h"
+#include "MbDAssemblyLink.h"
 #include "BomObject.h"
 #include "BomObjectPy.h"
 
@@ -194,7 +194,7 @@ void BomObject::addObjectChildrenToBom(
 
         bool isMirrored = isObjMirrored(child);
 
-        if (auto* asmLink = freecad_cast<MbDFEMLink*>(child)) {
+        if (auto* asmLink = freecad_cast<MbDAssemblyLink*>(child)) {
             child = asmLink->getLinkedMbDFEM();
             if (!child) {
                 continue;

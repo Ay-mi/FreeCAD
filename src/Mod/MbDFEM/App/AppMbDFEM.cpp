@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: LGPL-2.1-or-later
+﻿// SPDX-License-Identifier: LGPL-2.1-or-later
 /****************************************************************************
  *                                                                          *
  *   Copyright (c) 2023 Ondsel <development@ondsel.com>                     *
@@ -27,7 +27,7 @@
 #include <Base/PyObjectBase.h>
 
 #include "MbDAssembly.h"
-#include "MbDFEMLink.h"
+#include "MbDAssemblyLink.h"
 #include "BomObject.h"
 #include "BomGroup.h"
 #include "JointGroup.h"
@@ -62,7 +62,7 @@ PyMOD_INIT_FUNC(MbDFEMApp)
     // This function is responsible for adding inherited slots from a type's base class.
 
     MbDFEM::MbDAssembly ::init();
-    MbDFEM::MbDFEMLink ::init();
+    MbDFEM::MbDAssemblyLink ::init();
     MbDFEM::BomObject ::init();
 
     MbDFEM::BomGroup ::init();

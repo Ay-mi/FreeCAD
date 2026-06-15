@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: LGPL-2.1-or-later
+﻿// SPDX-License-Identifier: LGPL-2.1-or-later
 /****************************************************************************
  *                                                                          *
  *   Copyright (c) 2023 Ondsel <development@ondsel.com>                     *
@@ -68,9 +68,9 @@
 #include <Gui/ViewParams.h>
 #include <Gui/Selection/SoFCSelectionAction.h>
 
-#include <Mod/MbDFEM/App/MbDFEMLink.h>
+#include <Mod/MbDFEM/App/MbDAssemblyLink.h>
 #include <Mod/MbDFEM/App/MbDAssembly.h>
-#include <Mod/MbDFEM/App/MbDFEMUtils.h>
+#include <Mod/MbDFEM/App/MbDAssemblyUtils.h>
 #include <Mod/MbDFEM/App/JointGroup.h>
 #include <Mod/MbDFEM/App/ViewGroup.h>
 #include <Mod/MbDFEM/App/BomGroup.h>
@@ -701,7 +701,7 @@ bool ViewProviderMbDFEM::canDragObjectIn3d(App::DocumentObject* obj) const
         return false;
     }
 
-    if (auto* asmLink = dynamic_cast<MbDFEM::MbDFEMLink*>(obj)) {
+    if (auto* asmLink = dynamic_cast<MbDFEM::MbDAssemblyLink*>(obj)) {
         if (!asmLink->isRigid()) {
             return false;
         }
@@ -848,7 +848,7 @@ void ViewProviderMbDFEM::collectMovableObjects(
     auto* MbDFEMPart = getObject<MbDAssembly>();
 
     // Handling of special case: flexible MbDFEMLink
-    auto* asmLink = dynamic_cast<MbDFEM::MbDFEMLink*>(currentObject);
+    auto* asmLink = dynamic_cast<MbDFEM::MbDAssemblyLink*>(currentObject);
     if (asmLink && !asmLink->isRigid()) {
         std::vector<App::DocumentObject*> children = asmLink->Group.getValues();
         for (auto* child : children) {
@@ -1305,11 +1305,11 @@ bool ViewProviderMbDFEM::canDelete(App::DocumentObject* objBeingDeleted) const
         objsBeingDeleted.push_back(objBeingDeleted);
 
         auto addSubComponents
-            = std::function<void(MbDFEMLink*, std::vector<App::DocumentObject*>&)> {};
-        addSubComponents = [&](MbDFEMLink* asmLink, std::vector<App::DocumentObject*>& objs) {
-            std::vector<App::DocumentObject*> MbDFEMLinkGroup = asmLink->Group.getValues();
-            for (auto* obj : MbDFEMLinkGroup) {
-                auto* subAsmLink = freecad_cast<MbDFEMLink*>(obj);
+            = std::function<void(MbDAssemblyLink*, std::vector<App::DocumentObject*>&)> {};
+        addSubComponents = [&](MbDAssemblyLink* asmLink, std::vector<App::DocumentObject*>& objs) {
+            std::vector<App::DocumentObject*> MbDAssemblyLinkGroup = asmLink->Group.getValues();
+            for (auto* obj : MbDAssemblyLinkGroup) {
+                auto* subAsmLink = freecad_cast<MbDAssemblyLink*>(obj);
                 auto* link = dynamic_cast<App::Link*>(obj);
                 if (subAsmLink || link) {
                     if (std::ranges::find(objs, obj) == objs.end()) {
@@ -1322,7 +1322,7 @@ bool ViewProviderMbDFEM::canDelete(App::DocumentObject* objBeingDeleted) const
             }
         };
 
-        auto* asmLink = dynamic_cast<MbDFEM::MbDFEMLink*>(objBeingDeleted);
+        auto* asmLink = dynamic_cast<MbDFEM::MbDAssemblyLink*>(objBeingDeleted);
         if (asmLink && !asmLink->isRigid()) {
             addSubComponents(asmLink, objsBeingDeleted);
         }

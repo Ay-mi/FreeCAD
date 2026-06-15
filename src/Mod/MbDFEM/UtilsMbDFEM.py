@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: LGPL-2.1-or-later
+﻿# SPDX-License-Identifier: LGPL-2.1-or-later
 # /**************************************************************************
 #                                                                           *
 #    Copyright (c) 2023 Ondsel <development@ondsel.com>                     *
@@ -102,7 +102,7 @@ def number_of_components_in(MbDFEM):
             continue
 
         if obj.isDerivedFrom("MbDFEM::MbDAssembly") or obj.isDerivedFrom(
-            "MbDFEM::MbDFEMLink"
+            "MbDFEM::MbDAssemblyLink"
         ):
             i = i + number_of_components_in(obj)
             continue
@@ -619,7 +619,7 @@ def color_from_unsigned(c):
 
 def getJointsOfType(asm, jointTypes):
     if not (
-        asm.isDerivedFrom("MbDFEM::MbDAssembly") or asm.isDerivedFrom("MbDFEM::MbDFEMLink")
+        asm.isDerivedFrom("MbDFEM::MbDAssembly") or asm.isDerivedFrom("MbDFEM::MbDAssemblyLink")
     ):
         return []
 
@@ -1251,7 +1251,7 @@ def getComponentReference(MbDFEM, root_obj, sub_string):
         # Skips (Groups / Flexible Links / LinkGroups / non-geofeature objects)
         if obj.isDerivedFrom("App::DocumentObjectGroup"):
             continue
-        if obj.isDerivedFrom("MbDFEM::MbDFEMLink"):
+        if obj.isDerivedFrom("MbDFEM::MbDAssemblyLink"):
             if hasattr(obj, "Rigid") and not obj.Rigid:
                 continue
         if isLinkGroup(obj):

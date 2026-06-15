@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: LGPL-2.1-or-later
+﻿# SPDX-License-Identifier: LGPL-2.1-or-later
 
 set(MbDFEM_LIBS
     Part
@@ -9,7 +9,7 @@ set(MbDFEM_LIBS
 )
 
 generate_from_py(MbDAssembly)
-generate_from_py(MbDFEMLink)
+generate_from_py(MbDAssemblyLink)
 generate_from_py(BomObject)
 generate_from_py(BomGroup)
 generate_from_py(JointGroup)
@@ -20,8 +20,8 @@ generate_from_py(SimulationGroup)
 SET(Python_SRCS
     MbDAssembly.pyi
     MbDAssemblyPyImp.cpp
-    MbDFEMLink.pyi
-    MbDFEMLinkPyImp.cpp
+    MbDAssemblyLink.pyi
+    MbDAssemblyLinkPyImp.cpp
     BomObject.pyi
     BomObjectPyImp.cpp
     BomGroup.pyi
@@ -45,10 +45,10 @@ SOURCE_GROUP("Module" FILES ${Module_SRCS})
 SET(MbDFEM_SRCS
     MbDAssembly.cpp
     MbDAssembly.h
-    MbDFEMLink.cpp
-    MbDFEMLink.h
-    MbDFEMUtils.cpp
-    MbDFEMUtils.h
+    MbDAssemblyLink.cpp
+    MbDAssemblyLink.h
+    MbDAssemblyUtils.cpp
+    MbDAssemblyUtils.h
     BomObject.cpp
     BomObject.h
     BomGroup.cpp

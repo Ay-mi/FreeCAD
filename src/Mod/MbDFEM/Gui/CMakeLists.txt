@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: LGPL-2.1-or-later
+﻿# SPDX-License-Identifier: LGPL-2.1-or-later
 
 
 set(MbDFEMGui_LIBS
@@ -47,8 +47,8 @@ SET(MbDFEMGui_SRCS_Module
     TaskMbDFEMMessages.h
     ViewProviderMbDFEM.cpp
     ViewProviderMbDFEM.h
-    ViewProviderMbDFEMLink.cpp
-    ViewProviderMbDFEMLink.h
+    ViewProviderMbDAssemblyLink.cpp
+    ViewProviderMbDAssemblyLink.h
     ViewProviderBom.cpp
     ViewProviderBom.h
     ViewProviderBomGroup.cpp

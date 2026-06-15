@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: LGPL-2.1-or-later
+﻿// SPDX-License-Identifier: LGPL-2.1-or-later
 /****************************************************************************
  *                                                                          *
  *   Copyright (c) 2024 Ondsel <development@ondsel.com>                     *
@@ -21,58 +21,37 @@
  *                                                                          *
  ***************************************************************************/
 
-#pragma once
 
-#include <QCoreApplication>
+// inclusion of the generated files (generated out of MbDFEMLink.xml)
+#include "MbDAssemblyLinkPy.h"
+#include "MbDAssemblyLinkPy.cpp"
 
-#include <Mod/MbDFEM/MbDFEMGlobal.h>
+using namespace MbDFEM;
 
-#include <Gui/ViewProviderPart.h>
-
-
-namespace MbDFEMGui
+// returns a string which represents the object e.g. when printed in python
+std::string MbDAssemblyLinkPy::representation() const
 {
+    return {"<MbDFEM link>"};
+}
 
-class MbDFEMGuiExport ViewProviderMbDFEMLink: public Gui::ViewProviderPart
+PyObject* MbDAssemblyLinkPy::getCustomAttributes(const char* /*attr*/) const
 {
-    Q_DECLARE_TR_FUNCTIONS(MbDFEMGui::ViewProviderMbDFEMLink)
-    PROPERTY_HEADER_WITH_OVERRIDE(MbDFEMGui::ViewProviderMbDFEMLink);
+    return nullptr;
+}
 
-public:
-    ViewProviderMbDFEMLink();
-    ~ViewProviderMbDFEMLink() override;
+int MbDAssemblyLinkPy::setCustomAttributes(const char* /*attr*/, PyObject* /*obj*/)
+{
+    return 0;
+}
 
-    /// deliver the icon shown in the tree view. Override from ViewProvider.h
-    QIcon getIcon() const override;
+Py::List MbDAssemblyLinkPy::getJoints() const
+{
+    Py::List ret;
+    std::vector<App::DocumentObject*> list = getMbDAssemblyLinkPtr()->getJoints();
 
-    bool setEdit(int ModNum) override;
+    for (auto It : list) {
+        ret.append(Py::Object(It->getPyObject(), true));
+    }
 
-    bool doubleClicked() override;
-
-    // When the MbDFEM link is deleted, we delete all its content as well.
-    bool onDelete(const std::vector<std::string>& subNames) override;
-
-    // Prevent deletion of the link MbDFEM's content.
-    bool canDelete(App::DocumentObject*) const override
-    {
-        return false;
-    };
-
-    // Prevent drag/drop of objects within the MbDFEM link.
-    bool canDragObjects() const override
-    {
-        return false;
-    };
-    bool canDropObjects() const override
-    {
-        return false;
-    };
-    bool canDragAndDropObject(App::DocumentObject*) const override
-    {
-        return false;
-    };
-
-    void setupContextMenu(QMenu*, QObject*, const char*) override;
-};
-
-}  // namespace MbDFEMGui
+    return ret;
+}

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: LGPL-2.1-or-later
+﻿// SPDX-License-Identifier: LGPL-2.1-or-later
 /****************************************************************************
  *                                                                          *
  *   Copyright (c) 2023 Ondsel <development@ondsel.com>                     *
@@ -77,10 +77,10 @@
 #include <OndselSolver/ExternalSystem.h>
 #include <OndselSolver/enum.h>
 
-#include "MbDFEMLink.h"
+#include "MbDAssemblyLink.h"
 #include "MbDAssembly.h"
 #include "MbDAssemblyPy.h"
-#include "MbDFEMUtils.h"
+#include "MbDAssemblyUtils.h"
 #include "JointGroup.h"
 #include "ViewGroup.h"
 
@@ -2037,18 +2037,18 @@ void MbDAssembly::setObjMasses(std::vector<std::pair<App::DocumentObject*, doubl
     objMasses = objectMasses;
 }
 
-std::vector<MbDFEMLink*> MbDAssembly::getSubAssemblies()
+std::vector<MbDAssemblyLink*> MbDAssembly::getSubAssemblies()
 {
-    std::vector<MbDFEMLink*> subAssemblies = {};
+    std::vector<MbDAssemblyLink*> subAssemblies = {};
 
     App::Document* doc = getDocument();
 
     std::vector<DocumentObject*> assemblies = doc->getObjectsOfType(
-        MbDFEM::MbDFEMLink::getClassTypeId()
+        MbDFEM::MbDAssemblyLink::getClassTypeId()
     );
     for (auto MbDFEM : assemblies) {
         if (hasObject(MbDFEM)) {
-            subAssemblies.push_back(freecad_cast<MbDFEMLink*>(MbDFEM));
+            subAssemblies.push_back(freecad_cast<MbDAssemblyLink*>(MbDFEM));
         }
     }
 

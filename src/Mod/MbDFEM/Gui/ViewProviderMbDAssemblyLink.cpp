@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: LGPL-2.1-or-later
+﻿// SPDX-License-Identifier: LGPL-2.1-or-later
 /****************************************************************************
  *                                                                          *
  *   Copyright (c) 2024 Ondsel <development@ondsel.com>                     *
@@ -42,26 +42,26 @@
 #include <Gui/MainWindow.h>
 
 #include <Mod/MbDFEM/App/MbDAssembly.h>
-#include <Mod/MbDFEM/App/MbDFEMLink.h>
+#include <Mod/MbDFEM/App/MbDAssemblyLink.h>
 
 #include "ViewProviderMbDFEM.h"
-#include "ViewProviderMbDFEMLink.h"
+#include "ViewProviderMbDAssemblyLink.h"
 
 
 using namespace MbDFEM;
 using namespace MbDFEMGui;
 
 
-PROPERTY_SOURCE(MbDFEMGui::ViewProviderMbDFEMLink, Gui::ViewProviderPart)
+PROPERTY_SOURCE(MbDFEMGui::ViewProviderMbDAssemblyLink, Gui::ViewProviderPart)
 
-ViewProviderMbDFEMLink::ViewProviderMbDFEMLink()
+ViewProviderMbDAssemblyLink::ViewProviderMbDAssemblyLink()
 {}
 
-ViewProviderMbDFEMLink::~ViewProviderMbDFEMLink() = default;
+ViewProviderMbDAssemblyLink::~ViewProviderMbDAssemblyLink() = default;
 
-QIcon ViewProviderMbDFEMLink::getIcon() const
+QIcon ViewProviderMbDAssemblyLink::getIcon() const
 {
-    auto* linkObj = dynamic_cast<MbDFEM::MbDFEMLink*>(getObject());
+    auto* linkObj = dynamic_cast<MbDFEM::MbDAssemblyLink*>(getObject());
     if (linkObj->isRigid()) {
         return Gui::BitmapFactory().pixmap("MbDFEM_MbDFEMLinkRigid.svg");
     }
@@ -70,9 +70,9 @@ QIcon ViewProviderMbDFEMLink::getIcon() const
     }
 }
 
-bool ViewProviderMbDFEMLink::setEdit(int mode)
+bool ViewProviderMbDAssemblyLink::setEdit(int mode)
 {
-    auto* linkObj = dynamic_cast<MbDFEM::MbDFEMLink*>(getObject());
+    auto* linkObj = dynamic_cast<MbDFEM::MbDAssemblyLink*>(getObject());
 
     if (!linkObj->isRigid() && mode == (int)ViewProvider::Transform) {
         Base::Console().userTranslatedNotification("Flexible sub-assemblies cannot be transformed.");
@@ -82,9 +82,9 @@ bool ViewProviderMbDFEMLink::setEdit(int mode)
     return ViewProviderPart::setEdit(mode);
 }
 
-bool ViewProviderMbDFEMLink::doubleClicked()
+bool ViewProviderMbDAssemblyLink::doubleClicked()
 {
-    auto* link = freecad_cast<MbDFEMLink*>(getObject());
+    auto* link = freecad_cast<MbDAssemblyLink*>(getObject());
     if (!link) {
         return true;
     }
@@ -129,7 +129,7 @@ bool ViewProviderMbDFEMLink::doubleClicked()
     return vpa->doubleClicked();
 }
 
-bool ViewProviderMbDFEMLink::onDelete(const std::vector<std::string>& subNames)
+bool ViewProviderMbDAssemblyLink::onDelete(const std::vector<std::string>& subNames)
 {
     Q_UNUSED(subNames)
 
@@ -145,11 +145,11 @@ bool ViewProviderMbDFEMLink::onDelete(const std::vector<std::string>& subNames)
     return ViewProviderPart::onDelete(subNames);
 }
 
-void ViewProviderMbDFEMLink::setupContextMenu(QMenu* menu, QObject* receiver, const char* member)
+void ViewProviderMbDAssemblyLink::setupContextMenu(QMenu* menu, QObject* receiver, const char* member)
 {
     auto func = new Gui::ActionFunction(menu);
     QAction* act;
-    auto* linkObj = dynamic_cast<MbDFEM::MbDFEMLink*>(getObject());
+    auto* linkObj = dynamic_cast<MbDFEM::MbDAssemblyLink*>(getObject());
     if (linkObj->isRigid()) {
         act = menu->addAction(QObject::tr("Turn flexible"));
         act->setToolTip(
@@ -164,7 +164,7 @@ void ViewProviderMbDFEMLink::setupContextMenu(QMenu* menu, QObject* receiver, co
     }
 
     func->trigger(act, [this]() {
-        auto* linkObj = dynamic_cast<MbDFEM::MbDFEMLink*>(getObject());
+        auto* linkObj = dynamic_cast<MbDFEM::MbDAssemblyLink*>(getObject());
         getDocument()->openCommand(QT_TRANSLATE_NOOP("Command", "Toggle Rigid"));
         Gui::cmdAppObjectArgs(
             linkObj,

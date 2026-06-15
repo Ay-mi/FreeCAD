@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: LGPL-2.1-or-later
+﻿# SPDX-License-Identifier: LGPL-2.1-or-later
 # /**************************************************************************
 #                                                                           *
 #    Copyright (c) 2023 Ondsel <development@ondsel.com>                     *
@@ -752,7 +752,7 @@ class Joint:
         for obj in joint.InList:
             if obj.isDerivedFrom("MbDFEM::MbDAssembly"):
                 return obj
-            elif obj.isDerivedFrom("MbDFEM::MbDFEMLink"):
+            elif obj.isDerivedFrom("MbDFEM::MbDAssemblyLink"):
                 return self.getMbDFEM(obj)
 
         return None

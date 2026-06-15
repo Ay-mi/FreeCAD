@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: LGPL-2.1-or-later
+﻿// SPDX-License-Identifier: LGPL-2.1-or-later
 /****************************************************************************
  *                                                                          *
  *   Copyright (c) 2023 Ondsel <development@ondsel.com>                     *
@@ -45,9 +45,9 @@
 #include <Mod/Part/App/PartFeature.h>
 #include <Mod/PartDesign/App/Body.h>
 
-#include "MbDFEMUtils.h"
+#include "MbDAssemblyUtils.h"
 #include "MbDAssembly.h"
-#include "MbDFEMLink.h"
+#include "MbDAssemblyLink.h"
 
 #include "JointGroup.h"
 
@@ -702,7 +702,7 @@ App::DocumentObject* getMovingPartFromSel(
         }
 
         // We ignore dynamic sub-assemblies.
-        if (obj->isDerivedFrom<MbDFEM::MbDFEMLink>()) {
+        if (obj->isDerivedFrom<MbDFEM::MbDAssemblyLink>()) {
             const auto* pRigid = obj->getPropertyByName<App::PropertyBool>("Rigid");
             if (pRigid && !pRigid->getValue()) {
                 continue;
@@ -758,7 +758,7 @@ void collectComponentsRecursively(
             continue;
         }
 
-        if (auto* asmLink = freecad_cast<MbDFEM::MbDFEMLink*>(obj)) {
+        if (auto* asmLink = freecad_cast<MbDFEM::MbDAssemblyLink*>(obj)) {
             // If the sub-MbDFEM is rigid, treat it as a single movable part.
             // If it's flexible, we need to check its individual components.
             if (asmLink->isRigid()) {

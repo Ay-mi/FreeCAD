@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: LGPL-2.1-or-later
+﻿// SPDX-License-Identifier: LGPL-2.1-or-later
 /****************************************************************************
  *                                                                          *
  *   Copyright (c) 2023 Ondsel <development@ondsel.com>                     *
@@ -58,7 +58,7 @@ class Rotation;
 namespace MbDFEM
 {
 
-class MbDFEMLink;
+class MbDAssemblyLink;
 class JointGroup;
 class ViewGroup;
 enum class JointType;
@@ -203,7 +203,7 @@ public:
     double getObjMass(App::DocumentObject* obj);
     void setObjMasses(std::vector<std::pair<App::DocumentObject*, double>> objectMasses);
 
-    std::vector<MbDFEMLink*> getSubAssemblies();
+    std::vector<MbDAssemblyLink*> getSubAssemblies();
 
     std::vector<App::DocumentObject*> getMotionsFromSimulation(App::DocumentObject* sim);
 

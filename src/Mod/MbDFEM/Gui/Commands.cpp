@@ -1,4 +1,4 @@
-// SPDX - License - Identifier: LGPL - 2.1 - or -later
+﻿// SPDX - License - Identifier: LGPL - 2.1 - or -later
 /****************************************************************************
  *                                                                          *
  *   Copyright (c) 2025 Pierre-Louis Boyer                                  *
@@ -32,9 +32,9 @@
 #include <Gui/Selection/Selection.h>
 #include <Gui/Tree.h>
 
-#include <Mod/MbDFEM/App/MbDFEMLink.h>
+#include <Mod/MbDFEM/App/MbDAssemblyLink.h>
 #include <Mod/MbDFEM/App/MbDAssembly.h>
-#include <Mod/MbDFEM/App/MbDFEMUtils.h>
+#include <Mod/MbDFEM/App/MbDAssemblyUtils.h>
 
 #include "Commands.h"
 #include "ViewProviderMbDFEM.h"
@@ -117,7 +117,7 @@ void CmdMbDFEMLinkSelectLinked::activated(int iMsg)
         return;
     }
 
-    auto* asmLink = dynamic_cast<MbDFEM::MbDFEMLink*>(selection[0].getObject());
+    auto* asmLink = dynamic_cast<MbDFEM::MbDAssemblyLink*>(selection[0].getObject());
 
     if (!asmLink) {
         return;
@@ -148,7 +148,7 @@ bool CmdMbDFEMLinkSelectLinked::isActive()
     std::vector<Gui::SelectionObject> selection = Gui::Selection().getSelectionEx();
     return (
         selection.size() == 1 && selection[0].getObject()
-        && selection[0].getObject()->isDerivedFrom(MbDFEM::MbDFEMLink::getClassTypeId())
+        && selection[0].getObject()->isDerivedFrom(MbDFEM::MbDAssemblyLink::getClassTypeId())
     );
 }
 

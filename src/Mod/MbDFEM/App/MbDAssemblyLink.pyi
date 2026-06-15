@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: LGPL-2.1-or-later
+﻿# SPDX-License-Identifier: LGPL-2.1-or-later
 
 from __future__ import annotations
 
@@ -9,10 +9,10 @@ from Base.Metadata import export
 from App.Part import Part
 
 @export(
-    Include="Mod/MbDFEM/App/MbDFEMLink.h",
+    Include="Mod/MbDFEM/App/MbDAssemblyLink.h",
     Namespace="MbDFEM",
 )
-class MbDFEMLink(Part):
+class MbDAssemblyLink(Part):
     """
     This class handles document objects in MbDFEM
 

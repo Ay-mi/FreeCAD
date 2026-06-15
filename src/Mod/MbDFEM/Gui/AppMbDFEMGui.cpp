@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: LGPL-2.1-or-later
+﻿// SPDX-License-Identifier: LGPL-2.1-or-later
 /****************************************************************************
  *                                                                          *
  *   Copyright (c) 2023 Ondsel <development@ondsel.com>                     *
@@ -28,7 +28,7 @@
 
 #include "Commands.h"
 #include "ViewProviderMbDFEM.h"
-#include "ViewProviderMbDFEMLink.h"
+#include "ViewProviderMbDAssemblyLink.h"
 #include "ViewProviderBom.h"
 #include "ViewProviderBomGroup.h"
 #include "ViewProviderJointGroup.h"
@@ -62,7 +62,7 @@ PyMOD_INIT_FUNC(MbDFEMGui)
     // This function is responsible for adding inherited slots from a type's base class.
 
     MbDFEMGui::ViewProviderMbDFEM::init();
-    MbDFEMGui::ViewProviderMbDFEMLink::init();
+    MbDFEMGui::ViewProviderMbDAssemblyLink::init();
     MbDFEMGui::ViewProviderBom::init();
     MbDFEMGui::ViewProviderBomGroup::init();
     MbDFEMGui::ViewProviderJointGroup::init();

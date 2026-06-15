@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: LGPL-2.1-or-later
+﻿# SPDX-License-Identifier: LGPL-2.1-or-later
 # /**************************************************************************
 #                                                                           *
 #    Copyright (c) 2023 Ondsel <development@ondsel.com>                     *
@@ -405,7 +405,7 @@ class TaskMbDFEMInsertLink(QtCore.QObject):
                 documentItem.setText(0, f"{newDocName}.FCStd")"""
 
         if selectedPart.isDerivedFrom("MbDFEM::MbDAssembly"):
-            objType = "MbDFEM::MbDFEMLink"
+            objType = "MbDFEM::MbDAssemblyLink"
         else:
             objType = "App::Link"
 
@@ -504,7 +504,7 @@ class TaskMbDFEMInsertLink(QtCore.QObject):
             targetObj = self.insertionStack[0]["addedObject"]
 
             # If the object is a flexible MbDFEMLink, we should ground its internal 'base' part
-            if targetObj.isDerivedFrom("MbDFEM::MbDFEMLink") and not targetObj.Rigid:
+            if targetObj.isDerivedFrom("MbDFEM::MbDAssemblyLink") and not targetObj.Rigid:
                 linkedAsm = targetObj.LinkedObject
                 if linkedAsm and hasattr(linkedAsm, "Group"):
                     srcGrounded = None

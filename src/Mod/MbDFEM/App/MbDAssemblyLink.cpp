@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: LGPL-2.1-or-later
+﻿// SPDX-License-Identifier: LGPL-2.1-or-later
 /****************************************************************************
  *                                                                          *
  *   Copyright (c) 2024 Ondsel <development@ondsel.com>                     *
@@ -43,11 +43,11 @@
 #include <Mod/Part/App/DatumFeature.h>
 
 #include "MbDAssembly.h"
-#include "MbDFEMUtils.h"
+#include "MbDAssemblyUtils.h"
 #include "JointGroup.h"
 
-#include "MbDFEMLink.h"
-#include "MbDFEMLinkPy.h"
+#include "MbDAssemblyLink.h"
+#include "MbDAssemblyLinkPy.h"
 
 namespace PartApp = Part;
 
@@ -55,9 +55,9 @@ using namespace MbDFEM;
 
 // ================================ MbDFEM Object ============================
 
-PROPERTY_SOURCE(MbDFEM::MbDFEMLink, App::Part)
+PROPERTY_SOURCE(MbDFEM::MbDAssemblyLink, App::Part)
 
-MbDFEMLink::MbDFEMLink()
+MbDAssemblyLink::MbDAssemblyLink()
 {
     ADD_PROPERTY_TYPE(
         Rigid,
@@ -77,25 +77,25 @@ MbDFEMLink::MbDFEMLink()
     );
 }
 
-MbDFEMLink::~MbDFEMLink() = default;
+MbDAssemblyLink::~MbDAssemblyLink() = default;
 
-PyObject* MbDFEMLink::getPyObject()
+PyObject* MbDAssemblyLink::getPyObject()
 {
     if (PythonObject.is(Py::_None())) {
         // ref counter is set to 1
-        PythonObject = Py::Object(new MbDFEMLinkPy(this), true);
+        PythonObject = Py::Object(new MbDAssemblyLinkPy(this), true);
     }
     return Py::new_reference_to(PythonObject);
 }
 
-App::DocumentObjectExecReturn* MbDFEMLink::execute()
+App::DocumentObjectExecReturn* MbDAssemblyLink::execute()
 {
     updateContents();
 
     return App::Part::execute();
 }
 
-void MbDFEMLink::onChanged(const App::Property* prop)
+void MbDAssemblyLink::onChanged(const App::Property* prop)
 {
     if (App::GetApplication().isRestoring()) {
         App::Part::onChanged(prop);
@@ -130,7 +130,7 @@ void MbDFEMLink::onChanged(const App::Property* prop)
             // movePlc needs to be computed before updateContents.
             App::DocumentObject* firstLink = nullptr;
             for (auto* obj : Group.getValues()) {
-                if (obj && (obj->isDerivedFrom<App::Link>() || obj->isDerivedFrom<MbDFEMLink>())) {
+                if (obj && (obj->isDerivedFrom<App::Link>() || obj->isDerivedFrom<MbDAssemblyLink>())) {
                     firstLink = obj;
                     break;
                 }
@@ -141,7 +141,7 @@ void MbDFEMLink::onChanged(const App::Property* prop)
                 if (auto* link = dynamic_cast<App::Link*>(firstLink)) {
                     sourceObj = link->getLinkedObject(false);  // Get non-recursive linked object
                 }
-                else if (auto* asmLink = dynamic_cast<MbDFEMLink*>(firstLink)) {
+                else if (auto* asmLink = dynamic_cast<MbDAssemblyLink*>(firstLink)) {
                     sourceObj = asmLink->getLinkedMbDFEM();
                 }
 
@@ -225,7 +225,7 @@ void MbDFEMLink::onChanged(const App::Property* prop)
     App::Part::onChanged(prop);
 }
 
-void MbDFEMLink::updateParentJoints()
+void MbDAssemblyLink::updateParentJoints()
 {
     MbDAssembly* parent = getParentMbDFEM();
     if (!parent) {
@@ -298,7 +298,7 @@ void MbDFEMLink::updateParentJoints()
     }
 }
 
-void MbDFEMLink::updateContents()
+void MbDAssemblyLink::updateContents()
 {
     synchronizeComponents();
 
@@ -311,7 +311,7 @@ void MbDFEMLink::updateContents()
     purgeTouched();
 }
 
-void MbDFEMLink::synchronizeComponents()
+void MbDAssemblyLink::synchronizeComponents()
 {
     App::Document* doc = getDocument();
 
@@ -323,7 +323,7 @@ void MbDFEMLink::synchronizeComponents()
     objLinkMap.clear();
 
     std::vector<App::DocumentObject*> MbDFEMGroup = MbDFEM->Group.getValues();
-    std::vector<App::DocumentObject*> MbDFEMLinkGroup = Group.getValues();
+    std::vector<App::DocumentObject*> MbDAssemblyLinkGroup = Group.getValues();
 
     // Filter out child objects from Part-workbench features to get only top-level components.
     // An object is considered a child if it's referenced by another object's 'Base', 'Tool',
@@ -371,10 +371,10 @@ void MbDFEMLink::synchronizeComponents()
         bool found = false;
         std::set<App::Link*> linkGroupsAdded;
 
-        for (auto* obj2 : MbDFEMLinkGroup) {
+        for (auto* obj2 : MbDAssemblyLinkGroup) {
             App::DocumentObject* linkedObj;
 
-            auto* subAsmLink = freecad_cast<MbDFEMLink*>(obj2);
+            auto* subAsmLink = freecad_cast<MbDAssemblyLink*>(obj2);
             auto* link2 = dynamic_cast<App::Link*>(obj2);
 
             if (subAsmLink) {
@@ -420,12 +420,12 @@ void MbDFEMLink::synchronizeComponents()
         }
         if (!found) {
             // Add a link or a MbDFEMLink to it in the MbDFEMLink.
-            if (obj->isDerivedFrom<MbDFEMLink>()) {
-                auto* asmLink = static_cast<MbDFEMLink*>(obj);
+            if (obj->isDerivedFrom<MbDAssemblyLink>()) {
+                auto* asmLink = static_cast<MbDAssemblyLink*>(obj);
 
                 App::DocumentObject* newObj
-                    = doc->addObject("MbDFEM::MbDFEMLink", obj->getNameInDocument());
-                auto* subAsmLink = static_cast<MbDFEMLink*>(newObj);
+                    = doc->addObject("MbDFEM::MbDAssemblyLink", obj->getNameInDocument());
+                auto* subAsmLink = static_cast<MbDAssemblyLink*>(newObj);
                 subAsmLink->LinkedObject.setValue(obj);
                 subAsmLink->Rigid.setValue(asmLink->Rigid.getValue());
                 subAsmLink->Label.setValue(obj->Label.getValue());
@@ -479,13 +479,13 @@ void MbDFEMLink::synchronizeComponents()
 
     // We check if a component needs to be removed from the MbDFEMLink
     // NOTE: this is not being executed when a src link is deleted, because the link
-    // is then in error, and so MbDFEMLink::execute() does not get called.
+    // is then in error, and so MbDAssemblyLink::execute() does not get called.
     std::set<App::DocumentObject*> validLinks;
     for (const auto& pair : objLinkMap) {
         validLinks.insert(pair.second);
     }
-    for (auto* obj : MbDFEMLinkGroup) {
-        // We don't need to update MbDFEMLinkGroup after the addition since we're not removing
+    for (auto* obj : MbDAssemblyLinkGroup) {
+        // We don't need to update MbDAssemblyLinkGroup after the addition since we're not removing
         // something we just added.
         if (!obj->isDerivedFrom<App::Part>() && !obj->isDerivedFrom<PartApp::Feature>()
             && !obj->isDerivedFrom<App::Link>()) {
@@ -543,7 +543,7 @@ void copyPropertyIfDifferent(
 }
 };  // namespace
 
-void MbDFEMLink::synchronizeJoints()
+void MbDAssemblyLink::synchronizeJoints()
 {
     App::Document* doc = getDocument();
     MbDAssembly* MbDFEM = getLinkedMbDFEM();
@@ -554,19 +554,19 @@ void MbDFEMLink::synchronizeJoints()
     JointGroup* jGroup = ensureJointGroup();
 
     std::vector<App::DocumentObject*> MbDFEMJoints = MbDFEM->getJoints(false, false);
-    std::vector<App::DocumentObject*> MbDFEMLinkJoints = getJoints();
+    std::vector<App::DocumentObject*> MbDAssemblyLinkJoints = getJoints();
 
     // We delete the excess of joints if any
-    for (size_t i = MbDFEMJoints.size(); i < MbDFEMLinkJoints.size(); ++i) {
-        doc->removeObject(MbDFEMLinkJoints[i]->getNameInDocument());
+    for (size_t i = MbDFEMJoints.size(); i < MbDAssemblyLinkJoints.size(); ++i) {
+        doc->removeObject(MbDAssemblyLinkJoints[i]->getNameInDocument());
     }
 
     // We make sure the joints match.
     for (size_t i = 0; i < MbDFEMJoints.size(); ++i) {
         App::DocumentObject* joint = MbDFEMJoints[i];
         App::DocumentObject* lJoint;
-        if (i < MbDFEMLinkJoints.size()) {
-            lJoint = MbDFEMLinkJoints[i];
+        if (i < MbDAssemblyLinkJoints.size()) {
+            lJoint = MbDAssemblyLinkJoints[i];
         }
         else {
             auto ret = doc->copyObject({joint});
@@ -602,15 +602,15 @@ void MbDFEMLink::synchronizeJoints()
         handleJointReference(joint, lJoint, "Reference2");
     }
 
-    MbDFEMLinkJoints = getJoints();
+    MbDAssemblyLinkJoints = getJoints();
 
-    for (auto* joint : MbDFEMLinkJoints) {
+    for (auto* joint : MbDAssemblyLinkJoints) {
         joint->purgeTouched();
     }
 }
 
 
-void MbDFEMLink::handleJointReference(
+void MbDAssemblyLink::handleJointReference(
     App::DocumentObject* joint,
     App::DocumentObject* lJoint,
     const char* refName
@@ -632,7 +632,7 @@ void MbDFEMLink::handleJointReference(
     auto it = objLinkMap.find(externalComponent);
     if (it == objLinkMap.end()) {
         Base::Console().warning(
-            "MbDFEMLink: Could not map external component %s to a local link for joint %s\n",
+            "MbDAssemblyLink: Could not map external component %s to a local link for joint %s\n",
             externalComponent->getNameInDocument(),
             joint->getNameInDocument()
         );
@@ -670,7 +670,7 @@ void MbDFEMLink::handleJointReference(
     }
 }
 
-void MbDFEMLink::ensureNoJointGroup()
+void MbDAssemblyLink::ensureNoJointGroup()
 {
     // Make sure there is no joint group
     JointGroup* jGroup = getJointGroup(this);
@@ -680,7 +680,7 @@ void MbDFEMLink::ensureNoJointGroup()
         getDocument()->removeObject(jGroup->getNameInDocument());
     }
 }
-JointGroup* MbDFEMLink::ensureJointGroup()
+JointGroup* MbDAssemblyLink::ensureJointGroup()
 {
     // Make sure there is a jointGroup
     JointGroup* jGroup = getJointGroup(this);
@@ -695,7 +695,7 @@ JointGroup* MbDFEMLink::ensureJointGroup()
     return jGroup;
 }
 
-App::DocumentObject* MbDFEMLink::getLinkedObject2(bool recursive) const
+App::DocumentObject* MbDAssemblyLink::getLinkedObject2(bool recursive) const
 {
     auto* obj = LinkedObject.getValue();
     auto* MbDFEM = freecad_cast<MbDAssembly*>(obj);
@@ -703,7 +703,7 @@ App::DocumentObject* MbDFEMLink::getLinkedObject2(bool recursive) const
         return MbDFEM;
     }
     else {
-        auto* subLink = freecad_cast<MbDFEMLink*>(obj);
+        auto* subLink = freecad_cast<MbDAssemblyLink*>(obj);
         if (subLink) {
             if (recursive) {
                 return subLink->getLinkedObject2(recursive);
@@ -717,12 +717,12 @@ App::DocumentObject* MbDFEMLink::getLinkedObject2(bool recursive) const
     return nullptr;
 }
 
-MbDAssembly* MbDFEMLink::getLinkedMbDFEM() const
+MbDAssembly* MbDAssemblyLink::getLinkedMbDFEM() const
 {
     return freecad_cast<MbDAssembly*>(getLinkedObject2());
 }
 
-MbDAssembly* MbDFEMLink::getParentMbDFEM() const
+MbDAssembly* MbDAssemblyLink::getParentMbDFEM() const
 {
     std::vector<App::DocumentObject*> inList = getInList();
     for (auto* obj : inList) {
@@ -735,7 +735,7 @@ MbDAssembly* MbDFEMLink::getParentMbDFEM() const
     return nullptr;
 }
 
-bool MbDFEMLink::isRigid() const
+bool MbDAssemblyLink::isRigid() const
 {
     auto* prop = dynamic_cast<App::PropertyBool*>(getPropertyByName("Rigid"));
     if (!prop) {
@@ -744,7 +744,7 @@ bool MbDFEMLink::isRigid() const
     return prop->getValue();
 }
 
-std::vector<App::DocumentObject*> MbDFEMLink::getJoints()
+std::vector<App::DocumentObject*> MbDAssemblyLink::getJoints()
 {
     JointGroup* jointGroup = getJointGroup(this);
 
@@ -754,17 +754,17 @@ std::vector<App::DocumentObject*> MbDFEMLink::getJoints()
     return jointGroup->getJoints();
 }
 
-bool MbDFEMLink::allowDuplicateLabel() const
+bool MbDAssemblyLink::allowDuplicateLabel() const
 {
     return true;
 }
 
-int MbDFEMLink::numberOfComponents() const
+int MbDAssemblyLink::numberOfComponents() const
 {
     return isRigid() ? 1 : getLinkedMbDFEM()->numberOfComponents();
 }
 
-bool MbDFEMLink::isEmpty() const
+bool MbDAssemblyLink::isEmpty() const
 {
     return numberOfComponents() == 0;
 }
