@@ -1,27 +1,4 @@
-// SPDX-License-Identifier: LGPL-2.1-or-later
-/****************************************************************************
- *                                                                          *
- *   Copyright (c) 2023 Ondsel <development@ondsel.com>                     *
- *                                                                          *
- *   This file is part of FreeCAD.                                          *
- *                                                                          *
- *   FreeCAD is free software: you can redistribute it and/or modify it     *
- *   under the terms of the GNU Lesser General Public License as            *
- *   published by the Free Software Foundation, either version 2.1 of the   *
- *   License, or (at your option) any later version.                        *
- *                                                                          *
- *   FreeCAD is distributed in the hope that it will be useful, but         *
- *   WITHOUT ANY WARRANTY; without even the implied warranty of             *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU       *
- *   Lesser General Public License for more details.                        *
- *                                                                          *
- *   You should have received a copy of the GNU Lesser General Public       *
- *   License along with FreeCAD. If not, see                                *
- *   <https://www.gnu.org/licenses/>.                                       *
- *                                                                          *
- ***************************************************************************/
-
-#pragma once
+﻿#pragma once
 
 #include <QCoreApplication>
 #include <QMetaObject>
@@ -45,7 +22,7 @@ class View3DInventorViewer;
 
 namespace MbDFEMGui
 {
-class TaskMbDFEMMessages;
+class TaskMbDAssemblyMessages;
 
 struct MovingObject
 {
@@ -80,11 +57,11 @@ struct MovingObject
     {}
 };
 
-class MbDFEMGuiExport ViewProviderMbDFEM: public Gui::ViewProviderPart,
+class MbDFEMGuiExport ViewProviderMbDAssembly: public Gui::ViewProviderPart,
                                               public Gui::SelectionObserver
 {
-    Q_DECLARE_TR_FUNCTIONS(MbDFEMGui::ViewProviderMbDFEM)
-    PROPERTY_HEADER_WITH_OVERRIDE(MbDFEMGui::ViewProviderMbDFEM);
+    Q_DECLARE_TR_FUNCTIONS(MbDFEMGui::ViewProviderMbDAssembly)
+    PROPERTY_HEADER_WITH_OVERRIDE(MbDFEMGui::ViewProviderMbDAssembly);
 
     enum class DragMode
     {
@@ -107,8 +84,8 @@ public:
         Hidden,
     };
 
-    ViewProviderMbDFEM();
-    ~ViewProviderMbDFEM() override;
+    ViewProviderMbDAssembly();
+    ~ViewProviderMbDAssembly() override;
 
     /// deliver the icon shown in the tree view. Override from ViewProvider.h
     QIcon getIcon() const override;
@@ -294,7 +271,7 @@ private:
         std::set<App::DocumentObject*>& visited
     );
 
-    TaskMbDFEMMessages* taskSolver {nullptr};
+    TaskMbDAssemblyMessages* taskSolver {nullptr};
 
     QMetaObject::Connection workbenchConnection;
     fastsignals::connection connectActivatedVP;

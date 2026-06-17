@@ -1,32 +1,32 @@
-#include <Gui/Application.h>
+﻿#include <Gui/Application.h>
 #include <Gui/BitmapFactory.h>
 #include <Gui/Command.h>
 // #include <Mod/MbDFEM/App/MbDAssembly.h>
 
-#include "TaskMbDFEMMessages.h"
-#include "ViewProviderMbDFEM.h"
+#include "TaskMbDAssemblyMessages.h"
+#include "ViewProviderMbDAssembly.h"
 
 using namespace MbDFEMGui;
 using namespace Gui::TaskView;
 namespace sp = std::placeholders;
 
-TaskMbDFEMMessages::TaskMbDFEMMessages(ViewProviderMbDFEM* vp)
+TaskMbDAssemblyMessages::TaskMbDAssemblyMessages(ViewProviderMbDAssembly* vp)
     : TaskSolverMessages(Gui::BitmapFactory().pixmap("GeoMbDFEM"), tr("Solver messages"))
     , vp(vp)
 {
     // NOLINTBEGIN
     connectionSetUp = vp->signalSetUp.connect(
-        std::bind(&TaskMbDFEMMessages::slotSetUp, this, sp::_1, sp::_2, sp::_3, sp::_4)
+        std::bind(&TaskMbDAssemblyMessages::slotSetUp, this, sp::_1, sp::_2, sp::_3, sp::_4)
     );
     // NOLINTEND
 }
 
-TaskMbDFEMMessages::~TaskMbDFEMMessages()
+TaskMbDAssemblyMessages::~TaskMbDAssemblyMessages()
 {
     connectionSetUp.disconnect();
 }
 
-void TaskMbDFEMMessages::updateToolTip(const QString& link)
+void TaskMbDAssemblyMessages::updateToolTip(const QString& link)
 {
     if (link == QStringLiteral("#conflicting")) {
         setLinkTooltip(tr("Selects these conflicting joints"));
@@ -47,7 +47,7 @@ void TaskMbDFEMMessages::updateToolTip(const QString& link)
     }
 }
 
-void TaskMbDFEMMessages::onLabelStatusLinkClicked(const QString& str)
+void TaskMbDAssemblyMessages::onLabelStatusLinkClicked(const QString& str)
 {
     if (str == QStringLiteral("#conflicting")) {
         Gui::Application::Instance->commandManager().runCommandByName(
@@ -71,4 +71,4 @@ void TaskMbDFEMMessages::onLabelStatusLinkClicked(const QString& str)
     }
 }
 
-#include "moc_TaskMbDFEMMessages.cpp"
+#include "moc_TaskMbDAssemblyMessages.cpp"

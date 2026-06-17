@@ -7,13 +7,13 @@
 namespace MbDFEMGui
 {
 
-class MbDFEMGuiExport ViewProviderPartsGroup: public Gui::ViewProviderDocumentObjectGroup
+class MbDFEMGuiExport ViewProviderPartGroup: public Gui::ViewProviderDocumentObjectGroup
 {
-    PROPERTY_HEADER_WITH_OVERRIDE(MbDFEMGui::ViewProviderPartsGroup);
+    PROPERTY_HEADER_WITH_OVERRIDE(MbDFEMGui::ViewProviderPartGroup);
 
 public:
-    ViewProviderPartsGroup();
-    ~ViewProviderPartsGroup() override;
+    ViewProviderPartGroup();
+    ~ViewProviderPartGroup() override;
 
     QIcon getIcon() const override;
 
@@ -35,7 +35,7 @@ public:
     }
     bool onDelete(const std::vector<std::string>&) override
     {
-        return false;
+        return true;
     }
 };
 

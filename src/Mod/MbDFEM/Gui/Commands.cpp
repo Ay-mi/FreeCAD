@@ -37,7 +37,7 @@
 #include <Mod/MbDFEM/App/MbDAssemblyUtils.h>
 
 #include "Commands.h"
-#include "ViewProviderMbDFEM.h"
+#include "ViewProviderMbDAssembly.h"
 
 
 using namespace MbDFEM;
@@ -52,7 +52,7 @@ static MbDAssembly* getActiveMbDFEM()
     }
 
     auto* vp = doc->getInEdit();
-    if (auto* MbDFEMVP = freecad_cast<ViewProviderMbDFEM*>(vp)) {
+    if (auto* MbDFEMVP = freecad_cast<ViewProviderMbDAssembly*>(vp)) {
         return MbDFEMVP->getObject<MbDAssembly>();
     }
 

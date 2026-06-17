@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
 <TS version="2.1" language="ms" sourcelanguage="en">
   <context>
@@ -28,14 +28,14 @@
     </message>
   </context>
   <context>
-    <name>MbDFEM_SolveMbDFEM</name>
+    <name>MbDFEM_SolveMbDAssembly</name>
     <message>
-      <location filename="../../../CommandSolveMbDFEM.py" line="50"/>
+      <location filename="../../../CommandSolveMbDAssembly.py" line="50"/>
       <source>Solve MbDFEM</source>
       <translation>Selesaikan Perhimpunan</translation>
     </message>
     <message>
-      <location filename="../../../CommandSolveMbDFEM.py" line="55"/>
+      <location filename="../../../CommandSolveMbDAssembly.py" line="55"/>
       <source>Solves the currently active MbDFEM.</source>
       <translation>Selesaikan perhimpunan yang sedang aktif.</translation>
     </message>
@@ -48,27 +48,27 @@
       <translation type="unfinished">MbDFEM</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="143"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="143"/>
       <source>Active object</source>
       <translation>Objek aktif</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEMLink.cpp" line="125"/>
+      <location filename="../../ViewProviderMbDAssemblyLink.cpp" line="125"/>
       <source>Turn flexible</source>
       <translation>Hidupkan fleksibel</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEMLink.cpp" line="127"/>
+      <location filename="../../ViewProviderMbDAssemblyLink.cpp" line="127"/>
       <source>Your sub-MbDFEM is currently rigid. This will make it flexible instead.</source>
       <translation>Sub-himpunan anda pada masa ini tegar. Ini akan menjadikannya fleksibel sebaliknya.</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEMLink.cpp" line="131"/>
+      <location filename="../../ViewProviderMbDAssemblyLink.cpp" line="131"/>
       <source>Turn rigid</source>
       <translation>Berubah tegar</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEMLink.cpp" line="133"/>
+      <location filename="../../ViewProviderMbDAssemblyLink.cpp" line="133"/>
       <source>Your sub-MbDFEM is currently flexible. This will make it rigid instead.</source>
       <translation>Subhimpunan anda fleksibel pada masa ini. Ini akan menjadikannya tegar sebaliknya.</translation>
     </message>
@@ -888,72 +888,72 @@ The files are named "runPreDrag.asmt" and "dragging.log" and are located in the 
     </message>
   </context>
   <context>
-    <name>MbDFEMGui::ViewProviderMbDFEM</name>
+    <name>MbDFEMGui::ViewProviderMbDAssembly</name>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="211"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="211"/>
       <source>The object is associated to one or more joints.</source>
       <translation>Objek dikaitkan dengan satu atau lebih sendi.</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="213"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="213"/>
       <source>Do you want to move the object and delete associated joints?</source>
       <translation type="unfinished">Do you want to move the object and delete associated joints?</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1085"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1085"/>
       <source>Move part</source>
       <translation type="unfinished">Move part</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1679"/>
-      <source>ViewProviderMbDFEM</source>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1679"/>
+      <source>ViewProviderMbDAssembly</source>
       <comment>and %1 more</comment>
-      <translation type="unfinished">ViewProviderMbDFEM</translation>
+      <translation type="unfinished">ViewProviderMbDAssembly</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1696"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1696"/>
       <source>Empty MbDFEM</source>
       <translation type="unfinished">Empty MbDFEM</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1701"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1701"/>
       <source>Over-constrained:</source>
       <translation type="unfinished">Over-constrained:</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1709"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1709"/>
       <source>Malformed joints:</source>
       <translation type="unfinished">Malformed joints:</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1717"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1717"/>
       <source>Redundant joints:</source>
       <translation type="unfinished">Redundant joints:</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1725"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1725"/>
       <source>Partially redundant:</source>
       <translation type="unfinished">Partially redundant:</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1733"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1733"/>
       <source>Solver failed to converge</source>
       <translation type="unfinished">Solver failed to converge</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1741"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1741"/>
       <source>Under-constrained:</source>
       <translation type="unfinished">Under-constrained:</translation>
     </message>
     <message numerus="yes">
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1743"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1743"/>
       <source>%n Degrees of Freedom</source>
       <translation type="unfinished">
         <numerusform>%n Degrees of Freedom</numerusform>
       </translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1747"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1747"/>
       <source>Fully constrained</source>
       <translation type="unfinished">Fully constrained</translation>
     </message>
@@ -1096,7 +1096,7 @@ The files are named "runPreDrag.asmt" and "dragging.log" and are located in the 
   <context>
     <name>Command</name>
     <message>
-      <location filename="../../ViewProviderMbDFEMLink.cpp" line="139"/>
+      <location filename="../../ViewProviderMbDAssemblyLink.cpp" line="139"/>
       <source>Toggle Rigid</source>
       <translation>Togol Tegar</translation>
     </message>
@@ -1482,29 +1482,29 @@ The files are named "runPreDrag.asmt" and "dragging.log" and are located in the 
     </message>
   </context>
   <context>
-    <name>MbDFEMGui::TaskMbDFEMMessages</name>
+    <name>MbDFEMGui::TaskMbDAssemblyMessages</name>
     <message>
-      <location filename="../../TaskMbDFEMMessages.cpp" line="38"/>
+      <location filename="../../TaskMbDAssemblyMessages.cpp" line="38"/>
       <source>Solver messages</source>
       <translation type="unfinished">Solver messages</translation>
     </message>
     <message>
-      <location filename="../../TaskMbDFEMMessages.cpp" line="56"/>
+      <location filename="../../TaskMbDAssemblyMessages.cpp" line="56"/>
       <source>Click to select these conflicting joints.</source>
       <translation type="unfinished">Click to select these conflicting joints.</translation>
     </message>
     <message>
-      <location filename="../../TaskMbDFEMMessages.cpp" line="59"/>
+      <location filename="../../TaskMbDAssemblyMessages.cpp" line="59"/>
       <source>Click to select these redundant joints.</source>
       <translation type="unfinished">Click to select these redundant joints.</translation>
     </message>
     <message>
-      <location filename="../../TaskMbDFEMMessages.cpp" line="63"/>
+      <location filename="../../TaskMbDAssemblyMessages.cpp" line="63"/>
       <source>The MbDFEM has unconstrained components giving rise to those Degrees Of Freedom. Click to select these unconstrained components.</source>
       <translation type="unfinished">The MbDFEM has unconstrained components giving rise to those Degrees Of Freedom. Click to select these unconstrained components.</translation>
     </message>
     <message>
-      <location filename="../../TaskMbDFEMMessages.cpp" line="68"/>
+      <location filename="../../TaskMbDAssemblyMessages.cpp" line="68"/>
       <source>Click to select these malformed joints.</source>
       <translation type="unfinished">Click to select these malformed joints.</translation>
     </message>

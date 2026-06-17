@@ -14,7 +14,7 @@ generate_from_py(MbDPart)
 generate_from_py(BomObject)
 generate_from_py(BomGroup)
 generate_from_py(JointGroup)
-generate_from_py(PartsGroup)
+generate_from_py(PartGroup)
 generate_from_py(ViewGroup)
 generate_from_py(SimulationGroup)
 
@@ -32,8 +32,8 @@ SET(Python_SRCS
     BomGroupPyImp.cpp
     JointGroup.pyi
     JointGroupPyImp.cpp
-    PartsGroup.pyi
-    PartsGroupPyImp.cpp
+    PartGroup.pyi
+    PartGroupPyImp.cpp
     ViewGroup.pyi
     ViewGroupPyImp.cpp
     SimulationGroup.pyi
@@ -63,8 +63,8 @@ SET(MbDFEM_SRCS
     BomGroup.h
     JointGroup.cpp
     JointGroup.h
-    PartsGroup.cpp
-    PartsGroup.h
+    PartGroup.cpp
+    PartGroup.h
     ViewGroup.cpp
     ViewGroup.h
     SimulationGroup.cpp

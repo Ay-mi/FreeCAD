@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
 <TS version="2.1" language="ko" sourcelanguage="en">
   <context>
@@ -28,14 +28,14 @@
     </message>
   </context>
   <context>
-    <name>MbDFEM_SolveMbDFEM</name>
+    <name>MbDFEM_SolveMbDAssembly</name>
     <message>
-      <location filename="../../../CommandSolveMbDFEM.py" line="49"/>
+      <location filename="../../../CommandSolveMbDAssembly.py" line="49"/>
       <source>Solve MbDFEM</source>
       <translation>어셈블리 해석</translation>
     </message>
     <message>
-      <location filename="../../../CommandSolveMbDFEM.py" line="54"/>
+      <location filename="../../../CommandSolveMbDAssembly.py" line="54"/>
       <source>Solves the currently active MbDFEM.</source>
       <translation>현재 활성 어셈블리를 해석합니다.</translation>
     </message>
@@ -48,27 +48,27 @@
       <translation type="unfinished">MbDFEM</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="147"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="147"/>
       <source>Active object</source>
       <translation>활성 객체</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEMLink.cpp" line="154"/>
+      <location filename="../../ViewProviderMbDAssemblyLink.cpp" line="154"/>
       <source>Turn flexible</source>
       <translation>유연하게 전환</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEMLink.cpp" line="156"/>
+      <location filename="../../ViewProviderMbDAssemblyLink.cpp" line="156"/>
       <source>Your sub-MbDFEM is currently rigid. This will make it flexible instead.</source>
       <translation>하위 어셈블리가 현재 강체 상태입니다. 이 작업으로 유연하게 변경됩니다.</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEMLink.cpp" line="160"/>
+      <location filename="../../ViewProviderMbDAssemblyLink.cpp" line="160"/>
       <source>Turn rigid</source>
       <translation>강체로 전환</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEMLink.cpp" line="162"/>
+      <location filename="../../ViewProviderMbDAssemblyLink.cpp" line="162"/>
       <source>Your sub-MbDFEM is currently flexible. This will make it rigid instead.</source>
       <translation>하위 어셈블리가 현재 유연한 상태입니다. 이 작업으로 강체로 변경됩니다.</translation>
     </message>
@@ -938,61 +938,61 @@ The files are named "runPreDrag.asmt" and "dragging.log" and are located in the 
     </message>
   </context>
   <context>
-    <name>MbDFEMGui::ViewProviderMbDFEM</name>
+    <name>MbDFEMGui::ViewProviderMbDAssembly</name>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="215"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="215"/>
       <source>The object is associated to one or more joints.</source>
       <translation>객체가 하나 이상의 연결부에 연결되어 있습니다.</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="217"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="217"/>
       <source>Do you want to move the object and delete associated joints?</source>
       <translation>객체를 이동하고 연결된 연결부를 삭제하시겠습니까?</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1090"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1090"/>
       <source>Move part</source>
       <translation>파트 이동</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1803"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1803"/>
       <source>Empty MbDFEM</source>
       <translation>빈 어셈블리</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1815"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1815"/>
       <source>Over-constrained:</source>
       <translation>과구속:</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1823"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1823"/>
       <source>Malformed joints:</source>
       <translation>형식이 잘못된 연결부:</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1788"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1788"/>
       <source>and %1 more</source>
       <translation>및 %1개 더</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1847"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1847"/>
       <source>Solver failed to converge</source>
       <translation>솔버가 수렴하지 못했습니다</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1855"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1855"/>
       <source>Under-constrained:</source>
       <translation>미구속:</translation>
     </message>
     <message numerus="yes">
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1857"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1857"/>
       <source>%n Degrees of Freedom</source>
       <translation>
         <numerusform>%n 자유도</numerusform>
       </translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1861"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1861"/>
       <source>Fully constrained</source>
       <translation>완전 구속됨</translation>
     </message>
@@ -1135,7 +1135,7 @@ The files are named "runPreDrag.asmt" and "dragging.log" and are located in the 
   <context>
     <name>Command</name>
     <message>
-      <location filename="../../ViewProviderMbDFEMLink.cpp" line="168"/>
+      <location filename="../../ViewProviderMbDAssemblyLink.cpp" line="168"/>
       <source>Toggle Rigid</source>
       <translation>강체 전환</translation>
     </message>
@@ -1526,24 +1526,24 @@ The files are named "runPreDrag.asmt" and "dragging.log" and are located in the 
     </message>
   </context>
   <context>
-    <name>MbDFEMGui::TaskMbDFEMMessages</name>
+    <name>MbDFEMGui::TaskMbDAssemblyMessages</name>
     <message>
-      <location filename="../../TaskMbDFEMMessages.cpp" line="38"/>
+      <location filename="../../TaskMbDAssemblyMessages.cpp" line="38"/>
       <source>Solver messages</source>
       <translation>솔버 메시지</translation>
     </message>
     <message>
-      <location filename="../../TaskMbDFEMMessages.cpp" line="56"/>
+      <location filename="../../TaskMbDAssemblyMessages.cpp" line="56"/>
       <source>Click to select these conflicting joints.</source>
       <translation>충돌하는 연결부를 선택하려면 클릭하십시오.</translation>
     </message>
     <message>
-      <location filename="../../TaskMbDFEMMessages.cpp" line="59"/>
+      <location filename="../../TaskMbDAssemblyMessages.cpp" line="59"/>
       <source>Click to select these redundant joints.</source>
       <translation>중복 연결부를 선택하려면 클릭하십시오.</translation>
     </message>
     <message>
-      <location filename="../../TaskMbDFEMMessages.cpp" line="62"/>
+      <location filename="../../TaskMbDAssemblyMessages.cpp" line="62"/>
       <source>The MbDFEM has unconstrained components giving rise to those Degrees Of Freedom.
 Click to select these unconstrained components.
 Note: Currently this selects only unconnected parts, not constrained parts that still have free DoF.</source>
@@ -1552,7 +1552,7 @@ Note: Currently this selects only unconnected parts, not constrained parts that 
 참고: 현재 이 기능은 연결되지 않은 파트만 선택하며, 구속되어 있지만 자유도가 있는 파트는 선택하지 않습니다.</translation>
     </message>
     <message>
-      <location filename="../../TaskMbDFEMMessages.cpp" line="70"/>
+      <location filename="../../TaskMbDAssemblyMessages.cpp" line="70"/>
       <source>Click to select these malformed joints.</source>
       <translation>형식이 잘못된 연결부를 선택하려면 클릭하십시오.</translation>
     </message>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
 <TS version="2.1" language="ta" sourcelanguage="en">
   <context>
@@ -28,14 +28,14 @@
     </message>
   </context>
   <context>
-    <name>MbDFEM_SolveMbDFEM</name>
+    <name>MbDFEM_SolveMbDAssembly</name>
     <message>
-      <location filename="../../../CommandSolveMbDFEM.py" line="49"/>
+      <location filename="../../../CommandSolveMbDAssembly.py" line="49"/>
       <source>Solve MbDFEM</source>
       <translation>சட்டசபையை தீர்க்கவும்</translation>
     </message>
     <message>
-      <location filename="../../../CommandSolveMbDFEM.py" line="54"/>
+      <location filename="../../../CommandSolveMbDAssembly.py" line="54"/>
       <source>Solves the currently active MbDFEM.</source>
       <translation>தற்போது செயலில் உள்ள சட்டசபையை தீர்க்கிறது.</translation>
     </message>
@@ -48,27 +48,27 @@
       <translation type="unfinished">MbDFEM</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="147"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="147"/>
       <source>Active object</source>
       <translation>செயலில் உள்ள பொருள்</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEMLink.cpp" line="154"/>
+      <location filename="../../ViewProviderMbDAssemblyLink.cpp" line="154"/>
       <source>Turn flexible</source>
       <translation>நெகிழ்வாகத் திரும்பு</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEMLink.cpp" line="156"/>
+      <location filename="../../ViewProviderMbDAssemblyLink.cpp" line="156"/>
       <source>Your sub-MbDFEM is currently rigid. This will make it flexible instead.</source>
       <translation>உங்கள் துணை-அசெம்பிளி தற்போது கடினமாக உள்ளது. இது அதற்கு பதிலாக நெகிழ்வானதாக மாற்றும்.</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEMLink.cpp" line="160"/>
+      <location filename="../../ViewProviderMbDAssemblyLink.cpp" line="160"/>
       <source>Turn rigid</source>
       <translation>திடமாக திரும்பவும்</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEMLink.cpp" line="162"/>
+      <location filename="../../ViewProviderMbDAssemblyLink.cpp" line="162"/>
       <source>Your sub-MbDFEM is currently flexible. This will make it rigid instead.</source>
       <translation>உங்கள் துணை-அசெம்பிளி தற்போது நெகிழ்வானது. இது அதற்கு பதிலாக கடினமாக்கும்.</translation>
     </message>
@@ -938,54 +938,54 @@ The files are named "runPreDrag.asmt" and "dragging.log" and are located in the 
     </message>
   </context>
   <context>
-    <name>MbDFEMGui::ViewProviderMbDFEM</name>
+    <name>MbDFEMGui::ViewProviderMbDAssembly</name>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="215"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="215"/>
       <source>The object is associated to one or more joints.</source>
       <translation>பொருள் ஒன்று அல்லது அதற்கு மேற்பட்ட மூட்டுகளுடன் தொடர்புடையது.</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="217"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="217"/>
       <source>Do you want to move the object and delete associated joints?</source>
       <translation>பொருளை நகர்த்தவும் தொடர்புடைய மூட்டுகளை நீக்கவும் விரும்புகிறீர்களா?</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1090"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1090"/>
       <source>Move part</source>
       <translation>பகுதியை நகர்த்தவும்</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1803"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1803"/>
       <source>Empty MbDFEM</source>
       <translation>காலியான பேரவை</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1815"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1815"/>
       <source>Over-constrained:</source>
       <translation>அதிகப்படியான கட்டுப்பாடு:</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1823"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1823"/>
       <source>Malformed joints:</source>
       <translation>தவறான மூட்டுகள்:</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1788"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1788"/>
       <source>and %1 more</source>
       <translation>மேலும் % 1</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1847"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1847"/>
       <source>Solver failed to converge</source>
       <translation>கரைப்பான் ஒன்றிணைக்க முடியவில்லை</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1855"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1855"/>
       <source>Under-constrained:</source>
       <translation>கீழ்-கட்டுப்படுத்தப்பட்டவை:</translation>
     </message>
     <message numerus="yes">
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1857"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1857"/>
       <source>%n Degrees of Freedom</source>
       <translation>
         <numerusform>%n சுதந்திர நிலை</numerusform>
@@ -993,7 +993,7 @@ The files are named "runPreDrag.asmt" and "dragging.log" and are located in the 
       </translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1861"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1861"/>
       <source>Fully constrained</source>
       <translation>முழுமையாக கட்டுப்படுத்தப்பட்டது</translation>
     </message>
@@ -1136,7 +1136,7 @@ The files are named "runPreDrag.asmt" and "dragging.log" and are located in the 
   <context>
     <name>Command</name>
     <message>
-      <location filename="../../ViewProviderMbDFEMLink.cpp" line="168"/>
+      <location filename="../../ViewProviderMbDAssemblyLink.cpp" line="168"/>
       <source>Toggle Rigid</source>
       <translation>ரிசிடை நிலைமாற்று</translation>
     </message>
@@ -1527,24 +1527,24 @@ The files are named "runPreDrag.asmt" and "dragging.log" and are located in the 
     </message>
   </context>
   <context>
-    <name>MbDFEMGui::TaskMbDFEMMessages</name>
+    <name>MbDFEMGui::TaskMbDAssemblyMessages</name>
     <message>
-      <location filename="../../TaskMbDFEMMessages.cpp" line="38"/>
+      <location filename="../../TaskMbDAssemblyMessages.cpp" line="38"/>
       <source>Solver messages</source>
       <translation>தீர்க்கும் செய்திகள்</translation>
     </message>
     <message>
-      <location filename="../../TaskMbDFEMMessages.cpp" line="56"/>
+      <location filename="../../TaskMbDAssemblyMessages.cpp" line="56"/>
       <source>Click to select these conflicting joints.</source>
       <translation>இந்த முரண்பட்ட மூட்டுகளைத் தேர்ந்தெடுக்க சொடுக்கு செய்யவும்.</translation>
     </message>
     <message>
-      <location filename="../../TaskMbDFEMMessages.cpp" line="59"/>
+      <location filename="../../TaskMbDAssemblyMessages.cpp" line="59"/>
       <source>Click to select these redundant joints.</source>
       <translation>இந்த தேவையற்ற மூட்டுகளைத் தேர்ந்தெடுக்க சொடுக்கு செய்யவும்.</translation>
     </message>
     <message>
-      <location filename="../../TaskMbDFEMMessages.cpp" line="62"/>
+      <location filename="../../TaskMbDAssemblyMessages.cpp" line="62"/>
       <source>The MbDFEM has unconstrained components giving rise to those Degrees Of Freedom.
 Click to select these unconstrained components.
 Note: Currently this selects only unconnected parts, not constrained parts that still have free DoF.</source>
@@ -1553,7 +1553,7 @@ Click to select these unconstrained components.
 Note: Currently this selects only unconnected parts, not constrained parts that still have free DoF.</translation>
     </message>
     <message>
-      <location filename="../../TaskMbDFEMMessages.cpp" line="70"/>
+      <location filename="../../TaskMbDAssemblyMessages.cpp" line="70"/>
       <source>Click to select these malformed joints.</source>
       <translation>Click பெறுநர் தேர்ந்தெடு these malformed joints.</translation>
     </message>

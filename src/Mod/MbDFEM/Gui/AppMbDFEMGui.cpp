@@ -3,11 +3,11 @@
 #include <Base/PyObjectBase.h>
 
 #include "Commands.h"
-#include "ViewProviderMbDFEM.h"
+#include "ViewProviderMbDAssembly.h"
 #include "ViewProviderMbDAssemblyLink.h"
 #include "ViewProviderMbDPart.h"
 #include "ViewProviderBom.h"
-#include "ViewProviderPartsGroup.h"
+#include "ViewProviderPartGroup.h"
 #include "ViewProviderBomGroup.h"
 #include "ViewProviderJointGroup.h"
 #include "ViewProviderViewGroup.h"
@@ -39,11 +39,11 @@ PyMOD_INIT_FUNC(MbDFEMGui)
     // call PyType_Ready, otherwise we run into a segmentation fault, later on.
     // This function is responsible for adding inherited slots from a type's base class.
 
-    MbDFEMGui::ViewProviderMbDFEM::init();
+    MbDFEMGui::ViewProviderMbDAssembly::init();
     MbDFEMGui::ViewProviderMbDAssemblyLink::init();
     MbDFEMGui::ViewProviderMbDPart::init();
     MbDFEMGui::ViewProviderBom::init();
-    MbDFEMGui::ViewProviderPartsGroup::init();
+    MbDFEMGui::ViewProviderPartGroup::init(); //registers ViewProviderPartGroup in FreeCAD global type system
     MbDFEMGui::ViewProviderBomGroup::init();
     MbDFEMGui::ViewProviderJointGroup::init();
     MbDFEMGui::ViewProviderViewGroup::init();

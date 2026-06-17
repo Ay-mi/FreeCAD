@@ -1,4 +1,4 @@
-<RCC>
+﻿<RCC>
     <qresource prefix="/">
         <file>icons/MbDFEM_ActivateMbDFEM.svg</file>
         <file>icons/MbDFEM_MbDFEMLink.svg</file>
@@ -24,7 +24,7 @@
         <file>icons/MbDFEM_CreateJointScrew.svg</file>
         <file>icons/MbDFEM_ExportASMT.svg</file>
         <file>icons/MbDFEM_SelectJointsOfComponent.svg</file>
-        <file>icons/MbDFEM_SolveMbDFEM.svg</file>
+        <file>icons/MbDFEM_SolveMbDAssembly.svg</file>
         <file>icons/MbDFEM_JointGroup.svg</file>
         <file>icons/MbDFEM_ExplodedView.svg</file>
         <file>icons/MbDFEM_ExplodedViewGroup.svg</file>

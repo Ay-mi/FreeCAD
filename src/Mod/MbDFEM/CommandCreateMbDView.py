@@ -1,26 +1,3 @@
-# SPDX-License-Identifier: LGPL-2.1-or-later
-# /**************************************************************************
-#                                                                           *
-#    Copyright (c) 2023 Ondsel <development@ondsel.com>                     *
-#                                                                           *
-#    This file is part of FreeCAD.                                          *
-#                                                                           *
-#    FreeCAD is free software: you can redistribute it and/or modify it     *
-#    under the terms of the GNU Lesser General Public License as            *
-#    published by the Free Software Foundation, either version 2.1 of the   *
-#    License, or (at your option) any later version.                        *
-#                                                                           *
-#    FreeCAD is distributed in the hope that it will be useful, but         *
-#    WITHOUT ANY WARRANTY; without even the implied warranty of             *
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU       *
-#    Lesser General Public License for more details.                        *
-#                                                                           *
-#    You should have received a copy of the GNU Lesser General Public       *
-#    License along with FreeCAD. If not, see                                *
-#    <https://www.gnu.org/licenses/>.                                       *
-#                                                                           *
-# **************************************************************************/
-
 import re
 import os
 import FreeCAD as App
@@ -39,7 +16,6 @@ import UtilsMbDFEM
 import MbDFEMPreferences as Preferences
 
 __title__ = "MbDFEM Command Create Exploded View"
-__author__ = "Ondsel"
 __url__ = "https://www.freecad.org"
 
 
@@ -70,8 +46,8 @@ class CommandCreateView:
         if not MbDFEM:
             return
 
-        Gui.addModule("CommandCreateView")  # NOLINT
-        Gui.doCommand("panel = CommandCreateView.TaskMbDFEMCreateView()")
+        Gui.addModule("CommandCreateMbDView")  # NOLINT
+        Gui.doCommand("panel = CommandCreateMbDView.TaskMbDFEMCreateView()")
         self.panel = Gui.doCommandEval("panel")
         Gui.doCommandGui("dialog = Gui.Control.showDialog(panel)")
         dialog = Gui.doCommandEval("dialog")
@@ -856,11 +832,11 @@ class TaskMbDFEMCreateView(QtCore.QObject):
             f'MbDFEM = App.ActiveDocument.getObject("{self.MbDFEM.Name}")\n'
             "view_group = UtilsMbDFEM.getViewGroup(MbDFEM)\n"
             'viewObj = view_group.newObject("App::FeaturePython", "Exploded View")\n'
-            "CommandCreateView.ExplodedView(viewObj)"
+            "CommandCreateMbDView.ExplodedView(viewObj)"
         )
         Gui.doCommand(commands)
         self.viewObj = Gui.doCommandEval("viewObj")
-        Gui.doCommandGui("CommandCreateView.ViewProviderExplodedView(viewObj.ViewObject)")
+        Gui.doCommandGui("CommandCreateMbDView.ViewProviderExplodedView(viewObj.ViewObject)")
 
     def createExplodedStepObject(self):
         moveType_index = 0
@@ -871,11 +847,11 @@ class TaskMbDFEMCreateView(QtCore.QObject):
         commands = (
             f'MbDFEM = App.ActiveDocument.getObject("{self.MbDFEM.Name}")\n'
             'currentStep = MbDFEM.newObject("App::FeaturePython", "Move")\n'
-            f"CommandCreateView.ExplodedViewStep(currentStep, {moveType_index})"
+            f"CommandCreateMbDView.ExplodedViewStep(currentStep, {moveType_index})"
         )
         Gui.doCommand(commands)
         self.currentStep = Gui.doCommandEval("currentStep")
-        Gui.doCommandGui("CommandCreateView.ViewProviderExplodedViewStep(currentStep.ViewObject)")
+        Gui.doCommandGui("CommandCreateMbDView.ViewProviderExplodedViewStep(currentStep.ViewObject)")
 
         self.currentStep.MovementTransform = App.Placement()
 

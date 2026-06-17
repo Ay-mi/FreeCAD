@@ -1,5 +1,3 @@
-# SPDX-License-Identifier: LGPL-2.1-or-later
-
 from __future__ import annotations
 
 from typing import Any, List, Tuple, TypeAlias
@@ -10,10 +8,10 @@ from Gui.ViewProvider import ViewProvider
 
 SoTransformDragger: TypeAlias = Any
 
-@export(Include="Mod/MbDFEM/Gui/ViewProviderMbDFEM.h", Namespace="MbDFEMGui")
-class ViewProviderMbDFEM(ViewProvider):
+@export(Include="Mod/MbDFEM/Gui/ViewProviderMbDAssembly.h", Namespace="MbDFEMGui")
+class ViewProviderMbDAssembly(ViewProvider):
     """
-    This is the ViewProviderMbDFEM class
+    This is the ViewProviderMbDAssembly class
 
     Author: Ondsel (development@ondsel.com)
     License: LGPL-2.1-or-later

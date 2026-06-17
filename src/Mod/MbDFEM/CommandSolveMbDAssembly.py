@@ -14,19 +14,19 @@ __title__ = "MbDFEM Command to Solve MbDFEM"
 __url__ = "https://www.freecad.org"
 
 
-class CommandSolveMbDFEM:
+class CommandSolveMbDAssembly:
     def __init__(self):
         pass
 
     def GetResources(self):
 
         return {
-            "Pixmap": "MbDFEM_SolveMbDFEM",
-            "MenuText": QT_TRANSLATE_NOOP("MbDFEM_SolveMbDFEM", "Solve MbDFEM"),
+            "Pixmap": "MbDFEM_SolveMbDAssembly",
+            "MenuText": QT_TRANSLATE_NOOP("MbDFEM_SolveMbDAssembly", "Solve MbDAssembly"),
             "Accel": "Z",
             "ToolTip": QT_TRANSLATE_NOOP(
-                "MbDFEM_SolveMbDFEM",
-                "Solves the currently active MbDFEM.",
+                "MbDFEM_SolveMbDAssembly",
+                "Solves the currently active MbDAssembly.",
             ),
             "CmdType": "ForEdit",
         }
@@ -39,10 +39,10 @@ class CommandSolveMbDFEM:
         if not MbDFEM:
             return
 
-        App.setActiveTransaction("Solve MbDFEM")
+        App.setActiveTransaction("Solve MbDAssembly")
         MbDFEM.recompute(True)
         Gui.ActiveDocument.commitCommand()
 
 
 if App.GuiUp:
-    Gui.addCommand("MbDFEM_SolveMbDFEM", CommandSolveMbDFEM())
+    Gui.addCommand("MbDFEM_SolveMbDAssembly", CommandSolveMbDAssembly())

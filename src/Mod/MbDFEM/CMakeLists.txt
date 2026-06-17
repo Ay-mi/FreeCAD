@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: LGPL-2.1-or-later
+﻿# SPDX-License-Identifier: LGPL-2.1-or-later
 
 if (NOT FREECAD_USE_EXTERNAL_ONDSELSOLVER)
 include_directories(
@@ -19,11 +19,11 @@ endif(BUILD_GUI)
 
 set(MbDFEM_Scripts
     Init.py
-    CommandCreateMbDFEM.py
+    CommandCreateMbDAssembly.py
     CommandCreateMbDBom.py
     CommandInsertMbDLink.py
     CommandInsertMbDNewPart.py
-    CommandSolveMbDFEM.py
+    CommandSolveMbDAssembly.py
     CommandCreateMbDJoint.py
     CommandCreateMbDView.py
     CommandCreateMbDSimulation.py

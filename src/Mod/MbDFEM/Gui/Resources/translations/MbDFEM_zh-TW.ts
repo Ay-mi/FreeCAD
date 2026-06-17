@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
 <TS version="2.1" language="zh-TW" sourcelanguage="en">
   <context>
@@ -28,14 +28,14 @@
     </message>
   </context>
   <context>
-    <name>MbDFEM_SolveMbDFEM</name>
+    <name>MbDFEM_SolveMbDAssembly</name>
     <message>
-      <location filename="../../../CommandSolveMbDFEM.py" line="49"/>
+      <location filename="../../../CommandSolveMbDAssembly.py" line="49"/>
       <source>Solve MbDFEM</source>
       <translation>組裝求解</translation>
     </message>
     <message>
-      <location filename="../../../CommandSolveMbDFEM.py" line="54"/>
+      <location filename="../../../CommandSolveMbDAssembly.py" line="54"/>
       <source>Solves the currently active MbDFEM.</source>
       <translation type="unfinished">Solves the currently active MbDFEM.</translation>
     </message>
@@ -48,27 +48,27 @@
       <translation>程式集</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="147"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="147"/>
       <source>Active object</source>
       <translation>作業中物件</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEMLink.cpp" line="154"/>
+      <location filename="../../ViewProviderMbDAssemblyLink.cpp" line="154"/>
       <source>Turn flexible</source>
       <translation>變得靈活</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEMLink.cpp" line="156"/>
+      <location filename="../../ViewProviderMbDAssemblyLink.cpp" line="156"/>
       <source>Your sub-MbDFEM is currently rigid. This will make it flexible instead.</source>
       <translation>您的子組裝體目前是剛性的。這將使其變得靈活。</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEMLink.cpp" line="160"/>
+      <location filename="../../ViewProviderMbDAssemblyLink.cpp" line="160"/>
       <source>Turn rigid</source>
       <translation>變為剛性</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEMLink.cpp" line="162"/>
+      <location filename="../../ViewProviderMbDAssemblyLink.cpp" line="162"/>
       <source>Your sub-MbDFEM is currently flexible. This will make it rigid instead.</source>
       <translation>您的子組裝體目前是靈活的。這將使其變成剛性。</translation>
     </message>
@@ -938,61 +938,61 @@ The files are named "runPreDrag.asmt" and "dragging.log" and are located in the 
     </message>
   </context>
   <context>
-    <name>MbDFEMGui::ViewProviderMbDFEM</name>
+    <name>MbDFEMGui::ViewProviderMbDAssembly</name>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="215"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="215"/>
       <source>The object is associated to one or more joints.</source>
       <translation>該物件與一個或多個接頭相關聯.</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="217"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="217"/>
       <source>Do you want to move the object and delete associated joints?</source>
       <translation>您要移動物件並刪除關聯的接頭嗎?</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1090"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1090"/>
       <source>Move part</source>
       <translation>移動零件</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1803"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1803"/>
       <source>Empty MbDFEM</source>
       <translation type="unfinished">Empty MbDFEM</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1815"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1815"/>
       <source>Over-constrained:</source>
       <translation>過度拘束：</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1823"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1823"/>
       <source>Malformed joints:</source>
       <translation type="unfinished">Malformed joints:</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1788"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1788"/>
       <source>and %1 more</source>
       <translation>還有 %1 個</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1847"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1847"/>
       <source>Solver failed to converge</source>
       <translation>求解器無法收斂</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1855"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1855"/>
       <source>Under-constrained:</source>
       <translation>拘束不足：</translation>
     </message>
     <message numerus="yes">
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1857"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1857"/>
       <source>%n Degrees of Freedom</source>
       <translation type="unfinished">
         <numerusform>%n Degrees of Freedom</numerusform>
       </translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1861"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1861"/>
       <source>Fully constrained</source>
       <translation>完全拘束</translation>
     </message>
@@ -1135,7 +1135,7 @@ The files are named "runPreDrag.asmt" and "dragging.log" and are located in the 
   <context>
     <name>Command</name>
     <message>
-      <location filename="../../ViewProviderMbDFEMLink.cpp" line="168"/>
+      <location filename="../../ViewProviderMbDAssemblyLink.cpp" line="168"/>
       <source>Toggle Rigid</source>
       <translation>切換剛性</translation>
     </message>
@@ -1526,24 +1526,24 @@ The files are named "runPreDrag.asmt" and "dragging.log" and are located in the 
     </message>
   </context>
   <context>
-    <name>MbDFEMGui::TaskMbDFEMMessages</name>
+    <name>MbDFEMGui::TaskMbDAssemblyMessages</name>
     <message>
-      <location filename="../../TaskMbDFEMMessages.cpp" line="38"/>
+      <location filename="../../TaskMbDAssemblyMessages.cpp" line="38"/>
       <source>Solver messages</source>
       <translation type="unfinished">Solver messages</translation>
     </message>
     <message>
-      <location filename="../../TaskMbDFEMMessages.cpp" line="56"/>
+      <location filename="../../TaskMbDAssemblyMessages.cpp" line="56"/>
       <source>Click to select these conflicting joints.</source>
       <translation type="unfinished">Click to select these conflicting joints.</translation>
     </message>
     <message>
-      <location filename="../../TaskMbDFEMMessages.cpp" line="59"/>
+      <location filename="../../TaskMbDAssemblyMessages.cpp" line="59"/>
       <source>Click to select these redundant joints.</source>
       <translation type="unfinished">Click to select these redundant joints.</translation>
     </message>
     <message>
-      <location filename="../../TaskMbDFEMMessages.cpp" line="62"/>
+      <location filename="../../TaskMbDAssemblyMessages.cpp" line="62"/>
       <source>The MbDFEM has unconstrained components giving rise to those Degrees Of Freedom.
 Click to select these unconstrained components.
 Note: Currently this selects only unconnected parts, not constrained parts that still have free DoF.</source>
@@ -1552,7 +1552,7 @@ Click to select these unconstrained components.
 Note: Currently this selects only unconnected parts, not constrained parts that still have free DoF.</translation>
     </message>
     <message>
-      <location filename="../../TaskMbDFEMMessages.cpp" line="70"/>
+      <location filename="../../TaskMbDAssemblyMessages.cpp" line="70"/>
       <source>Click to select these malformed joints.</source>
       <translation type="unfinished">Click to select these malformed joints.</translation>
     </message>

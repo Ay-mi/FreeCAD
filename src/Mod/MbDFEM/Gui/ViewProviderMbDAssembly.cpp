@@ -1,28 +1,4 @@
-﻿// SPDX-License-Identifier: LGPL-2.1-or-later
-/****************************************************************************
- *                                                                          *
- *   Copyright (c) 2023 Ondsel <development@ondsel.com>                     *
- *                                                                          *
- *   This file is part of FreeCAD.                                          *
- *                                                                          *
- *   FreeCAD is free software: you can redistribute it and/or modify it     *
- *   under the terms of the GNU Lesser General Public License as            *
- *   published by the Free Software Foundation, either version 2.1 of the   *
- *   License, or (at your option) any later version.                        *
- *                                                                          *
- *   FreeCAD is distributed in the hope that it will be useful, but         *
- *   WITHOUT ANY WARRANTY; without even the implied warranty of             *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU       *
- *   Lesser General Public License for more details.                        *
- *                                                                          *
- *   You should have received a copy of the GNU Lesser General Public       *
- *   License along with FreeCAD. If not, see                                *
- *   <https://www.gnu.org/licenses/>.                                       *
- *                                                                          *
- ***************************************************************************/
-
-
-#include <boost/core/ignore_unused.hpp>
+﻿#include <boost/core/ignore_unused.hpp>
 #include <QMessageBox>
 #include <QTimer>
 #include <QMenu>
@@ -72,14 +48,15 @@
 #include <Mod/MbDFEM/App/MbDAssembly.h>
 #include <Mod/MbDFEM/App/MbDAssemblyUtils.h>
 #include <Mod/MbDFEM/App/JointGroup.h>
+#include <Mod/MbDFEM/App/PartGroup.h>
 #include <Mod/MbDFEM/App/ViewGroup.h>
 #include <Mod/MbDFEM/App/BomGroup.h>
 #include <Mod/PartDesign/App/Body.h>
 
-#include "TaskMbDFEMMessages.h"
+#include "TaskMbDAssemblyMessages.h"
 
-#include "ViewProviderMbDFEM.h"
-#include "ViewProviderMbDFEMPy.h"
+#include "ViewProviderMbDAssembly.h"
+#include "ViewProviderMbDAssemblyPy.h"
 
 #include <Gui/Utilities.h>
 
@@ -109,9 +86,9 @@ void printPlacement(Base::Placement plc, const char* name)
     );
 }
 
-PROPERTY_SOURCE(MbDFEMGui::ViewProviderMbDFEM, Gui::ViewProviderPart)
+PROPERTY_SOURCE(MbDFEMGui::ViewProviderMbDAssembly, Gui::ViewProviderPart)
 
-ViewProviderMbDFEM::ViewProviderMbDFEM()
+ViewProviderMbDAssembly::ViewProviderMbDAssembly()
     : SelectionObserver(false)
     , dragMode(DragMode::None)
     , canStartDragging(false)
@@ -125,11 +102,11 @@ ViewProviderMbDFEM::ViewProviderMbDFEM()
     , docsToMove({})
 {
     m_preTransactionConn = App::GetApplication().signalBeforeOpenTransaction.connect(
-        std::bind(&ViewProviderMbDFEM::slotAboutToOpenTransaction, this, std::placeholders::_1)
+        std::bind(&ViewProviderMbDAssembly::slotAboutToOpenTransaction, this, std::placeholders::_1)
     );
 }
 
-ViewProviderMbDFEM::~ViewProviderMbDFEM()
+ViewProviderMbDAssembly::~ViewProviderMbDAssembly()
 {
     m_preTransactionConn.disconnect();
     QObject::disconnect(workbenchConnection);
@@ -137,12 +114,12 @@ ViewProviderMbDFEM::~ViewProviderMbDFEM()
     updateTaskPanel(false);
 };
 
-QIcon ViewProviderMbDFEM::getIcon() const
+QIcon ViewProviderMbDAssembly::getIcon() const
 {
     return Gui::BitmapFactory().pixmap("GeoMbDFEM.svg");
 }
 
-void ViewProviderMbDFEM::setupContextMenu(QMenu* menu, QObject* receiver, const char* member)
+void ViewProviderMbDAssembly::setupContextMenu(QMenu* menu, QObject* receiver, const char* member)
 {
     auto func = new Gui::ActionFunction(menu);
 
@@ -154,7 +131,7 @@ void ViewProviderMbDFEM::setupContextMenu(QMenu* menu, QObject* receiver, const 
     ViewProviderDragger::setupContextMenu(menu, receiver, member);  // NOLINT
 }
 
-bool ViewProviderMbDFEM::doubleClicked()
+bool ViewProviderMbDAssembly::doubleClicked()
 {
     if (isInEditMode()) {
         autoCollapseOnDeactivation = true;
@@ -180,13 +157,13 @@ bool ViewProviderMbDFEM::doubleClicked()
     return true;
 }
 
-bool ViewProviderMbDFEM::canDragObject(App::DocumentObject* obj) const
+bool ViewProviderMbDAssembly::canDragObject(App::DocumentObject* obj) const
 {
     // The user should not be able to drag the joint group out of the MbDFEM
     return obj && !obj->is<MbDFEM::JointGroup>();
 }
 
-bool ViewProviderMbDFEM::canDragObjectToTarget(App::DocumentObject* obj, App::DocumentObject* target) const
+bool ViewProviderMbDAssembly::canDragObjectToTarget(App::DocumentObject* obj, App::DocumentObject* target) const
 {
     // If a solid is removed from the MbDFEM, its joints need to be removed.
     bool prompted = false;
@@ -236,7 +213,7 @@ bool ViewProviderMbDFEM::canDragObjectToTarget(App::DocumentObject* obj, App::Do
     return true;
 }
 
-void ViewProviderMbDFEM::updateData(const App::Property* prop)
+void ViewProviderMbDAssembly::updateData(const App::Property* prop)
 {
     auto* obj = static_cast<MbDFEM::MbDAssembly*>(pcObject);
     if (prop == &obj->Group) {
@@ -282,7 +259,7 @@ void ViewProviderMbDFEM::updateData(const App::Property* prop)
     }
 }
 
-bool ViewProviderMbDFEM::setEdit(int mode)
+bool ViewProviderMbDAssembly::setEdit(int mode)
 {
     if (mode == ViewProvider::Default) {
         // Ask that this edit mode be restored. For example if it is quit to edit a sketch.
@@ -312,7 +289,7 @@ bool ViewProviderMbDFEM::setEdit(int mode)
 
         connectActivatedVP = getDocument()->signalActivatedViewProvider.connect(
             std::bind(
-                &ViewProviderMbDFEM::slotActivatedVP,
+                &ViewProviderMbDAssembly::slotActivatedVP,
                 this,
                 std::placeholders::_1,
                 std::placeholders::_2
@@ -332,7 +309,7 @@ bool ViewProviderMbDFEM::setEdit(int mode)
     return ViewProviderPart::setEdit(mode);
 }
 
-void ViewProviderMbDFEM::unsetEdit(int mode)
+void ViewProviderMbDAssembly::unsetEdit(int mode)
 {
     if (mode == ViewProvider::Default) {
         canStartDragging = false;
@@ -369,7 +346,7 @@ void ViewProviderMbDFEM::unsetEdit(int mode)
     ViewProviderPart::unsetEdit(mode);
 }
 
-void ViewProviderMbDFEM::slotActivatedVP(const Gui::ViewProviderDocumentObject* vp, const char* name)
+void ViewProviderMbDAssembly::slotActivatedVP(const Gui::ViewProviderDocumentObject* vp, const char* name)
 {
     if (name && strcmp(name, MbDFEMKEY) == 0) {
 
@@ -382,7 +359,7 @@ void ViewProviderMbDFEM::slotActivatedVP(const Gui::ViewProviderDocumentObject* 
     }
 }
 
-void ViewProviderMbDFEM::setDragger()
+void ViewProviderMbDAssembly::setDragger()
 {
     // Create the dragger coin object
     assert(!asmDragger);
@@ -402,7 +379,7 @@ void ViewProviderMbDFEM::setDragger()
     asmDragger->ref();
 }
 
-void ViewProviderMbDFEM::unsetDragger()
+void ViewProviderMbDAssembly::unsetDragger()
 {
     pcRoot->removeChild(asmDraggerSwitch);
     if (asmDragger) {
@@ -415,7 +392,7 @@ void ViewProviderMbDFEM::unsetDragger()
     }
 }
 
-void ViewProviderMbDFEM::setEditViewer(Gui::View3DInventorViewer* viewer, int ModNum)
+void ViewProviderMbDAssembly::setEditViewer(Gui::View3DInventorViewer* viewer, int ModNum)
 {
     ViewProviderPart::setEditViewer(viewer, ModNum);
 
@@ -424,12 +401,12 @@ void ViewProviderMbDFEM::setEditViewer(Gui::View3DInventorViewer* viewer, int Mo
     }
 }
 
-bool ViewProviderMbDFEM::isInEditMode() const
+bool ViewProviderMbDAssembly::isInEditMode() const
 {
     return asmDragger != nullptr;
 }
 
-App::DocumentObject* ViewProviderMbDFEM::getActivePart() const
+App::DocumentObject* ViewProviderMbDAssembly::getActivePart() const
 {
     auto activeView = getDocument()->getActiveView();
     if (!activeView) {
@@ -438,7 +415,7 @@ App::DocumentObject* ViewProviderMbDFEM::getActivePart() const
     return activeView->getActiveObject<App::DocumentObject*>(MbDFEMKEY);
 }
 
-bool ViewProviderMbDFEM::keyPressed(bool pressed, int key)
+bool ViewProviderMbDAssembly::keyPressed(bool pressed, int key)
 {
     if (key == SoKeyboardEvent::ESCAPE) {
         if (isInEditMode()) {
@@ -460,7 +437,7 @@ bool ViewProviderMbDFEM::keyPressed(bool pressed, int key)
     return false;  // handle all other key events
 }
 
-bool ViewProviderMbDFEM::mouseMove(const SbVec2s& cursorPos, Gui::View3DInventorViewer* viewer)
+bool ViewProviderMbDAssembly::mouseMove(const SbVec2s& cursorPos, Gui::View3DInventorViewer* viewer)
 {
     try {
         return tryMouseMove(cursorPos, viewer);
@@ -471,7 +448,7 @@ bool ViewProviderMbDFEM::mouseMove(const SbVec2s& cursorPos, Gui::View3DInventor
     }
 }
 
-bool ViewProviderMbDFEM::tryMouseMove(const SbVec2s& cursorPos, Gui::View3DInventorViewer* viewer)
+bool ViewProviderMbDAssembly::tryMouseMove(const SbVec2s& cursorPos, Gui::View3DInventorViewer* viewer)
 {
     if (!isInEditMode()) {
         return false;
@@ -622,7 +599,7 @@ bool ViewProviderMbDFEM::tryMouseMove(const SbVec2s& cursorPos, Gui::View3DInven
     return false;
 }
 
-bool ViewProviderMbDFEM::mouseButtonPressed(
+bool ViewProviderMbDAssembly::mouseButtonPressed(
     int Button,
     bool pressed,
     const SbVec2s& cursorPos,
@@ -676,7 +653,7 @@ bool ViewProviderMbDFEM::mouseButtonPressed(
     return false;
 }
 
-void ViewProviderMbDFEM::doubleClickedIn3dView()
+void ViewProviderMbDAssembly::doubleClickedIn3dView()
 {
     // Double clicking on a joint should start editing it.
     auto* joint = getSelectedJoint();
@@ -695,7 +672,7 @@ void ViewProviderMbDFEM::doubleClickedIn3dView()
     }
 }
 
-bool ViewProviderMbDFEM::canDragObjectIn3d(App::DocumentObject* obj) const
+bool ViewProviderMbDAssembly::canDragObjectIn3d(App::DocumentObject* obj) const
 {
     if (!obj) {
         return false;
@@ -742,7 +719,7 @@ bool ViewProviderMbDFEM::canDragObjectIn3d(App::DocumentObject* obj) const
     return true;
 }
 
-App::DocumentObject* ViewProviderMbDFEM::getSelectedJoint()
+App::DocumentObject* ViewProviderMbDAssembly::getSelectedJoint()
 {
     auto sel = Gui::Selection().getSelectionEx("", App::DocumentObject::getClassTypeId());
 
@@ -758,7 +735,7 @@ App::DocumentObject* ViewProviderMbDFEM::getSelectedJoint()
     return nullptr;
 }
 
-bool ViewProviderMbDFEM::getSelectedObjectsWithinMbDFEM(bool addPreselection, bool onlySolids)
+bool ViewProviderMbDAssembly::getSelectedObjectsWithinMbDFEM(bool addPreselection, bool onlySolids)
 {
     // check the current selection, and check if any of the selected objects are within this
     // App::Part
@@ -837,7 +814,7 @@ bool ViewProviderMbDFEM::getSelectedObjectsWithinMbDFEM(bool addPreselection, bo
     return !docsToMove.empty();
 }
 
-void ViewProviderMbDFEM::collectMovableObjects(
+void ViewProviderMbDAssembly::collectMovableObjects(
     App::DocumentObject* selRoot,
     const std::string& subNamePrefix,
     App::DocumentObject* currentObject,
@@ -893,7 +870,7 @@ void ViewProviderMbDFEM::collectMovableObjects(
     }
 }
 
-ViewProviderMbDFEM::DragMode ViewProviderMbDFEM::findDragMode()
+ViewProviderMbDAssembly::DragMode ViewProviderMbDAssembly::findDragMode()
 {
     auto addPartsToMove = [&](const std::vector<MbDFEM::ObjRef>& refs) {
         for (auto& partRef : refs) {
@@ -1016,7 +993,7 @@ ViewProviderMbDFEM::DragMode ViewProviderMbDFEM::findDragMode()
     return DragMode::Translation;
 }
 
-void ViewProviderMbDFEM::initMove(const SbVec2s& cursorPos, Gui::View3DInventorViewer* viewer)
+void ViewProviderMbDAssembly::initMove(const SbVec2s& cursorPos, Gui::View3DInventorViewer* viewer)
 {
     try {
         tryInitMove(cursorPos, viewer);
@@ -1026,7 +1003,7 @@ void ViewProviderMbDFEM::initMove(const SbVec2s& cursorPos, Gui::View3DInventorV
     }
 }
 
-void ViewProviderMbDFEM::tryInitMove(const SbVec2s& cursorPos, Gui::View3DInventorViewer* viewer)
+void ViewProviderMbDAssembly::tryInitMove(const SbVec2s& cursorPos, Gui::View3DInventorViewer* viewer)
 {
     dragMode = findDragMode();
     if (dragMode == DragMode::None) {
@@ -1118,7 +1095,7 @@ void ViewProviderMbDFEM::tryInitMove(const SbVec2s& cursorPos, Gui::View3DInvent
     }
 }
 
-void ViewProviderMbDFEM::endMove()
+void ViewProviderMbDAssembly::endMove()
 {
     docsToMove.clear();
     partMoving = false;
@@ -1156,7 +1133,7 @@ void ViewProviderMbDFEM::endMove()
     }
 }
 
-void ViewProviderMbDFEM::initMoveDragger()
+void ViewProviderMbDAssembly::initMoveDragger()
 {
     setDraggerVisibility(true);
 
@@ -1178,7 +1155,7 @@ void ViewProviderMbDFEM::initMoveDragger()
     asmDragger->addMotionCallback(draggerMotionCallback, this);
 }
 
-void ViewProviderMbDFEM::endMoveDragger()
+void ViewProviderMbDAssembly::endMoveDragger()
 {
     if (getDraggerVisibility()) {
         asmDragger->removeMotionCallback(draggerMotionCallback, this);
@@ -1186,10 +1163,10 @@ void ViewProviderMbDFEM::endMoveDragger()
     }
 }
 
-void ViewProviderMbDFEM::draggerMotionCallback(void* data, SoDragger* d)
+void ViewProviderMbDAssembly::draggerMotionCallback(void* data, SoDragger* d)
 {
     boost::ignore_unused(d);
-    auto sudoThis = static_cast<ViewProviderMbDFEM*>(data);
+    auto sudoThis = static_cast<ViewProviderMbDAssembly*>(data);
 
     Base::Placement draggerPlc = sudoThis->getDraggerPlacement();
     Base::Placement movePlc = draggerPlc * sudoThis->draggerInitPlc.inverse();
@@ -1210,7 +1187,7 @@ void ViewProviderMbDFEM::draggerMotionCallback(void* data, SoDragger* d)
     }
 }
 
-void ViewProviderMbDFEM::onSelectionChanged(const Gui::SelectionChanges& msg)
+void ViewProviderMbDAssembly::onSelectionChanged(const Gui::SelectionChanges& msg)
 {
     // onSelectionChanged is called from both Selection.cpp and SelectionObserver.
     // In the case where you have nested assemblies, that would cause issues. See #27532
@@ -1270,12 +1247,12 @@ void ViewProviderMbDFEM::onSelectionChanged(const Gui::SelectionChanges& msg)
     }
 }
 
-bool ViewProviderMbDFEM::onDelete(const std::vector<std::string>& subNames)
+bool ViewProviderMbDAssembly::onDelete(const std::vector<std::string>& subNames)
 {
     // Delete the MbDFEM groups when MbDFEM is deleted
     for (auto obj : getObject()->getOutList()) {
-        if (obj->is<MbDFEM::JointGroup>() || obj->is<MbDFEM::ViewGroup>()
-            || obj->is<MbDFEM::BomGroup>()) {
+        if (obj->is<MbDFEM::JointGroup>() || obj->is<MbDFEM::PartGroup>()
+            || obj->is<MbDFEM::ViewGroup>() || obj->is<MbDFEM::BomGroup>()) {
 
             // Delete the group content first.
             Gui::Command::doCommand(
@@ -1293,7 +1270,7 @@ bool ViewProviderMbDFEM::onDelete(const std::vector<std::string>& subNames)
     return ViewProviderPart::onDelete(subNames);
 }
 
-bool ViewProviderMbDFEM::canDelete(App::DocumentObject* objBeingDeleted) const
+bool ViewProviderMbDAssembly::canDelete(App::DocumentObject* objBeingDeleted) const
 {
     bool res = ViewProviderPart::canDelete(objBeingDeleted);
     if (res) {
@@ -1372,11 +1349,11 @@ bool ViewProviderMbDFEM::canDelete(App::DocumentObject* objBeingDeleted) const
     return res;
 }
 
-void ViewProviderMbDFEM::setDraggerVisibility(bool val)
+void ViewProviderMbDAssembly::setDraggerVisibility(bool val)
 {
     asmDraggerSwitch->whichChild = val ? SO_SWITCH_ALL : SO_SWITCH_NONE;
 }
-bool ViewProviderMbDFEM::getDraggerVisibility()
+bool ViewProviderMbDAssembly::getDraggerVisibility()
 {
     if (!isInEditMode()) {
         return false;
@@ -1385,13 +1362,13 @@ bool ViewProviderMbDFEM::getDraggerVisibility()
     return asmDraggerSwitch->whichChild.getValue() == SO_SWITCH_ALL;
 }
 
-void ViewProviderMbDFEM::setDraggerPlacement(Base::Placement plc)
+void ViewProviderMbDAssembly::setDraggerPlacement(Base::Placement plc)
 {
     asmDragger->rotation.setValue(Base::convertTo<SbRotation>(plc.getRotation()));
     asmDragger->translation.setValue(Base::convertTo<SbVec3f>(plc.getPosition()));
 }
 
-Base::Placement ViewProviderMbDFEM::getDraggerPlacement()
+Base::Placement ViewProviderMbDAssembly::getDraggerPlacement()
 {
     return {
         Base::convertTo<Base::Vector3d>(asmDragger->translation.getValue()),
@@ -1399,21 +1376,21 @@ Base::Placement ViewProviderMbDFEM::getDraggerPlacement()
     };
 }
 
-Gui::SoTransformDragger* ViewProviderMbDFEM::getDragger()
+Gui::SoTransformDragger* ViewProviderMbDAssembly::getDragger()
 {
     return asmDragger;
 }
 
-PyObject* ViewProviderMbDFEM::getPyObject()
+PyObject* ViewProviderMbDAssembly::getPyObject()
 {
     if (!pyViewObject) {
-        pyViewObject = new ViewProviderMbDFEMPy(this);
+        pyViewObject = new ViewProviderMbDAssemblyPy(this);
     }
     pyViewObject->IncRef();
     return pyViewObject;
 }
 
-void ViewProviderMbDFEM::applyIsolationRecursively(
+void ViewProviderMbDAssembly::applyIsolationRecursively(
     App::DocumentObject* current,
     std::set<App::DocumentObject*>& isolateSet,
     IsolateMode mode,
@@ -1496,7 +1473,7 @@ void ViewProviderMbDFEM::applyIsolationRecursively(
     }
 }
 
-void ViewProviderMbDFEM::isolateComponents(std::set<App::DocumentObject*>& isolateSet, IsolateMode mode)
+void ViewProviderMbDAssembly::isolateComponents(std::set<App::DocumentObject*>& isolateSet, IsolateMode mode)
 {
     if (!stateBackup.empty()) {
         clearIsolate();
@@ -1515,7 +1492,7 @@ void ViewProviderMbDFEM::isolateComponents(std::set<App::DocumentObject*>& isola
     }
 }
 
-void ViewProviderMbDFEM::isolateJointReferences(App::DocumentObject* joint, IsolateMode mode)
+void ViewProviderMbDAssembly::isolateJointReferences(App::DocumentObject* joint, IsolateMode mode)
 {
     if (!joint || isolatedJoint == joint) {
         return;
@@ -1551,7 +1528,7 @@ void ViewProviderMbDFEM::isolateJointReferences(App::DocumentObject* joint, Isol
     highlightJointElements(joint);
 }
 
-void ViewProviderMbDFEM::clearIsolate()
+void ViewProviderMbDAssembly::clearIsolate()
 {
     if (isolatedJoint) {
         isolatedJoint->Visibility.setValue(isolatedJointVisibilityBackup);
@@ -1582,7 +1559,7 @@ void ViewProviderMbDFEM::clearIsolate()
     stateBackup.clear();
 }
 
-void ViewProviderMbDFEM::highlightJointElements(App::DocumentObject* joint)
+void ViewProviderMbDAssembly::highlightJointElements(App::DocumentObject* joint)
 {
     clearJointElementHighlight();
 
@@ -1630,21 +1607,21 @@ void ViewProviderMbDFEM::highlightJointElements(App::DocumentObject* joint)
     }
 }
 
-void ViewProviderMbDFEM::clearJointElementHighlight()
+void ViewProviderMbDAssembly::clearJointElementHighlight()
 {
     Gui::SoSelectionElementAction action(Gui::SoSelectionElementAction::Color, true);
     // An empty color map tells nodes to clear their secondary color.
     action.apply(this->getRoot());
 }
 
-void ViewProviderMbDFEM::slotAboutToOpenTransaction(const std::string& cmdName)
+void ViewProviderMbDAssembly::slotAboutToOpenTransaction(const std::string& cmdName)
 {
     Q_UNUSED(cmdName);
     this->clearIsolate();
     this->clearTemporaryExplosion();
 }
 
-bool ViewProviderMbDFEM::explodeTemporarily(App::DocumentObject* explodedView)
+bool ViewProviderMbDAssembly::explodeTemporarily(App::DocumentObject* explodedView)
 {
     if (!explodedView || temporaryExplosion == explodedView) {
         return false;
@@ -1681,7 +1658,7 @@ bool ViewProviderMbDFEM::explodeTemporarily(App::DocumentObject* explodedView)
     return false;
 }
 
-void ViewProviderMbDFEM::clearTemporaryExplosion()
+void ViewProviderMbDAssembly::clearTemporaryExplosion()
 {
     if (!temporaryExplosion) {
         return;
@@ -1714,7 +1691,7 @@ void ViewProviderMbDFEM::clearTemporaryExplosion()
 }
 
 // UTILS
-Base::Vector3d ViewProviderMbDFEM::getCenterOfBoundingBox(const std::vector<MovingObject>& movingObjs)
+Base::Vector3d ViewProviderMbDAssembly::getCenterOfBoundingBox(const std::vector<MovingObject>& movingObjs)
 {
     int count = 0;
     Base::Vector3d center;  // feujhzef
@@ -1787,12 +1764,12 @@ inline QString objListHelper(const MbDAssembly* MbDFEM, const std::vector<std::s
                 QString::fromLatin1(joints[i]->Label.getStrValue().c_str())
             ));
         }
-        results.append(ViewProviderMbDFEM::tr("and %1 more").arg(more));
+        results.append(ViewProviderMbDAssembly::tr("and %1 more").arg(more));
     }
     return results;
 }
 
-void ViewProviderMbDFEM::UpdateSolverInformation()
+void ViewProviderMbDAssembly::UpdateSolverInformation()
 {
     // Updates Solver Information with the Last solver execution at MbDAssembly level
     auto* MbDFEM = getObject<MbDAssembly>();
@@ -1864,13 +1841,13 @@ void ViewProviderMbDFEM::UpdateSolverInformation()
     }
 }
 
-void ViewProviderMbDFEM::onWorkbenchActivated(const QString& name)
+void ViewProviderMbDAssembly::onWorkbenchActivated(const QString& name)
 {
     bool isMbDFEMWb = (name == QLatin1String("MbDFEMWorkbench"));
     updateTaskPanel(isMbDFEMWb);
 }
 
-void ViewProviderMbDFEM::updateTaskPanel(bool show)
+void ViewProviderMbDAssembly::updateTaskPanel(bool show)
 {
     Gui::TaskView::TaskView* taskView = Gui::Control().taskPanel();
     if (!taskView) {
@@ -1878,7 +1855,7 @@ void ViewProviderMbDFEM::updateTaskPanel(bool show)
     }
 
     if (show && !taskSolver) {
-        taskSolver = new TaskMbDFEMMessages(this);
+        taskSolver = new TaskMbDAssemblyMessages(this);
         taskView->addContextualPanel(taskSolver, this->getObject()->getDocument());
         UpdateSolverInformation();
     }

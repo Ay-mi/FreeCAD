@@ -20,7 +20,7 @@ qt_add_resources(MbDFEMResource_SRCS Resources/MbDFEM.qrc ${MbDFEM_TR_QRC})
 
 SOURCE_GROUP("Resources" FILES ${MbDFEMResource_SRCS})
 
-generate_from_py(ViewProviderMbDFEM)
+generate_from_py(ViewProviderMbDAssembly)
 
 set(MbDFEMGui_UIC_SRCS
     TaskMbDFEMCreateBom.ui
@@ -32,8 +32,8 @@ set(MbDFEMGui_UIC_SRCS
 )
 
 SET(Python_SRCS
-    ViewProviderMbDFEM.pyi
-    ViewProviderMbDFEMPyImp.cpp
+    ViewProviderMbDAssembly.pyi
+    ViewProviderMbDAssemblyPyImp.cpp
 )
 SOURCE_GROUP("Python" FILES ${Python_SRCS})
 
@@ -43,10 +43,10 @@ SET(MbDFEMGui_SRCS_Module
     PreCompiled.h
     Commands.cpp
     Commands.h
-    TaskMbDFEMMessages.cpp
-    TaskMbDFEMMessages.h
-    ViewProviderMbDFEM.cpp
-    ViewProviderMbDFEM.h
+    TaskMbDAssemblyMessages.cpp
+    TaskMbDAssemblyMessages.h
+    ViewProviderMbDAssembly.cpp
+    ViewProviderMbDAssembly.h
     ViewProviderMbDAssemblyLink.cpp
     ViewProviderMbDAssemblyLink.h
     ViewProviderMbDPart.cpp
@@ -57,8 +57,8 @@ SET(MbDFEMGui_SRCS_Module
     ViewProviderBomGroup.h
     ViewProviderJointGroup.cpp
     ViewProviderJointGroup.h
-    ViewProviderPartsGroup.cpp
-    ViewProviderPartsGroup.h
+    ViewProviderPartGroup.cpp
+    ViewProviderPartGroup.h
     ViewProviderViewGroup.cpp
     ViewProviderViewGroup.h
     ViewProviderSimulationGroup.cpp

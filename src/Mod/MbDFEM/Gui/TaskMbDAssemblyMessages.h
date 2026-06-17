@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <Gui/TaskView/TaskSolverMessages.h>
 
@@ -6,15 +6,15 @@
 namespace MbDFEMGui
 {
 
-class ViewProviderMbDFEM;
+class ViewProviderMbDAssembly;
 
-class TaskMbDFEMMessages: public Gui::TaskSolverMessages
+class TaskMbDAssemblyMessages: public Gui::TaskSolverMessages
 {
     Q_OBJECT
 
 public:
-    explicit TaskMbDFEMMessages(ViewProviderMbDFEM* vp);
-    ~TaskMbDFEMMessages() override;
+    explicit TaskMbDAssemblyMessages(ViewProviderMbDAssembly* vp);
+    ~TaskMbDAssemblyMessages() override;
 
 private:
     void onLabelStatusLinkClicked(const QString&) override;
@@ -22,7 +22,7 @@ private:
     void updateToolTip(const QString& link) override;
 
 protected:
-    ViewProviderMbDFEM* vp;
+    ViewProviderMbDAssembly* vp;
 };
 
 }  // namespace MbDFEMGui

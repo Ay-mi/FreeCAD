@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
 <TS version="2.1" language="pt-PT" sourcelanguage="en">
   <context>
@@ -157,14 +157,14 @@
     </message>
   </context>
   <context>
-    <name>MbDFEM_SolveMbDFEM</name>
+    <name>MbDFEM_SolveMbDAssembly</name>
     <message>
-      <location filename="../../../CommandSolveMbDFEM.py" line="50"/>
+      <location filename="../../../CommandSolveMbDAssembly.py" line="50"/>
       <source>Solve MbDFEM</source>
       <translation type="unfinished">Solve MbDFEM</translation>
     </message>
     <message>
-      <location filename="../../../CommandSolveMbDFEM.py" line="57"/>
+      <location filename="../../../CommandSolveMbDAssembly.py" line="57"/>
       <source>Solve the currently active MbDFEM.</source>
       <translation type="unfinished">Solve the currently active MbDFEM.</translation>
     </message>
@@ -177,27 +177,27 @@
       <translation>Montagem</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="127"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="127"/>
       <source>Active object</source>
       <translation type="unfinished">Active object</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEMLink.cpp" line="127"/>
+      <location filename="../../ViewProviderMbDAssemblyLink.cpp" line="127"/>
       <source>Turn flexible</source>
       <translation type="unfinished">Turn flexible</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEMLink.cpp" line="128"/>
+      <location filename="../../ViewProviderMbDAssemblyLink.cpp" line="128"/>
       <source>Your sub-MbDFEM is currently rigid. This will make it flexible instead.</source>
       <translation type="unfinished">Your sub-MbDFEM is currently rigid. This will make it flexible instead.</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEMLink.cpp" line="132"/>
+      <location filename="../../ViewProviderMbDAssemblyLink.cpp" line="132"/>
       <source>Turn rigid</source>
       <translation type="unfinished">Turn rigid</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEMLink.cpp" line="133"/>
+      <location filename="../../ViewProviderMbDAssemblyLink.cpp" line="133"/>
       <source>Your sub-MbDFEM is currently flexible. This will make it rigid instead.</source>
       <translation type="unfinished">Your sub-MbDFEM is currently flexible. This will make it rigid instead.</translation>
     </message>
@@ -956,19 +956,19 @@ Os arquivos são nomeados "runPreDrag.asmt" e "dragging.log" e estão localizado
     </message>
   </context>
   <context>
-    <name>MbDFEMGui::ViewProviderMbDFEM</name>
+    <name>MbDFEMGui::ViewProviderMbDAssembly</name>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="196"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="196"/>
       <source>The object is associated to one or more joints.</source>
       <translation>O objeto está associado a uma ou mais junções.</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="198"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="198"/>
       <source>Do you want to move the object and delete associated joints?</source>
       <translation>Deseja mover o objeto e excluir as junções associadas?</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="891"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="891"/>
       <source>Move part</source>
       <translation type="unfinished">Move part</translation>
     </message>
@@ -1237,7 +1237,7 @@ Press ESC to cancel.</translation>
   <context>
     <name>Command</name>
     <message>
-      <location filename="../../ViewProviderMbDFEMLink.cpp" line="139"/>
+      <location filename="../../ViewProviderMbDAssemblyLink.cpp" line="139"/>
       <source>Toggle Rigid</source>
       <translation type="unfinished">Toggle Rigid</translation>
     </message>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
 <TS version="2.1" language="sr" sourcelanguage="en">
   <context>
@@ -28,14 +28,14 @@
     </message>
   </context>
   <context>
-    <name>MbDFEM_SolveMbDFEM</name>
+    <name>MbDFEM_SolveMbDAssembly</name>
     <message>
-      <location filename="../../../CommandSolveMbDFEM.py" line="49"/>
+      <location filename="../../../CommandSolveMbDAssembly.py" line="49"/>
       <source>Solve MbDFEM</source>
       <translation>Реши склоп</translation>
     </message>
     <message>
-      <location filename="../../../CommandSolveMbDFEM.py" line="54"/>
+      <location filename="../../../CommandSolveMbDAssembly.py" line="54"/>
       <source>Solves the currently active MbDFEM.</source>
       <translation>Реши тренутно активни склоп.</translation>
     </message>
@@ -48,27 +48,27 @@
       <translation>Скупштина</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="147"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="147"/>
       <source>Active object</source>
       <translation>Активни објекат</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEMLink.cpp" line="154"/>
+      <location filename="../../ViewProviderMbDAssemblyLink.cpp" line="154"/>
       <source>Turn flexible</source>
       <translation>Okreni fleksibilno</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEMLink.cpp" line="156"/>
+      <location filename="../../ViewProviderMbDAssemblyLink.cpp" line="156"/>
       <source>Your sub-MbDFEM is currently rigid. This will make it flexible instead.</source>
       <translation>Подсклоп је тренутно крут. Ово ће га направити флексибилним.</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEMLink.cpp" line="160"/>
+      <location filename="../../ViewProviderMbDAssemblyLink.cpp" line="160"/>
       <source>Turn rigid</source>
       <translation>Окрени круто</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEMLink.cpp" line="162"/>
+      <location filename="../../ViewProviderMbDAssemblyLink.cpp" line="162"/>
       <source>Your sub-MbDFEM is currently flexible. This will make it rigid instead.</source>
       <translation>Подсклоп је тренутно флексибилан. Ово ће га направити крутим.</translation>
     </message>
@@ -937,54 +937,54 @@ The files are named "runPreDrag.asmt" and "dragging.log" and are located in the 
     </message>
   </context>
   <context>
-    <name>MbDFEMGui::ViewProviderMbDFEM</name>
+    <name>MbDFEMGui::ViewProviderMbDAssembly</name>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="215"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="215"/>
       <source>The object is associated to one or more joints.</source>
       <translation>Објекту су придружени један или више спојева.</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="217"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="217"/>
       <source>Do you want to move the object and delete associated joints?</source>
       <translation>Да ли желиш померити објекат и обрисати придружене спојеве?</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1090"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1090"/>
       <source>Move part</source>
       <translation>Помеи део</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1803"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1803"/>
       <source>Empty MbDFEM</source>
       <translation>Празан склоп</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1815"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1815"/>
       <source>Over-constrained:</source>
       <translation>Превише ограничена скица:</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1823"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1823"/>
       <source>Malformed joints:</source>
       <translation>Оштећени спојеви:</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1788"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1788"/>
       <source>and %1 more</source>
       <translation>и %1 више</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1847"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1847"/>
       <source>Solver failed to converge</source>
       <translation>Солвер није успео да се приближи</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1855"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1855"/>
       <source>Under-constrained:</source>
       <translation>Недовољно ограничена скица:</translation>
     </message>
     <message numerus="yes">
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1857"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1857"/>
       <source>%n Degrees of Freedom</source>
       <translation type="unfinished">
         <numerusform>%n Степени слободе</numerusform>
@@ -993,7 +993,7 @@ The files are named "runPreDrag.asmt" and "dragging.log" and are located in the 
       </translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="1861"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="1861"/>
       <source>Fully constrained</source>
       <translation>Потпуно ограничена скица</translation>
     </message>
@@ -1136,7 +1136,7 @@ The files are named "runPreDrag.asmt" and "dragging.log" and are located in the 
   <context>
     <name>Command</name>
     <message>
-      <location filename="../../ViewProviderMbDFEMLink.cpp" line="168"/>
+      <location filename="../../ViewProviderMbDAssemblyLink.cpp" line="168"/>
       <source>Toggle Rigid</source>
       <translation>Укљ/искљ крутост</translation>
     </message>
@@ -1527,24 +1527,24 @@ The files are named "runPreDrag.asmt" and "dragging.log" and are located in the 
     </message>
   </context>
   <context>
-    <name>MbDFEMGui::TaskMbDFEMMessages</name>
+    <name>MbDFEMGui::TaskMbDAssemblyMessages</name>
     <message>
-      <location filename="../../TaskMbDFEMMessages.cpp" line="38"/>
+      <location filename="../../TaskMbDAssemblyMessages.cpp" line="38"/>
       <source>Solver messages</source>
       <translation>Поруке алгоритма за решавање</translation>
     </message>
     <message>
-      <location filename="../../TaskMbDFEMMessages.cpp" line="56"/>
+      <location filename="../../TaskMbDAssemblyMessages.cpp" line="56"/>
       <source>Click to select these conflicting joints.</source>
       <translation>Кликни да би изабрао конфликтне спојеве.</translation>
     </message>
     <message>
-      <location filename="../../TaskMbDFEMMessages.cpp" line="59"/>
+      <location filename="../../TaskMbDAssemblyMessages.cpp" line="59"/>
       <source>Click to select these redundant joints.</source>
       <translation>Кликни да би изабрао сувишне спојеве.</translation>
     </message>
     <message>
-      <location filename="../../TaskMbDFEMMessages.cpp" line="62"/>
+      <location filename="../../TaskMbDAssemblyMessages.cpp" line="62"/>
       <source>The MbDFEM has unconstrained components giving rise to those Degrees Of Freedom.
 Click to select these unconstrained components.
 Note: Currently this selects only unconnected parts, not constrained parts that still have free DoF.</source>
@@ -1553,7 +1553,7 @@ Note: Currently this selects only unconnected parts, not constrained parts that 
 Напомена: Тренутно се бирају само делови без спојева, делови са спојевима који и даље имају степене слободе се не бирају.</translation>
     </message>
     <message>
-      <location filename="../../TaskMbDFEMMessages.cpp" line="70"/>
+      <location filename="../../TaskMbDAssemblyMessages.cpp" line="70"/>
       <source>Click to select these malformed joints.</source>
       <translation>Кликни да би изабрао оштећене спојеве.</translation>
     </message>

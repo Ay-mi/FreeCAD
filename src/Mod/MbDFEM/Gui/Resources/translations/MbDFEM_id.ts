@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
 <TS version="2.1" language="id" sourcelanguage="en">
   <context>
@@ -152,14 +152,14 @@
     </message>
   </context>
   <context>
-    <name>MbDFEM_SolveMbDFEM</name>
+    <name>MbDFEM_SolveMbDAssembly</name>
     <message>
-      <location filename="../../../CommandSolveMbDFEM.py" line="51"/>
+      <location filename="../../../CommandSolveMbDAssembly.py" line="51"/>
       <source>Solve MbDFEM</source>
       <translation type="unfinished">Solve MbDFEM</translation>
     </message>
     <message>
-      <location filename="../../../CommandSolveMbDFEM.py" line="58"/>
+      <location filename="../../../CommandSolveMbDAssembly.py" line="58"/>
       <source>Solve the currently active MbDFEM.</source>
       <translation type="unfinished">Solve the currently active MbDFEM.</translation>
     </message>
@@ -431,24 +431,24 @@
     </message>
   </context>
   <context>
-    <name>MbDFEMGui::ViewProviderMbDFEM</name>
+    <name>MbDFEMGui::ViewProviderMbDAssembly</name>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="136"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="136"/>
       <source>Delete associated joints</source>
       <translation type="unfinished">Delete associated joints</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="148"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="148"/>
       <source>The object is associated to one or more joints.</source>
       <translation type="unfinished">The object is associated to one or more joints.</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="150"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="150"/>
       <source>Do you want to move the object and delete associated joints?</source>
       <translation type="unfinished">Do you want to move the object and delete associated joints?</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderMbDFEM.cpp" line="651"/>
+      <location filename="../../ViewProviderMbDAssembly.cpp" line="651"/>
       <source>Move part</source>
       <translation type="unfinished">Move part</translation>
     </message>

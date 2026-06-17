@@ -20,7 +20,7 @@
 #include <Mod/MbDFEM/App/MbDAssembly.h>
 #include <Mod/MbDFEM/App/MbDAssemblyLink.h>
 
-#include "ViewProviderMbDFEM.h"
+#include "ViewProviderMbDAssembly.h"
 #include "ViewProviderMbDAssemblyLink.h"
 
 
@@ -69,7 +69,7 @@ bool ViewProviderMbDAssemblyLink::doubleClicked()
         return true;
     }
 
-    auto* vpa = freecad_cast<ViewProviderMbDFEM*>(
+    auto* vpa = freecad_cast<ViewProviderMbDAssembly*>(
         Gui::Application::Instance->getViewProvider(MbDFEM)
     );
     if (!vpa) {
@@ -94,7 +94,7 @@ bool ViewProviderMbDAssemblyLink::doubleClicked()
             return true;
         }
 
-        vpa = freecad_cast<ViewProviderMbDFEM*>(
+        vpa = freecad_cast<ViewProviderMbDAssembly*>(
             Gui::Application::Instance->getViewProvider(MbDFEM)
         );
         if (!vpa) {

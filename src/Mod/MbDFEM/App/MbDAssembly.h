@@ -59,7 +59,7 @@ public:
     /// returns the type name of the ViewProvider
     const char* getViewProviderName() const override
     {
-        return "MbDFEMGui::ViewProviderMbDFEM";
+        return "MbDFEMGui::ViewProviderMbDAssembly";
     }
 
     App::DocumentObjectExecReturn* execute() override;

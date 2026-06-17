@@ -11,20 +11,21 @@ import MbDFEMPreferences as Preferences
 
 translate = App.Qt.translate
 
-__title__ = "MbDFEM Command Create MbDFEM"
+__title__ = "MbDFEM Command Create MbDAssembly"
 
-class CommandCreateMbDFEM:
+class CommandCreateMbDAssembly:
     def __init__(self):
         pass
 
     def GetResources(self):
         return {
-            "Pixmap": "GeoMbDFEM",
-            "MenuText": QT_TRANSLATE_NOOP("MbDFEM_CreateMbDFEM", "New MbDFEM"),
+            #"Pixmap": "GeoMbDFEM",
+            "Pixmap": "MbDFEMWorkbench", #replace later if needed
+            "MenuText": QT_TRANSLATE_NOOP("MbDFEM_CreateMbDAssembly", "New MbDAssembly"),
             "Accel": "A",
             "ToolTip": QT_TRANSLATE_NOOP(
-                "MbDFEM_CreateMbDFEM",
-                "Creates an MbDFEM object in the current document, or in the current active MbDFEM (if any). Limit of one root MbDFEM per file.",
+                "MbDFEM_CreateMbDAssembly",
+                "Creates an MbDAssembly in the current document, or in the current active MbDAssembly (if any). Limit of one root MbDAssembly per file.",
             ),
             "CmdType": "ForEdit",
         }
@@ -42,7 +43,7 @@ class CommandCreateMbDFEM:
         return App.ActiveDocument is not None
 
     def Activated(self):
-        Gui.ActiveDocument.openCommand("New MbDFEM")
+        Gui.ActiveDocument.openCommand("New MbDAssembly")
 
         activeMbDFEM = UtilsMbDFEM.activeMbDFEM()
         Gui.addModule("UtilsMbDFEM")
@@ -57,7 +58,7 @@ class CommandCreateMbDFEM:
             )
 
         commands = commands + 'MbDFEM.Type = "MbDAssembly"\n'
-        commands = commands + 'MbDFEM.newObject("MbDFEM::PartsGroup", "Parts")\n'
+        commands = commands + 'MbDFEM.newObject("MbDFEM::PartGroup", "Parts")\n' #creates PartGroup obj, looks up ViewProvider name
         commands = commands + 'MbDFEM.newObject("MbDFEM::JointGroup", "Joints")'
 
         Gui.doCommand(commands)
@@ -143,5 +144,5 @@ class CommandActivateMbDFEM:
 
 
 if App.GuiUp:
-    Gui.addCommand("MbDFEM_CreateMbDFEM", CommandCreateMbDFEM())
+    Gui.addCommand("MbDFEM_CreateMbDAssembly", CommandCreateMbDAssembly())
     Gui.addCommand("MbDFEM_ActivateMbDFEM", CommandActivateMbDFEM())

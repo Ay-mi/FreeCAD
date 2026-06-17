@@ -64,7 +64,7 @@ class MbDFEMWorkbench(Workbench):
         import MbDFEMGui
         from PySide import QtCore, QtGui
         from PySide.QtCore import QT_TRANSLATE_NOOP
-        import CommandCreateMbDFEM, CommandInsertMbDLink, CommandInsertMbDNewPart, CommandCreateMbDJoint, CommandSolveMbDFEM, CommandExportMbDASMT, CommandCreateMbDView, CommandCreateMbDSimulation, CommandCreateMbDBom
+        import CommandCreateMbDAssembly, CommandInsertMbDLink, CommandInsertMbDNewPart, CommandCreateMbDJoint, CommandSolveMbDAssembly, CommandExportMbDASMT, CommandCreateMbDView, CommandCreateMbDSimulation, CommandCreateMbDBom
         import MbDFEMPreferences
 
         FreeCADGui.addLanguagePath(":/translations")
@@ -76,9 +76,9 @@ class MbDFEMWorkbench(Workbench):
 
         # build commands list
         cmdList = [
-            "MbDFEM_CreateMbDFEM",
+            "MbDFEM_CreateMbDAssembly",
             "MbDFEM_Insert",
-            "MbDFEM_SolveMbDFEM",
+            "MbDFEM_SolveMbDAssembly",
             "MbDFEM_CreateView",
             "MbDFEM_CreateSimulation",
             "MbDFEM_CreateBom",

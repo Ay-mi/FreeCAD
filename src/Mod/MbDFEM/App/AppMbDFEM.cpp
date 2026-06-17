@@ -5,7 +5,7 @@
 #include "MbDAssembly.h"
 #include "MbDAssemblyLink.h"
 #include "MbDPart.h"
-#include "PartsGroup.h"
+#include "PartGroup.h"
 #include "BomObject.h"
 #include "BomGroup.h"
 #include "JointGroup.h"
@@ -44,7 +44,7 @@ PyMOD_INIT_FUNC(MbDFEMApp)
     MbDFEM::MbDPart::init();
     MbDFEM::BomObject ::init();
 
-    MbDFEM::PartsGroup::init();
+    MbDFEM::PartGroup::init();
     MbDFEM::BomGroup ::init();
     MbDFEM::JointGroup ::init();
     MbDFEM::ViewGroup ::init();
