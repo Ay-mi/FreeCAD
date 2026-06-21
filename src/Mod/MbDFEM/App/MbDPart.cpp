@@ -40,14 +40,16 @@ App::DocumentObjectExecReturn* MbDPart::execute()
     if (!obj) {
         return nullptr;
     }
-
     auto* placementProperty =
         dynamic_cast<App::PropertyPlacement*>(obj->getPropertyByName("Placement"));
     if (placementProperty) {
         placementProperty->setValue(Placement.getValue());
     }
 
-    return App::GeoFeature::execute();
+    // NEW (commented out): solver writes to MbDPart, MbDPart should not propagate back to CAD part.
+    // return App::GeoFeature::execute();
+
+    return nullptr;
 }
 
 App::DocumentObject* MbDPart::getCadPart() const

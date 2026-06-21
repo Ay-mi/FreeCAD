@@ -44,7 +44,7 @@ using namespace MbDFEM;
 using namespace MbDFEMGui;
 
 // Helper function to get the active MbDAssembly in edit mode
-static MbDAssembly* getActiveMbDFEM()
+static MbDAssembly* getActiveMbDAssembly()
 {
     Gui::Document* doc = Gui::Application::Instance->activeDocument();
     if (!doc) {
@@ -52,8 +52,8 @@ static MbDAssembly* getActiveMbDFEM()
     }
 
     auto* vp = doc->getInEdit();
-    if (auto* MbDFEMVP = freecad_cast<ViewProviderMbDAssembly*>(vp)) {
-        return MbDFEMVP->getObject<MbDAssembly>();
+    if (auto* mbdAssemblyVP = freecad_cast<ViewProviderMbDAssembly*>(vp)) {
+        return mbdAssemblyVP->getObject<MbDAssembly>();
     }
 
     return nullptr;
@@ -71,14 +71,14 @@ void selectObjects(const std::vector<App::DocumentObject*>& objectsToSelect)
     }
 }
 
-void selectObjectsByName(MbDAssembly* MbDFEM, const std::vector<std::string>& names)
+void selectObjectsByName(MbDAssembly* mbdAssembly, const std::vector<std::string>& names)
 {
-    if (!MbDFEM || names.empty()) {
+    if (!mbdAssembly || names.empty()) {
         return;
     }
 
     std::vector<App::DocumentObject*> objectsToSelect;
-    App::Document* doc = MbDFEM->getDocument();
+    App::Document* doc = mbdAssembly->getDocument();
 
     for (const auto& name : names) {
         if (auto* obj = doc->getObject(name.c_str())) {
@@ -124,7 +124,7 @@ void CmdMbDFEMLinkSelectLinked::activated(int iMsg)
     }
 
     // Get the linked object (usually an MbDAssembly in another doc)
-    App::DocumentObject* linkedObj = asmLink->getLinkedMbDFEM();
+    App::DocumentObject* linkedObj = asmLink->getLinkedMbDAssembly();
     if (!linkedObj) {
         return;
     }
@@ -173,19 +173,19 @@ CmdMbDFEMSelectConflictingConstraints::CmdMbDFEMSelectConflictingConstraints()
 void CmdMbDFEMSelectConflictingConstraints::activated(int iMsg)
 {
     Q_UNUSED(iMsg);
-    MbDAssembly* MbDFEM = getActiveMbDFEM();
-    if (!MbDFEM) {
+    MbDAssembly* mbdAssembly = getActiveMbDAssembly();
+    if (!mbdAssembly) {
         return;
     }
 
     // NOTE: The solver currently reports conflicting constraints as redundant.
     // This uses the redundant list until the solver provides a separate conflicting list.
-    selectObjectsByName(MbDFEM, MbDFEM->getLastRedundant());
+    selectObjectsByName(mbdAssembly, mbdAssembly->getLastRedundant());
 }
 
 bool CmdMbDFEMSelectConflictingConstraints::isActive()
 {
-    return getActiveMbDFEM() != nullptr;
+    return getActiveMbDAssembly() != nullptr;
 }
 
 // ================================================================================
@@ -208,17 +208,17 @@ CmdMbDFEMSelectRedundantConstraints::CmdMbDFEMSelectRedundantConstraints()
 void CmdMbDFEMSelectRedundantConstraints::activated(int iMsg)
 {
     Q_UNUSED(iMsg);
-    MbDAssembly* MbDFEM = getActiveMbDFEM();
-    if (!MbDFEM) {
+    MbDAssembly* mbdAssembly = getActiveMbDAssembly();
+    if (!mbdAssembly) {
         return;
     }
 
-    selectObjectsByName(MbDFEM, MbDFEM->getLastRedundant());
+    selectObjectsByName(mbdAssembly, mbdAssembly->getLastRedundant());
 }
 
 bool CmdMbDFEMSelectRedundantConstraints::isActive()
 {
-    return getActiveMbDFEM() != nullptr;
+    return getActiveMbDAssembly() != nullptr;
 }
 
 // ================================================================================
@@ -241,17 +241,17 @@ CmdMbDFEMSelectMalformedConstraints::CmdMbDFEMSelectMalformedConstraints()
 void CmdMbDFEMSelectMalformedConstraints::activated(int iMsg)
 {
     Q_UNUSED(iMsg);
-    MbDAssembly* MbDFEM = getActiveMbDFEM();
-    if (!MbDFEM) {
+    MbDAssembly* mbdAssembly = getActiveMbDAssembly();
+    if (!mbdAssembly) {
         return;
     }
 
-    selectObjectsByName(MbDFEM, MbDFEM->getLastMalformed());
+    selectObjectsByName(mbdAssembly, mbdAssembly->getLastMalformed());
 }
 
 bool CmdMbDFEMSelectMalformedConstraints::isActive()
 {
-    return getActiveMbDFEM() != nullptr;
+    return getActiveMbDAssembly() != nullptr;
 }
 
 
@@ -275,17 +275,17 @@ CmdMbDFEMSelectComponentsWithDoFs::CmdMbDFEMSelectComponentsWithDoFs()
 void CmdMbDFEMSelectComponentsWithDoFs::activated(int iMsg)
 {
     Q_UNUSED(iMsg);
-    MbDAssembly* MbDFEM = getActiveMbDFEM();
-    if (!MbDFEM) {
+    MbDAssembly* mbdAssembly = getActiveMbDAssembly();
+    if (!mbdAssembly) {
         return;
     }
 
     std::vector<App::DocumentObject*> objectsToSelect;
-    std::vector<App::DocumentObject*> allParts = getMbDFEMComponents(MbDFEM);
+    std::vector<App::DocumentObject*> allParts = getMbDAssemblyComponents(mbdAssembly);
 
     // Iterate through all collected parts and check their connectivity
     for (App::DocumentObject* part : allParts) {
-        if (!MbDFEM->isPartConnected(part)) {
+        if (!mbdAssembly->isPartConnected(part)) {
             objectsToSelect.push_back(part);
         }
     }
@@ -295,7 +295,7 @@ void CmdMbDFEMSelectComponentsWithDoFs::activated(int iMsg)
 
 bool CmdMbDFEMSelectComponentsWithDoFs::isActive()
 {
-    return getActiveMbDFEM() != nullptr;
+    return getActiveMbDAssembly() != nullptr;
 }
 
 // ================================================================================
@@ -319,8 +319,8 @@ CmdMbDFEMSelectJointsOfComponent::CmdMbDFEMSelectJointsOfComponent()
 void CmdMbDFEMSelectJointsOfComponent::activated(int iMsg)
 {
     Q_UNUSED(iMsg);
-    MbDAssembly* MbDFEM = getActiveMbDFEM();
-    if (!MbDFEM) {
+    MbDAssembly* mbdAssembly = getActiveMbDAssembly();
+    if (!mbdAssembly) {
         return;
     }
 
@@ -339,7 +339,7 @@ void CmdMbDFEMSelectJointsOfComponent::activated(int iMsg)
         const std::vector<std::string> subs = sel.getSubNames();
         std::string sub = subs.empty() ? "" : subs.front();
 
-        if (App::DocumentObject* comp = getMovingPartFromSel(MbDFEM, sel.getObject(), sub)) {
+        if (App::DocumentObject* comp = getMovingPartFromSel(mbdAssembly, sel.getObject(), sub)) {
             components.insert(comp);
         }
     }
@@ -350,7 +350,7 @@ void CmdMbDFEMSelectJointsOfComponent::activated(int iMsg)
 
     std::vector<App::DocumentObject*> jointsToSelect;
     for (auto* comp : components) {
-        std::vector<App::DocumentObject*> partJoints = MbDFEM->getJointsOfPart(comp);
+        std::vector<App::DocumentObject*> partJoints = mbdAssembly->getJointsOfPart(comp);
         jointsToSelect.insert(jointsToSelect.end(), partJoints.begin(), partJoints.end());
     }
 
@@ -359,7 +359,7 @@ void CmdMbDFEMSelectJointsOfComponent::activated(int iMsg)
 
 bool CmdMbDFEMSelectJointsOfComponent::isActive()
 {
-    return getActiveMbDFEM() != nullptr && !Gui::Selection().getSelection().empty();
+    return getActiveMbDAssembly() != nullptr && !Gui::Selection().getSelection().empty();
 }
 
 

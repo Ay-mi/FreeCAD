@@ -32,10 +32,10 @@ public:
 
     App::DocumentObjectExecReturn* execute() override;
 
-    // The linked MbDFEM is the MbDAssembly that this MbDFEMLink pseudo-links to recursively.
-    MbDAssembly* getLinkedMbDFEM() const;
-    // The parent MbDFEM is the main MbDFEM in which the linked MbDFEM is contained
-    MbDAssembly* getParentMbDFEM() const;
+    // Returns the MbDAssembly that this MbDAssemblyLink pseudo-links to recursively.
+    MbDAssembly* getLinkedMbDAssembly() const;
+    // Returns the main MbDAssembly in which this link is contained.
+    MbDAssembly* getParentMbDAssembly() const;
 
     // Overriding DocumentObject::getLinkedObject is giving bugs
     // This function returns the linked object, either an MbDAssembly or an MbDFEMLink

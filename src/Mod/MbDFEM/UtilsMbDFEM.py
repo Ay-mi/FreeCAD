@@ -14,7 +14,7 @@ __title__ = "MbDFEM utilitary functions"
 __url__ = "https://www.freecad.org"
 
 
-def activePartOrMbDFEM():
+def activePartOrMbDFEM(): #is the user inside and MbDAssembly object (denoted using key MbDFEM) of inside a part (App::Part)
     doc = Gui.ActiveDocument
 
     if doc is None or doc.ActiveView is None:

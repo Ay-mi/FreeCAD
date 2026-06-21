@@ -64,19 +64,19 @@ bool ViewProviderMbDAssemblyLink::doubleClicked()
     if (!link) {
         return true;
     }
-    auto* MbDFEM = link->getLinkedMbDFEM();
-    if (!MbDFEM) {
+    auto* mbdAssembly = link->getLinkedMbDAssembly();
+    if (!mbdAssembly) {
         return true;
     }
 
     auto* vpa = freecad_cast<ViewProviderMbDAssembly*>(
-        Gui::Application::Instance->getViewProvider(MbDFEM)
+        Gui::Application::Instance->getViewProvider(mbdAssembly)
     );
     if (!vpa) {
         return true;
     }
 
-    auto doc = MbDFEM->getDocument();
+    auto doc = mbdAssembly->getDocument();
     auto guiDoc = vpa->getDocument();
     if (!doc || !guiDoc) {
         return true;
@@ -84,18 +84,18 @@ bool ViewProviderMbDAssemblyLink::doubleClicked()
 
     Gui::MDIView* mdi = guiDoc->getActiveView();
 
-    // Ensure the linked MbDFEM document is fully loaded and has a view
+    // Ensure the linked MbDAssembly document is fully loaded and has a view
     if (doc->testStatus(App::Document::PartialDoc) || !mdi) {
         Gui::Application::Instance->reopen(doc);
 
         // reopening invalidates the pointer.
-        auto* MbDFEM = link->getLinkedMbDFEM();
-        if (!MbDFEM) {
+        auto* mbdAssembly = link->getLinkedMbDAssembly();
+        if (!mbdAssembly) {
             return true;
         }
 
         vpa = freecad_cast<ViewProviderMbDAssembly*>(
-            Gui::Application::Instance->getViewProvider(MbDFEM)
+            Gui::Application::Instance->getViewProvider(mbdAssembly)
         );
         if (!vpa) {
             return true;

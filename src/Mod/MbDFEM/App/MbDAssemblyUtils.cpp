@@ -724,7 +724,7 @@ void syncPlacements(App::DocumentObject* src, App::DocumentObject* to)
 namespace
 {
 // Helper function to perform the recursive traversal. Kept in an anonymous
-// namespace as it's an implementation detail of getMbDFEMComponents.
+// namespace as it's an implementation detail of getMbDAssemblyComponents.
 void collectComponentsRecursively(
     const std::vector<App::DocumentObject*>& objects,
     std::vector<App::DocumentObject*>& results
@@ -774,14 +774,14 @@ void collectComponentsRecursively(
 }
 }  // namespace
 
-std::vector<App::DocumentObject*> getMbDFEMComponents(const MbDAssembly* MbDFEM)
+std::vector<App::DocumentObject*> getMbDAssemblyComponents(const MbDAssembly* mbdAssembly)
 {
-    if (!MbDFEM) {
+    if (!mbdAssembly) {
         return {};
     }
 
     std::vector<App::DocumentObject*> components;
-    collectComponentsRecursively(MbDFEM->Group.getValues(), components);
+    collectComponentsRecursively(mbdAssembly->Group.getValues(), components);
     return components;
 }
 

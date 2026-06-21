@@ -84,7 +84,7 @@ void MbDAssemblyLink::onChanged(const App::Property* prop)
 
         // A flexible sub-MbDFEM cannot be grounded.
         // If a rigid sub-MbDFEM has an object that is grounded, we also remove it.
-        auto groundedJoints = getParentMbDFEM()->getGroundedJoints();
+        auto groundedJoints = getParentMbDAssembly()->getGroundedJoints();
         for (auto* joint : groundedJoints) {
             auto* propObj = dynamic_cast<App::PropertyLink*>(
                 joint->getPropertyByName("ObjectToGround")
@@ -119,7 +119,7 @@ void MbDAssemblyLink::onChanged(const App::Property* prop)
                     sourceObj = link->getLinkedObject(false);  // Get non-recursive linked object
                 }
                 else if (auto* asmLink = dynamic_cast<MbDAssemblyLink*>(firstLink)) {
-                    sourceObj = asmLink->getLinkedMbDFEM();
+                    sourceObj = asmLink->getLinkedMbDAssembly();
                 }
 
                 if (sourceObj) {
@@ -204,7 +204,7 @@ void MbDAssemblyLink::onChanged(const App::Property* prop)
 
 void MbDAssemblyLink::updateParentJoints()
 {
-    MbDAssembly* parent = getParentMbDFEM();
+    MbDAssembly* parent = getParentMbDAssembly();
     if (!parent) {
         return;
     }
@@ -292,21 +292,21 @@ void MbDAssemblyLink::synchronizeComponents()
 {
     App::Document* doc = getDocument();
 
-    MbDAssembly* MbDFEM = getLinkedMbDFEM();
-    if (!MbDFEM) {
+    MbDAssembly* mbdAssembly = getLinkedMbDAssembly();
+    if (!mbdAssembly) {
         return;
     }
 
     objLinkMap.clear();
 
-    std::vector<App::DocumentObject*> MbDFEMGroup = MbDFEM->Group.getValues();
+    std::vector<App::DocumentObject*> mbdAssemblyGroup = mbdAssembly->Group.getValues();
     std::vector<App::DocumentObject*> MbDAssemblyLinkGroup = Group.getValues();
 
     // Filter out child objects from Part-workbench features to get only top-level components.
     // An object is considered a child if it's referenced by another object's 'Base', 'Tool',
     // or 'Shapes' property within the same group.
     std::set<App::DocumentObject*> children;
-    for (auto* obj : MbDFEMGroup) {
+    for (auto* obj : mbdAssemblyGroup) {
         if (auto* partFeat = dynamic_cast<PartApp::Feature*>(obj)) {
             if (auto* prop = dynamic_cast<App::PropertyLink*>(partFeat->getPropertyByName("Base"))) {
                 if (prop->getValue()) {
@@ -329,8 +329,8 @@ void MbDAssemblyLink::synchronizeComponents()
 
     std::vector<App::DocumentObject*> topLevelComponents;
     std::copy_if(
-        MbDFEMGroup.begin(),
-        MbDFEMGroup.end(),
+        mbdAssemblyGroup.begin(),
+        mbdAssemblyGroup.end(),
         std::back_inserter(topLevelComponents),
         [&children](App::DocumentObject* obj) { return children.find(obj) == children.end(); }
     );
@@ -523,24 +523,24 @@ void copyPropertyIfDifferent(
 void MbDAssemblyLink::synchronizeJoints()
 {
     App::Document* doc = getDocument();
-    MbDAssembly* MbDFEM = getLinkedMbDFEM();
-    if (!MbDFEM) {
+    MbDAssembly* mbdAssembly = getLinkedMbDAssembly();
+    if (!mbdAssembly) {
         return;
     }
 
     JointGroup* jGroup = ensureJointGroup();
 
-    std::vector<App::DocumentObject*> MbDFEMJoints = MbDFEM->getJoints(false, false);
+    std::vector<App::DocumentObject*> mbdAssemblyJoints = mbdAssembly->getJoints(false, false);
     std::vector<App::DocumentObject*> MbDAssemblyLinkJoints = getJoints();
 
     // We delete the excess of joints if any
-    for (size_t i = MbDFEMJoints.size(); i < MbDAssemblyLinkJoints.size(); ++i) {
+    for (size_t i = mbdAssemblyJoints.size(); i < MbDAssemblyLinkJoints.size(); ++i) {
         doc->removeObject(MbDAssemblyLinkJoints[i]->getNameInDocument());
     }
 
     // We make sure the joints match.
-    for (size_t i = 0; i < MbDFEMJoints.size(); ++i) {
-        App::DocumentObject* joint = MbDFEMJoints[i];
+    for (size_t i = 0; i < mbdAssemblyJoints.size(); ++i) {
+        App::DocumentObject* joint = mbdAssemblyJoints[i];
         App::DocumentObject* lJoint;
         if (i < MbDAssemblyLinkJoints.size()) {
             lJoint = MbDAssemblyLinkJoints[i];
@@ -675,9 +675,9 @@ JointGroup* MbDAssemblyLink::ensureJointGroup()
 App::DocumentObject* MbDAssemblyLink::getLinkedObject2(bool recursive) const
 {
     auto* obj = LinkedObject.getValue();
-    auto* MbDFEM = freecad_cast<MbDAssembly*>(obj);
-    if (MbDFEM) {
-        return MbDFEM;
+    auto* mbdAssembly = freecad_cast<MbDAssembly*>(obj);
+    if (mbdAssembly) {
+        return mbdAssembly;
     }
     else {
         auto* subLink = freecad_cast<MbDAssemblyLink*>(obj);
@@ -694,18 +694,18 @@ App::DocumentObject* MbDAssemblyLink::getLinkedObject2(bool recursive) const
     return nullptr;
 }
 
-MbDAssembly* MbDAssemblyLink::getLinkedMbDFEM() const
+MbDAssembly* MbDAssemblyLink::getLinkedMbDAssembly() const
 {
     return freecad_cast<MbDAssembly*>(getLinkedObject2());
 }
 
-MbDAssembly* MbDAssemblyLink::getParentMbDFEM() const
+MbDAssembly* MbDAssemblyLink::getParentMbDAssembly() const
 {
     std::vector<App::DocumentObject*> inList = getInList();
     for (auto* obj : inList) {
-        auto* MbDFEM = freecad_cast<MbDAssembly*>(obj);
-        if (MbDFEM) {
-            return MbDFEM;
+        auto* mbdAssembly = freecad_cast<MbDAssembly*>(obj);
+        if (mbdAssembly) {
+            return mbdAssembly;
         }
     }
 
@@ -738,7 +738,7 @@ bool MbDAssemblyLink::allowDuplicateLabel() const
 
 int MbDAssemblyLink::numberOfComponents() const
 {
-    return isRigid() ? 1 : getLinkedMbDFEM()->numberOfComponents();
+    return isRigid() ? 1 : getLinkedMbDAssembly()->numberOfComponents();
 }
 
 bool MbDAssemblyLink::isEmpty() const

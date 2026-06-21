@@ -125,7 +125,7 @@ MbDFEMExport double getEdgeRadius(const App::DocumentObject* obj, const std::str
 MbDFEMExport DistanceType getDistanceType(App::DocumentObject* joint);
 MbDFEMExport JointGroup* getJointGroup(const App::Part* part);
 
-MbDFEMExport std::vector<App::DocumentObject*> getMbDFEMComponents(const MbDAssembly* MbDFEM);
+MbDFEMExport std::vector<App::DocumentObject*> getMbDAssemblyComponents(const MbDAssembly* mbdAssembly);
 
 // getters to get from properties
 MbDFEMExport void setJointActivated(const App::DocumentObject* joint, bool val);

@@ -60,6 +60,8 @@
 #include "MbDAssemblyUtils.h"
 #include "JointGroup.h"
 #include "ViewGroup.h"
+#include "PartGroup.h"
+#include "MbDPart.h"
 
 FC_LOG_LEVEL_INIT("MbDFEM", true, true, true)
 
@@ -73,18 +75,18 @@ namespace PartApp = Part;
 // ================================ MbDFEM Object ============================
 
 PROPERTY_SOURCE(MbDFEM::MbDAssembly, App::Part)
-
+//ASMTAssembly is from the MbDyn/OnselSolver library, core assembly obj which handles mbd simulation -> physics simul obj
 MbDAssembly::MbDAssembly()
-    : mbdAssembly(std::make_shared<ASMTAssembly>())
-    , bundleFixed(false)
-    , lastDoF(0)
-    , lastHasConflict(false)
-    , lastHasRedundancies(false)
-    , lastHasPartialRedundancies(false)
-    , lastHasMalformedConstraints(false)
-    , lastSolverStatus(0)
+    : mbdAssembly(std::make_shared<ASMTAssembly>()) //C++ member initializer, creates an ASMTAssembly obj, uses smart pointer shared_ptr, memory freed automatically
+    , bundleFixed(false) //whether assembly is fixed/fully constrained with no free motion, false: unchecked until a solve runs
+    , lastDoF(0) //degrees of freedom remaining after applying all joints/constr., 0 is starting value
+    , lastHasConflict(false) //whether the solver found conflicting constrs, geometrically impossible
+    , lastHasRedundancies(false) //are there redundant constrs?
+    , lastHasPartialRedundancies(false) //also checks for redundancies but only flags for specific to certain configurations or directions
+    , lastHasMalformedConstraints(false) //checks structural validity of constr before solving, ex missing parts, bad parameters
+    , lastSolverStatus(0) //int val indicates solver status after last run, 0 means no error or not run yet
 {
-    // mbdAssembly->externalSystem->freecadMbDAssembly = this;
+    // mbdAssembly->externalSystem->freecadMbDAssembly = this; //how it's done in AssemblyObject.cpp, TODO: check later if this can still be used
     mbdAssembly->externalSystem->freecadAssemblyObject = nullptr;
 
     lastDoF = numberOfComponents() * 6;
@@ -131,6 +133,14 @@ int MbDAssembly::solve(bool enableRedo)
 
     mbdAssembly = makeMbdAssembly();
     objectPartMap.clear();
+    // NEW (commented out): Reset transient solver data on all MbDParts so getMbDData() treats them as unseen this pass
+    // if (PartGroup* pg = getGroup<PartGroup>()) {
+    //     for (auto* obj : pg->getObjects()) {
+    //         if (auto* mbdPart = freecad_cast<MbDPart*>(obj)) {
+    //             mbdPart->liveASMTPart = nullptr;
+    //         }
+    //     }
+    // }
     motions.clear();
 
     auto groundedObjs = fixGroundedParts();
@@ -816,7 +826,7 @@ std::vector<App::DocumentObject*> MbDAssembly::getJointsOfPart(App::DocumentObje
 std::unordered_set<App::DocumentObject*> MbDAssembly::getGroundedParts()
 {
     std::unordered_set<App::DocumentObject*> groundedSet;
-    std::vector<App::DocumentObject*> allParts = getMbDFEMComponents(this);
+    std::vector<App::DocumentObject*> allParts = getMbDAssemblyComponents(this);
     for (auto part : allParts) {
         if (part) {
             auto propPlc = part->getPlacementProperty();
@@ -1845,14 +1855,14 @@ MbDAssembly::MbDPartData MbDAssembly::getMbDData(App::DocumentObject* part)
 
     // part has not been associated with an ASMTPart before
     std::string str = part->getFullName();
-    Base::Placement plc = getPlacementFromProp(part, "Placement");
-    std::shared_ptr<ASMTPart> mbdPart = makeMbdPart(str, plc);
-    mbdAssembly->addPart(mbdPart);
-    MbDPartData data = {mbdPart, Base::Placement()};
+    Base::Placement plc = getPlacementFromProp(part, "Placement"); //name and placement become solver's initial conditions
+    std::shared_ptr<ASMTPart> mbdPart = makeMbdPart(str, plc); //creates solver side ASMTPart, OndselSolver's description of a rigid body, lives in solver side
+    mbdAssembly->addPart(mbdPart); //register with ASMTAssembly so solver knows it exists
+    MbDPartData data = {mbdPart, Base::Placement()}; //new part is being registered
     objectPartMap[part] = data;  // Store the association
 
     // Associate other objects connected with fixed joints
-    if (bundleFixed) {
+    if (bundleFixed) { //if fixed joint bundling is on, define a recursive lambda to walk the fixed-joint graph starting from this part, p.s. part bundling is only by fixed joints
         auto addConnectedFixedParts = [&](App::DocumentObject* currentPart, auto& self) -> void {
             std::vector<App::DocumentObject*> joints = getJointsOfPart(currentPart);
             for (auto* joint : joints) {
@@ -2078,7 +2088,7 @@ void MbDAssembly::syncGroundedJoints()
         }
     }
 
-    std::vector<App::DocumentObject*> allParts = getMbDFEMComponents(this);
+    std::vector<App::DocumentObject*> allParts = getMbDAssemblyComponents(this);
 
     for (auto part : allParts) {
         if (!part) {
@@ -2137,7 +2147,7 @@ void MbDAssembly::syncGroundedJoints()
 
 int MbDAssembly::numberOfComponents() const
 {
-    return getMbDFEMComponents(this).size();
+    return getMbDAssemblyComponents(this).size();
 }
 
 bool MbDAssembly::isEmpty() const

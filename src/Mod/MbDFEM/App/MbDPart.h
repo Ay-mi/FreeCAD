@@ -4,6 +4,8 @@
 
 #include <App/GeoFeature.h>
 #include <App/PropertyLinks.h>
+#include <Base/Placement.h>
+#include <OndselSolver/ASMTPart.h>
 
 
 namespace MbDFEM
@@ -29,6 +31,10 @@ public:
     App::DocumentObject* getCadPart() const;
 
     App::PropertyXLink cadPart;
+
+    // Transient members — set during solve, not saved to disk
+    std::shared_ptr<MbD::ASMTPart> liveASMTPart;
+    Base::Placement offsetPlc;
 };
 
 

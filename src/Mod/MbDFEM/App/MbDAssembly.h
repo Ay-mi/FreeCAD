@@ -64,7 +64,7 @@ public:
 
     App::DocumentObjectExecReturn* execute() override;
     void onChanged(const App::Property* prop) override;
-    /* Solve the MbDFEM. It will update first the joints, solve, update placements of the parts
+    /* Solve the MbDAssembly. It will update first the joints, solve, update placements of the parts
     and redraw the joints Args : enableRedo : This store initial positions to enable undo while
     being in an active transaction (joint creation).*/
     int solve(bool enableRedo = false);
@@ -101,7 +101,7 @@ public:
     );
     std::shared_ptr<MbD::ASMTPart> getMbDPart(App::DocumentObject* obj);
     // To help the solver, during dragging, we are bundling parts connected by a fixed joint.
-    // So several MbDFEM components are bundled in a single ASMTPart.
+    // So several assembly components are bundled in a single ASMTPart.
     // So we need to store the plc of each bundled object relative to the bundle origin (first obj
     // of objectPartMap).
     struct MbDPartData
@@ -232,19 +232,19 @@ public:
     fastsignals::signal<void()> signalSolverUpdate;
 
 private:
-    std::shared_ptr<MbD::ASMTAssembly> mbdAssembly;
+    std::shared_ptr<MbD::ASMTAssembly> mbdAssembly; //most important OnselSolver object, filled with parts and joints before a solve
 
-    std::unordered_map<App::DocumentObject*, MbDPartData> objectPartMap;
-    std::vector<std::pair<App::DocumentObject*, double>> objMasses;
-    std::vector<App::DocumentObject*> draggedParts;
-    std::vector<App::DocumentObject*> motions;
+    std::unordered_map<App::DocumentObject*, MbDPartData> objectPartMap; //maps each FreeCAD part obj to its MbD Solver data (ex drag ops, simult setup)
+    std::vector<std::pair<App::DocumentObject*, double>> objMasses; //stores per part masses, set using setting in cpp, iterated when building MbD syst.
+    std::vector<App::DocumentObject*> draggedParts; //tracks which parts the user is currently dragging, used in drag loop to skip already dragged parts and apply drag forces
+    std::vector<App::DocumentObject*> motions; //stores motion joint objs from simulation, has get() method 
 
-    std::vector<std::pair<App::DocumentObject*, Base::Placement>> previousPositions;
+    std::vector<std::pair<App::DocumentObject*, Base::Placement>> previousPositions; //for undo, saves part positions before drag
 
-    bool bundleFixed;
+    bool bundleFixed; //
 
-    int lastDoF;
-    bool lastHasConflict;
+    int lastDoF; //read by ui to show constraint status/how many dof remain
+    bool lastHasConflict; //
     bool lastHasRedundancies;
     bool lastHasPartialRedundancies;
     bool lastHasMalformedConstraints;

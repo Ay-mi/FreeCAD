@@ -63,12 +63,12 @@ class CommandInsertLink:
         return UtilsMbDFEM.isMbDFEMCommandActive()
 
     def Activated(self):
-        MbDFEM = UtilsMbDFEM.activeMbDFEM()
+        MbDFEM = UtilsMbDFEM.activeMbDFEM() #fetches currently active MbDAssembly object
         if not MbDFEM:
             return
-        view = Gui.activeDocument().activeView()
-        self.panel = TaskMbDFEMInsertLink(MbDFEM, view)
-        Gui.Control.showDialog(self.panel)
+        view = Gui.activeDocument().activeView() #gets active 3D viewport, passed to the task panel which for ex, can calculate screen centre
+        self.panel = TaskMbDFEMInsertLink(MbDFEM, view) #creates task panel, stored on self so FreeCAD can call accept()/reject() when user clicks OK/Cancel
+        Gui.Control.showDialog(self.panel) #hands over panel to FreeCAD's task panel system
 
 
 class InsertLinkObserver:
@@ -81,44 +81,44 @@ class InsertLinkObserver:
 
 class TaskMbDFEMInsertLink(QtCore.QObject):
     def __init__(self, MbDFEM, view):
-        super().__init__()
+        super().__init__() #calls QtCore.QObject.__init(), initializes Qt obj machinery which TaskMbDFEMInsertLink inherits from
 
         self.MbDFEM = MbDFEM
         self.view = view
         self.doc = App.ActiveDocument
         self.showHidden = False
 
-        self.form = Gui.PySideUic.loadUi(":/panels/TaskMbDFEMInsertLink.ui")
-        self.form.installEventFilter(self)
-        self.form.partList.installEventFilter(self)
-
-        pref = Preferences.preferences()
+        self.form = Gui.PySideUic.loadUi(":/panels/TaskMbDFEMInsertLink.ui") #loads ui layout
+        self.form.installEventFilter(self) #registers self as an event interceptor on the form for keyboard/mouse inputs 
+        self.form.partList.installEventFilter(self) #same but for part list
+         
+        pref = Preferences.preferences() # restore users previous checkbox settings from FreeCAD preferences, inside MbDFEMPreferences.py 
         self.form.CheckBox_ShowOnlyParts.setChecked(pref.GetBool("InsertShowOnlyParts", False))
         self.form.CheckBox_RigidSubAsm.setChecked(pref.GetBool("InsertRigidSubAssemblies", True))
 
-        # Actions
+        # Actions - connect UI widgets to handler methods
         self.form.openFileButton.clicked.connect(self.openFiles)
         self.form.partList.itemClicked.connect(self.onItemClicked)
         self.form.filterPartList.textChanged.connect(self.onFilterChange)
-        self.form.CheckBox_ShowOnlyParts.stateChanged.connect(self.buildPartList)
+        self.form.CheckBox_ShowOnlyParts.stateChanged.connect(self.buildPartList) #rebuilds entire list when checkbox is toggled
 
-        self.form.partList.header().hide()
+        self.form.partList.header().hide() #QTreeWidget
 
-        self.translation = 0
+        self.translation = 0 
         # self.partMoving = False
-        self.totalTranslation = App.Vector()
-        self.prevScreenCenter = App.Vector()
-        self.groundedObj = None
+        self.totalTranslation = App.Vector() #cumulative offset applied so far
+        self.prevScreenCenter = App.Vector() #known last screen center, detects if user has panned the view between insertions
+        self.groundedObj = None #tracks which object was automatically grounded on first insertion
 
         self.insertionStack = []  # used to handle cancellation of insertions.
-        self.doc_item_map = {}
+        self.doc_item_map = {} #maps document items to their tree widget items
 
-        self.buildPartList()
+        self.buildPartList() #building part list from scratch, for selection of parts
 
-        Gui.ActiveDocument.openCommand("Insert Component")
+        Gui.ActiveDocument.openCommand("Insert Component") #open Undo transaction,everything gets grouped into single undo step from here
 
         # Listen for external deletions to keep the list in sync
-        self.docObserver = InsertLinkObserver(self.onObjectDeleted)
+        self.docObserver = InsertLinkObserver(self.onObjectDeleted) #reaction to user deleting something they just inserted while the panel is still open
         App.addDocumentObserver(self.docObserver)
 
     def accept(self):
@@ -179,15 +179,15 @@ class TaskMbDFEMInsertLink(QtCore.QObject):
         Gui.Selection.clearSelection()
 
     def buildPartList(self):
-        self.form.partList.clear()
-        self.doc_item_map.clear()
+        self.form.partList.clear() #clears items from Qt tree widget
+        self.doc_item_map.clear() #clears  the mapping of document objects to tree items
 
-        docList = App.listDocuments().values()
+        docList = App.listDocuments().values() #returns currently open FreeCAD docs
         if len(docList) > 20:
-            collapse = True
+            collapse = True #more 20 docs, will collapse tree nodes, easier to view
         else:
             collapse = False
-
+        #loop to create a top level tree node for each open document
         for doc in docList:
             # Create a new tree item for the document
             docItem = QtGui.QTreeWidgetItem()
@@ -332,7 +332,7 @@ class TaskMbDFEMInsertLink(QtCore.QObject):
                     self.buildPartList()
 
     def onItemClicked(self, item):
-        selectedPart = item.data(0, QtCore.Qt.UserRole)
+        selectedPart = item.data(0, QtCore.Qt.UserRole) #retrieves FreeCAD document object stores on this tree item
         if not selectedPart:
             # If there's no part associated, toggle the expanded state
             item.setExpanded(not item.isExpanded())
@@ -381,11 +381,11 @@ class TaskMbDFEMInsertLink(QtCore.QObject):
                 documentItem.setText(0, f"{newDocName}.FCStd")"""
 
         if selectedPart.isDerivedFrom("MbDFEM::MbDAssembly"):
-            objType = "MbDFEM::MbDAssemblyLink"
+            objType = "MbDFEM::MbDAssemblyLink" #if inserting an MbDAssembly, create an MbDAssemblyLink
         else:
-            objType = "App::Link"
+            objType = "App::Link" #otherwise create a regular schmegular App::Link
 
-        addedObject = self.MbDFEM.newObject(objType, selectedPart.Label)
+        addedObject = self.MbDFEM.newObject(objType, selectedPart.Label) #creates the new obj inside the assembly, newObject() is a FreeCAD method
 
         # set placement of the added object to the center of the screen.
         view = Gui.activeView()
@@ -393,18 +393,18 @@ class TaskMbDFEMInsertLink(QtCore.QObject):
         screenCenter = view.getPointOnFocalPlane(x // 2, y // 2)
         screenCorner = view.getPointOnFocalPlane(x, y)
 
-        addedObject.LinkedObject = selectedPart
+        addedObject.LinkedObject = selectedPart #points link at the source geometry
         addedObject.Label = selectedPart.Label  # non-ASCII characters fails with newObject. #12164
         addedObject.recompute()
 
-        insertionDict = {}
+        insertionDict = {} #stores tree item and created obj in a dict
         insertionDict["item"] = item
         insertionDict["addedObject"] = addedObject
         self.insertionStack.append(insertionDict)
-        self.increment_counter(item)
+        self.increment_counter(item) #counter to show how many times this part has been inserted
 
-        translation = App.Vector()
-        resetThreshold = (screenCorner - screenCenter).Length * 0.1
+        translation = App.Vector() 
+        resetThreshold = (screenCorner - screenCenter).Length * 0.1 #10% distance from screen center to corner, used to detect significant panning
         if len(self.insertionStack) == 1:
             translation = App.Vector()  # No translation for first object.
         elif (self.prevScreenCenter - screenCenter).Length > resetThreshold:
@@ -415,7 +415,7 @@ class TaskMbDFEMInsertLink(QtCore.QObject):
 
         insertionDict["translation"] = translation
         self.totalTranslation += translation
-
+        #decides where to place selected/chosen object
         originX, originY = view.getPointOnViewport(App.Vector() + translation)
         if originX > 0 and originX < x and originY > 0 and originY < y:
             # If the origin is within view then we insert at the origin.
@@ -439,7 +439,7 @@ class TaskMbDFEMInsertLink(QtCore.QObject):
         item.setSelected(False)
 
         if len(self.insertionStack) == 1 and not UtilsMbDFEM.isMbDFEMGrounded():
-            self.handleFirstInsertion()
+            self.handleFirstInsertion() #called if this is the first insertion and nothing is grounded yet
 
     def handleFirstInsertion(self):
         pref = Preferences.preferences()
@@ -449,7 +449,7 @@ class TaskMbDFEMInsertLink(QtCore.QObject):
             msgBox = QtWidgets.QMessageBox()
             msgBox.setWindowTitle("Ground Part?")
             msgBox.setText(
-                "Do you want to ground the first inserted part automatically?\nYou need at least one grounded part in your MbDFEM."
+                "Do you want to ground the first inserted part automatically?\nYou need at least one grounded part in your MbDAssembly."
             )
             msgBox.setIcon(QtWidgets.QMessageBox.Question)
 
@@ -460,7 +460,7 @@ class TaskMbDFEMInsertLink(QtCore.QObject):
 
             msgBox.exec_()
 
-            clickedButton = msgBox.clickedButton()
+            clickedButton = msgBox.clickedButton() #when you click on dialog box with first grounding option
             if clickedButton == yesButton:
                 fixPart = True
             elif clickedButton == yesAlwaysButton:
@@ -477,7 +477,7 @@ class TaskMbDFEMInsertLink(QtCore.QObject):
             if len(self.insertionStack) != 1:
                 return
 
-            targetObj = self.insertionStack[0]["addedObject"]
+            targetObj = self.insertionStack[0]["addedObject"] #get actual inserted obj from stack
 
             # If the object is a flexible MbDFEMLink, we should ground its internal 'base' part
             if targetObj.isDerivedFrom("MbDFEM::MbDAssemblyLink") and not targetObj.Rigid:
@@ -576,7 +576,7 @@ class TaskMbDFEMInsertLink(QtCore.QObject):
 
     # Taskbox keyboard event handler
     def eventFilter(self, watched, event):
-
+        #manages right clicks, 1. rc a partially loadedidocument node -> fully loaded, 2. rc a part that was inserted -> removed, 3. rc empty space -> shows objs hidden in tree view
         if event.type() == QtCore.QEvent.ContextMenu and watched is self.form.partList:
             item = watched.itemAt(event.pos())
 
