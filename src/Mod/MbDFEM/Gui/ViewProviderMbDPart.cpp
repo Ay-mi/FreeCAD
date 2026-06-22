@@ -8,6 +8,7 @@
 
 using namespace MbDFEMGui;
 
+//inherits from ViewProviderPart, used to render objs that inherit from Part::Feature, go hand in hand
 PROPERTY_SOURCE(MbDFEMGui::ViewProviderMbDPart, PartGui::ViewProviderPart)
 
 ViewProviderMbDPart::ViewProviderMbDPart()

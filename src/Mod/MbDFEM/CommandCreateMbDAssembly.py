@@ -35,9 +35,9 @@ class CommandCreateMbDAssembly:
             return False
 
         if Preferences.preferences().GetBool("EnforceOneMbDFEMRule", True):
-            activeMbDFEM = UtilsMbDFEM.activeMbDFEM()
+            activeMbFEMAssm = UtilsMbDFEM.activeMbFEMAssm()
 
-            if UtilsMbDFEM.isThereOneRootMbDFEM() and not activeMbDFEM:
+            if UtilsMbDFEM.isThereOneRootMbDFEM() and not activeMbFEMAssm:
                 return False
 
         return App.ActiveDocument is not None
@@ -45,25 +45,25 @@ class CommandCreateMbDAssembly:
     def Activated(self):
         Gui.ActiveDocument.openCommand("New MbDAssembly")
 
-        activeMbDFEM = UtilsMbDFEM.activeMbDFEM()
+        activeMbFEMAssm = UtilsMbDFEM.activeMbFEMAssm()
         Gui.addModule("UtilsMbDFEM")
-        if activeMbDFEM:
+        if activeMbFEMAssm:
             commands = (
-                "activeMbDFEM = UtilsMbDFEM.activeMbDFEM()\n"
-                'MbDFEM = activeMbDFEM.newObject("MbDFEM::MbDAssembly", "MbDAssembly")\n'
+                "activeMbFEMAssm = UtilsMbDFEM.activeMbFEMAssm()\n"
+                'mbdFemAssembly = activeMbFEMAssm.newObject("MbDFEM::MbDAssembly", "MbDAssembly")\n'
             )
         else:
             commands = (
-                'MbDFEM = App.ActiveDocument.addObject("MbDFEM::MbDAssembly", "MbDAssembly")\n'
+                'mbdFemAssembly = App.ActiveDocument.addObject("MbDFEM::MbDAssembly", "MbDAssembly")\n'
             )
 
-        commands = commands + 'MbDFEM.Type = "MbDAssembly"\n'
-        commands = commands + 'MbDFEM.newObject("MbDFEM::PartGroup", "Parts")\n' #creates PartGroup obj, looks up ViewProvider name
-        commands = commands + 'MbDFEM.newObject("MbDFEM::JointGroup", "Joints")'
+        commands = commands + 'mbdFemAssembly.Type = "MbDAssembly"\n'
+        commands = commands + 'mbdFemAssembly.newObject("MbDFEM::PartGroup", "Parts")\n' #creates PartGroup obj, looks up ViewProvider name
+        commands = commands + 'mbdFemAssembly.newObject("MbDFEM::JointGroup", "Joints")'
 
         Gui.doCommand(commands)
-        if not activeMbDFEM:
-            Gui.doCommandGui("Gui.ActiveDocument.setEdit(MbDFEM)")
+        if not activeMbFEMAssm:
+            Gui.doCommandGui("Gui.ActiveDocument.setEdit(mbdFemAssembly)")
 
         Gui.ActiveDocument.commitCommand()
 
@@ -120,7 +120,7 @@ class CommandActivateMbDFEM:
             return False
 
         # Command is only active if no MbDFEM is currently active
-        if UtilsMbDFEM.activeMbDFEM() is not None:
+        if UtilsMbDFEM.activeMbFEMAssm() is not None:
             return False
 
         # And if there is at least one MbDFEM in the document to activate

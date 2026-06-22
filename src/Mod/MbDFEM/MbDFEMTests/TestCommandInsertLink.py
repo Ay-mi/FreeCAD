@@ -83,7 +83,7 @@ class TestCommandInsertLink(unittest.TestCase):
         App.setActiveDocument(doc_name)
         self.doc = App.ActiveDocument
 
-        self.MbDFEM = App.ActiveDocument.addObject("MbDFEM::MbDAssembly", "MbDFEM")
+        self.mbdFemAssembly = App.ActiveDocument.addObject("MbDFEM::MbDAssembly", "MbDFEM")
 
         _msg(f"  Temporary document '{self.doc.Name}'")
 
@@ -103,7 +103,7 @@ class TestCommandInsertLink(unittest.TestCase):
 
         mock_view = MagicMock()
         mock_view.getSize = MagicMock(return_value=(800, 600))
-        task = CommandInsertLink.TaskMbDFEMInsertLink(self.MbDFEM, mock_view)
+        task = CommandInsertLink.TaskMbDFEMInsertLink(self.mbdFemAssembly, mock_view)
 
         # Create a mix of valid and invalid objects
         test_objects = [
@@ -183,7 +183,7 @@ class TestCommandInsertLink(unittest.TestCase):
 
         mock_view = MagicMock()
         mock_view.getSize = MagicMock(return_value=(800, 600))
-        task = CommandInsertLink.TaskMbDFEMInsertLink(self.MbDFEM, mock_view)
+        task = CommandInsertLink.TaskMbDFEMInsertLink(self.mbdFemAssembly, mock_view)
 
         # Don't add anything to insertion stack - it should remain empty
         self.assertEqual(len(task.insertionStack), 0, "Insertion stack should be empty")

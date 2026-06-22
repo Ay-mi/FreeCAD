@@ -14,21 +14,21 @@ __title__ = "MbDFEM utilitary functions"
 __url__ = "https://www.freecad.org"
 
 
-def activePartOrMbDFEM(): #is the user inside and MbDAssembly object (denoted using key MbDFEM) of inside a part (App::Part)
+def activePartOrMbDFEMAssm(): #is the user inside and MbDAssembly object (denoted using key MbDFEM) of inside a part (App::Part)
     doc = Gui.ActiveDocument
 
     if doc is None or doc.ActiveView is None:
         return None
-    activeMbDFEM = doc.ActiveView.getActiveObject("MbDFEM")
+    activeMbDFEMAssm = doc.ActiveView.getActiveObject("MbDFEM")
 
-    if activeMbDFEM:
-        return activeMbDFEM
+    if activeMbDFEMAssm:
+        return activeMbDFEMAssm
 
     return doc.ActiveView.getActiveObject("part")
 
 
-def activeMbDFEM():
-    active_MbDFEM = activePartOrMbDFEM()
+def activeMbFEMAssm():
+    active_MbDFEM = activePartOrMbDFEMAssm()
     if active_MbDFEM is not None and active_MbDFEM.isDerivedFrom("MbDFEM::MbDAssembly"):
         if active_MbDFEM.ViewObject.isInEditMode():
             return active_MbDFEM
@@ -37,7 +37,7 @@ def activeMbDFEM():
 
 
 def activePart():
-    active_part = activePartOrMbDFEM()
+    active_part = activePartOrMbDFEMAssm()
 
     if active_part is not None and not active_part.isDerivedFrom("MbDFEM::MbDAssembly"):
         return active_part
@@ -46,7 +46,7 @@ def activePart():
 
 
 def isMbDFEMCommandActive(): #returns true if an assembly is active and no dialog is open
-    return activeMbDFEM() is not None and not Gui.Control.activeDialog()
+    return activeMbFEMAssm() is not None and not Gui.Control.activeDialog()
 
 
 def isDocTemporary(doc):
@@ -59,7 +59,7 @@ def isDocTemporary(doc):
 
 
 def MbDFEM_has_at_least_n_parts(n):
-    MbDFEM = activeMbDFEM()
+    MbDFEM = activeMbFEMAssm()
     if not MbDFEM:
         MbDFEM = activePart()
         if not MbDFEM:
@@ -626,7 +626,7 @@ def getBomGroup(MbDFEM):
 
     return bom_group
 
-#mirrors getJointGroup style, MbDFEM should be renamed to mbDFEMAssembly
+#mirrors getJointGroup, MbDFEM should be renamed to mbDFEMAssembly
 def getPartGroup(MbDFEM): #given an MbDAssembly obj, if finds or creates the PartGroup that lives inside it
     part_group = None
 
@@ -684,7 +684,7 @@ def getSimulationGroup(MbDFEM):
 
     #rename to isMbDAssemblyGrounded
 def isMbDAssemblyGrounded(): #checks whether any grounded joint exists
-    MbDFEM = activeMbDFEM()
+    MbDFEM = activeMbFEMAssm()
     if not MbDFEM:
         return False
 

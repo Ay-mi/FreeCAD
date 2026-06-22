@@ -58,14 +58,14 @@ class CommandCreateSimulation:
         if not UtilsMbDFEM.isMbDFEMCommandActive():
             return False
 
-        MbDFEM = UtilsMbDFEM.activeMbDFEM()
+        mbdFemAssembly = UtilsMbDFEM.activeMbFEMAssm()
         joint_types = ["Revolute", "Slider", "Cylindrical"]
-        joints = UtilsMbDFEM.getJointsOfType(MbDFEM, joint_types)
+        joints = UtilsMbDFEM.getJointsOfType(mbdFemAssembly, joint_types)
         return len(joints) > 0
 
     def Activated(self):
-        MbDFEM = UtilsMbDFEM.activeMbDFEM()
-        if not MbDFEM:
+        mbdFemAssembly = UtilsMbDFEM.activeMbFEMAssm()
+        if not mbdFemAssembly:
             return
 
         self.panel = TaskMbDFEMCreateSimulation()
@@ -240,13 +240,13 @@ class ViewProviderSimulation:
         if task:
             task.reject()
 
-        MbDFEM = vpDoc.Object.Proxy.getMbDFEM(vpDoc.Object)
+        mbdFemAssembly = vpDoc.Object.Proxy.getMbDFEM(vpDoc.Object)
 
-        if MbDFEM is None:
+        if mbdFemAssembly is None:
             return False
 
-        if UtilsMbDFEM.activeMbDFEM() != MbDFEM:
-            Gui.ActiveDocument.setEdit(MbDFEM)
+        if UtilsMbDFEM.activeMbFEMAssm() != mbdFemAssembly:
+            Gui.ActiveDocument.setEdit(mbdFemAssembly)
 
         panel = TaskMbDFEMCreateSimulation(vpDoc.Object)
         dialog = Gui.Control.showDialog(panel)
@@ -392,16 +392,16 @@ class ViewProviderMotion:
         self.openEditDialog()
 
     def openEditDialog(self):
-        MbDFEM = self.getMbDFEM()
+        mbdFemAssembly = self.getMbDFEM()
 
-        if MbDFEM is None:
+        if mbdFemAssembly is None:
             return False
 
         joint = None
         if self.app_obj.Joint is not None:
             joint = self.app_obj.Joint[0]
 
-        dialog = MotionEditDialog(MbDFEM, self.app_obj.MotionType, joint, self.app_obj.Formula)
+        dialog = MotionEditDialog(mbdFemAssembly, self.app_obj.MotionType, joint, self.app_obj.Formula)
         if dialog.exec_():
             self.app_obj.MotionType = dialog.motionType
             self.app_obj.Joint = dialog.joint
@@ -420,22 +420,22 @@ class ViewProviderMotion:
         )
 
     def getMbDFEM(self):
-        MbDFEM = self.app_obj.Proxy.getMbDFEM(self.app_obj)
+        mbdFemAssembly = self.app_obj.Proxy.getMbDFEM(self.app_obj)
 
-        if MbDFEM is None:
+        if mbdFemAssembly is None:
             return None
 
-        if UtilsMbDFEM.activeMbDFEM() != MbDFEM:
-            Gui.ActiveDocument.setEdit(MbDFEM)
+        if UtilsMbDFEM.activeMbFEMAssm() != mbdFemAssembly:
+            Gui.ActiveDocument.setEdit(mbdFemAssembly)
 
-        return MbDFEM
+        return mbdFemAssembly
 
 
 class MotionEditDialog:
     def __init__(
-        self, MbDFEM, motionType=MotionTypes[0], joint=None, formula="initialValue + 5*time"
+        self, mbdFemAssembly, motionType=MotionTypes[0], joint=None, formula="initialValue + 5*time"
     ):
-        self.MbDFEM = MbDFEM
+        self.mbdFemAssembly = mbdFemAssembly
         self.motionType = motionType
         self.joint = joint
         self.formula = formula
@@ -711,7 +711,7 @@ SLOPE defines the steepness of the transition between 0 and H1 and H2 to 0 about
 
         jointTypes = ["Revolute", "Slider", "Cylindrical"]
 
-        joints = UtilsMbDFEM.getJointsOfType(self.MbDFEM, jointTypes)
+        joints = UtilsMbDFEM.getJointsOfType(self.mbdFemAssembly, jointTypes)
 
         # Add joints to the combo box with labels and icons
         for joint in joints:
@@ -757,16 +757,16 @@ class TaskMbDFEMCreateSimulation(QtCore.QObject):
         super().__init__()
         Gui.Selection.clearSelection()
 
-        self.MbDFEM = UtilsMbDFEM.activeMbDFEM()
+        self.mbdFemAssembly = UtilsMbDFEM.activeMbFEMAssm()
 
-        self.initialPlcs = UtilsMbDFEM.saveMbDFEMPartsPlacements(self.MbDFEM)
+        self.initialPlcs = UtilsMbDFEM.saveMbDFEMPartsPlacements(self.mbdFemAssembly)
 
-        self.doc = self.MbDFEM.Document
+        self.doc = self.mbdFemAssembly.Document
         self.gui_doc = Gui.getDocument(self.doc)
 
         self.view = self.gui_doc.activeView()
 
-        if not self.MbDFEM or not self.view or not self.doc:
+        if not self.mbdFemAssembly or not self.view or not self.doc:
             return
 
         self.runKinematicsTimer = QtCore.QTimer()
@@ -843,7 +843,7 @@ class TaskMbDFEMCreateSimulation(QtCore.QObject):
 
     def accept(self):
         self.deactivate()
-        UtilsMbDFEM.restoreMbDFEMPartsPlacements(self.MbDFEM, self.initialPlcs)
+        UtilsMbDFEM.restoreMbDFEMPartsPlacements(self.mbdFemAssembly, self.initialPlcs)
         Gui.ActiveDocument.commitCommand()
         return True
 
@@ -880,13 +880,13 @@ class TaskMbDFEMCreateSimulation(QtCore.QObject):
             self.onMotionsChanged()
 
     def createSimulationObject(self):
-        sim_group = UtilsMbDFEM.getSimulationGroup(self.MbDFEM)
+        sim_group = UtilsMbDFEM.getSimulationGroup(self.mbdFemAssembly)
         self.simFeaturePy = sim_group.newObject("App::FeaturePython", "Simulation")
         Simulation(self.simFeaturePy)
         ViewProviderSimulation(self.simFeaturePy.ViewObject)
 
     def createMotionObject(self, motionType, joint, formula):
-        motion = self.MbDFEM.newObject("App::FeaturePython", "Motion")
+        motion = self.mbdFemAssembly.newObject("App::FeaturePython", "Motion")
         Motion(motion, motionType, joint, formula)
         ViewProviderMotion(motion.ViewObject)
 
@@ -900,15 +900,15 @@ class TaskMbDFEMCreateSimulation(QtCore.QObject):
             self.form.motionList.addItem(motion.Label)
 
     def runKinematics(self):
-        self.MbDFEM.generateSimulation(self.simFeaturePy)
-        nFrms = self.MbDFEM.numberOfFrames()
+        self.mbdFemAssembly.generateSimulation(self.simFeaturePy)
+        nFrms = self.mbdFemAssembly.numberOfFrames()
         self.form.frameSlider.setMaximum(nFrms - 1)
         self.setFrameValue(nFrms - 1)
         self.form.groupBox_player.show()
         self.form.SaveAnimationButton.show()
 
     def onFrameChanged(self, val):
-        self.MbDFEM.updateForFrame(val)
+        self.mbdFemAssembly.updateForFrame(val)
         self.form.FrameLabel.setText(translate("MbDFEM", "Frame" + " " + str(val)))
         time = float(val * self.simFeaturePy.cTimeStepOutput)
         self.form.FrameTimeLabel.setText(f"{time:.2f} s")
@@ -950,7 +950,7 @@ class TaskMbDFEMCreateSimulation(QtCore.QObject):
         self.setFrameValue(self.index)
 
     def displayLastFrame(self):
-        nFrms = self.MbDFEM.numberOfFrames()
+        nFrms = self.mbdFemAssembly.numberOfFrames()
         self.setFrameValue(nFrms - 1)
 
     def stepBackward(self):
@@ -981,7 +981,7 @@ class TaskMbDFEMCreateSimulation(QtCore.QObject):
         self.animationTimer.stop()
 
     def addMotionClicked(self):
-        dialog = MotionEditDialog(self.MbDFEM)
+        dialog = MotionEditDialog(self.mbdFemAssembly)
         if dialog.exec_():
             self.createMotionObject(dialog.motionType, dialog.joint, dialog.formula)
 
@@ -1014,7 +1014,7 @@ class TaskMbDFEMCreateSimulation(QtCore.QObject):
                 motion.Document.removeObject(motion.Name)
 
     def saveAnimation(self):
-        num_frames = self.MbDFEM.numberOfFrames()
+        num_frames = self.mbdFemAssembly.numberOfFrames()
         if num_frames <= 1:
             QMessageBox.warning(
                 self.form,
@@ -1068,7 +1068,7 @@ class TaskMbDFEMCreateSimulation(QtCore.QObject):
                         App.Console.PrintMessage("Animation save cancelled.\n")
                         return
 
-                    self.MbDFEM.updateForFrame(i)
+                    self.mbdFemAssembly.updateForFrame(i)
                     Gui.updateGui()  # Ensure the 3D view is redrawn
 
                     frame_filename = temp_path / f"frame_{i:05d}.png"
@@ -1099,7 +1099,7 @@ class TaskMbDFEMCreateSimulation(QtCore.QObject):
             finally:
                 progress.close()
                 # Restore original state
-                self.MbDFEM.updateForFrame(original_frame)
+                self.mbdFemAssembly.updateForFrame(original_frame)
                 self.form.frameSlider.setValue(original_frame)
 
     def create_gif(self, output_path, frame_files, fps):

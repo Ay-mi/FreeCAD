@@ -290,12 +290,12 @@ class TaskMbDFEMCreateBom(QtCore.QObject):
         return False
 
     def createBomObject(self):
-        MbDFEM = UtilsMbDFEM.activeMbDFEM()
+        mbdFemAssembly = UtilsMbDFEM.activeMbFEMAssm()
         Gui.addModule("UtilsMbDFEM")
-        if MbDFEM is not None:
+        if mbdFemAssembly is not None:
             commands = (
-                "MbDFEM = UtilsMbDFEM.activeMbDFEM()\n"
-                "bom_group = UtilsMbDFEM.getBomGroup(MbDFEM)\n"
+                "mbdFemAssembly = UtilsMbDFEM.activeMbFEMAssm()\n"
+                "bom_group = UtilsMbDFEM.getBomGroup(mbdFemAssembly)\n"
                 'bomObj = bom_group.newObject("MbDFEM::BomObject", "Bill of Materials")'
             )
         else:

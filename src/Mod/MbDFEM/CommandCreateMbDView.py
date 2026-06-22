@@ -42,8 +42,8 @@ class CommandCreateView:
         )
 
     def Activated(self):
-        MbDFEM = UtilsMbDFEM.activeMbDFEM()
-        if not MbDFEM:
+        mbdFemAssembly = UtilsMbDFEM.activeMbFEMAssm()
+        if not mbdFemAssembly:
             return
 
         Gui.addModule("CommandCreateMbDView")  # NOLINT
@@ -158,11 +158,11 @@ class ExplodedView:
         line_positions = []
         factor = 1
 
-        MbDFEM = self.getMbDFEM(viewObj)
+        mbdFemAssembly = self.getMbDFEM(viewObj)
         # Get a snapshot of the MbDFEM's current, un-exploded state
-        calculated_placements = UtilsMbDFEM.saveMbDFEMPartsPlacements(MbDFEM)
+        calculated_placements = UtilsMbDFEM.saveMbDFEMPartsPlacements(mbdFemAssembly)
 
-        com, size = UtilsMbDFEM.getComAndSize(MbDFEM)
+        com, size = UtilsMbDFEM.getComAndSize(mbdFemAssembly)
 
         for move in viewObj.Group:
             if not UtilsMbDFEM.isRefValid(move.References, 1):
@@ -218,8 +218,8 @@ class ExplodedView:
         exploded_shapes = []
 
         # We need to include ALL parts of the MbDFEM, not just the moved ones.
-        MbDFEM = self.getMbDFEM(viewObj)
-        all_parts = UtilsMbDFEM.getMovablePartsWithin(MbDFEM, True)
+        mbdFemAssembly = self.getMbDFEM(viewObj)
+        all_parts = UtilsMbDFEM.getMovablePartsWithin(mbdFemAssembly, True)
         visible_parts = [
             part for part in all_parts if hasattr(part, "Visibility") and part.Visibility
         ]
@@ -300,13 +300,13 @@ class ViewProviderExplodedView:
         if task:
             task.reject()
 
-        MbDFEM = vobj.Object.Proxy.getMbDFEM(vobj.Object)
+        mbdFemAssembly = vobj.Object.Proxy.getMbDFEM(vobj.Object)
 
-        if MbDFEM is None:
+        if mbdFemAssembly is None:
             return False
 
-        if UtilsMbDFEM.activeMbDFEM() != MbDFEM:
-            Gui.ActiveDocument.setEdit(MbDFEM)
+        if UtilsMbDFEM.activeMbFEMAssm() != mbdFemAssembly:
+            Gui.ActiveDocument.setEdit(mbdFemAssembly)
 
         panel = TaskMbDFEMCreateView(vobj.Object)
         dialog = Gui.Control.showDialog(panel)
@@ -542,12 +542,12 @@ class ViewProviderExplodedViewStep:
 
 
 class ExplodedViewSelGate:
-    def __init__(self, MbDFEM, viewObj):
-        self.MbDFEM = MbDFEM
+    def __init__(self, mbdFemAssembly, viewObj):
+        self.mbdFemAssembly = mbdFemAssembly
         self.viewObj = viewObj
 
     def allow(self, doc, obj, sub):
-        comp, new_sub = UtilsMbDFEM.getComponentReference(self.MbDFEM, obj, sub)
+        comp, new_sub = UtilsMbDFEM.getComponentReference(self.mbdFemAssembly, obj, sub)
         if comp:
             # Objects within the MbDFEM.
             return True
@@ -570,10 +570,10 @@ class TaskMbDFEMCreateView(QtCore.QObject):
 
         view = Gui.activeDocument().activeView()
 
-        self.MbDFEM = UtilsMbDFEM.activeMbDFEM()
-        self.MbDFEM.ViewObject.EnableMovement = False
-        self.com, self.size = UtilsMbDFEM.getComAndSize(self.MbDFEM)
-        self.asmDragger = self.MbDFEM.ViewObject.getDragger()
+        self.mbdFemAssembly = UtilsMbDFEM.activeMbFEMAssm()
+        self.mbdFemAssembly.ViewObject.EnableMovement = False
+        self.com, self.size = UtilsMbDFEM.getComAndSize(self.mbdFemAssembly)
+        self.asmDragger = self.mbdFemAssembly.ViewObject.getDragger()
         self.cbFin = view.addDraggerCallback(
             self.asmDragger, "addFinishCallback", self.draggerFinished
         )
@@ -600,7 +600,7 @@ class TaskMbDFEMCreateView(QtCore.QObject):
         pref = Preferences.preferences()
         self.form.CheckBox_PartsAsSingleSolid.setChecked(pref.GetBool("PartsAsSingleSolid", True))
 
-        self.initialPlcs = UtilsMbDFEM.saveMbDFEMPartsPlacements(self.MbDFEM)
+        self.initialPlcs = UtilsMbDFEM.saveMbDFEMPartsPlacements(self.mbdFemAssembly)
 
         if viewObj:
             Gui.ActiveDocument.openCommand("Edit Exploded View")
@@ -615,7 +615,7 @@ class TaskMbDFEMCreateView(QtCore.QObject):
             self.createExplodedViewObject()
 
         Gui.Selection.addSelectionGate(
-            ExplodedViewSelGate(self.MbDFEM, self.viewObj), Gui.Selection.ResolveMode.NoResolve
+            ExplodedViewSelGate(self.mbdFemAssembly, self.viewObj), Gui.Selection.ResolveMode.NoResolve
         )
         Gui.Selection.addObserver(self, Gui.Selection.ResolveMode.NoResolve)
 
@@ -637,7 +637,7 @@ class TaskMbDFEMCreateView(QtCore.QObject):
 
     def accept(self):
         self.deactivate()
-        UtilsMbDFEM.restoreMbDFEMPartsPlacements(self.MbDFEM, self.initialPlcs)
+        UtilsMbDFEM.restoreMbDFEMPartsPlacements(self.mbdFemAssembly, self.initialPlcs)
         for move in self.viewObj.Group:
             move.Visibility = False
         commands = ""
@@ -665,8 +665,8 @@ class TaskMbDFEMCreateView(QtCore.QObject):
         view.removeDraggerCallback(self.asmDragger, "addFinishCallback", self.cbFin)
         view.removeDraggerCallback(self.asmDragger, "addMotionCallback", self.cbMov)
 
-        self.MbDFEM.ViewObject.DraggerVisibility = False
-        self.MbDFEM.ViewObject.EnableMovement = True
+        self.mbdFemAssembly.ViewObject.DraggerVisibility = False
+        self.mbdFemAssembly.ViewObject.EnableMovement = True
 
         Gui.Selection.removeSelectionGate()
         Gui.Selection.removeObserver(self)
@@ -703,7 +703,7 @@ class TaskMbDFEMCreateView(QtCore.QObject):
 
             for sub_name in sel.SubElementNames:
                 moving_part, new_sub = UtilsMbDFEM.getComponentReference(
-                    self.MbDFEM, sel.Object, sub_name
+                    self.mbdFemAssembly, sel.Object, sub_name
                 )
                 if not moving_part:
                     continue
@@ -713,7 +713,7 @@ class TaskMbDFEMCreateView(QtCore.QObject):
                 element_name = UtilsMbDFEM.getElementName(sub_name)
 
                 # Only objects within the MbDFEM, not the MbDFEM and not elements.
-                if obj is None or moving_part is None or obj == self.MbDFEM or element_name != "":
+                if obj is None or moving_part is None or obj == self.mbdFemAssembly or element_name != "":
                     Gui.Selection.removeSelection(sel.Object, sub_name)
                     continue
 
@@ -744,7 +744,7 @@ class TaskMbDFEMCreateView(QtCore.QObject):
             self.enableDragger(False)
 
     def enableDragger(self, val):
-        self.MbDFEM.ViewObject.DraggerVisibility = val
+        self.mbdFemAssembly.ViewObject.DraggerVisibility = val
         self.form.btnAlignDragger.setEnabled(val)
         if val:
             self.form.btnAlignDragger.setText("Align dragger to...")
@@ -753,7 +753,7 @@ class TaskMbDFEMCreateView(QtCore.QObject):
 
     def onMovesChanged(self):
         # First reset positions
-        UtilsMbDFEM.restoreMbDFEMPartsPlacements(self.MbDFEM, self.initialPlcs)
+        UtilsMbDFEM.restoreMbDFEMPartsPlacements(self.mbdFemAssembly, self.initialPlcs)
 
         self.viewObj.Proxy.applyMoves(self.viewObj, self.com, self.size)
 
@@ -772,7 +772,7 @@ class TaskMbDFEMCreateView(QtCore.QObject):
 
         # Add to selection all the movable parts
         partsAsSolid = self.form.CheckBox_PartsAsSingleSolid.isChecked()
-        MbDFEMParts = UtilsMbDFEM.getMovablePartsWithin(self.MbDFEM, partsAsSolid)
+        MbDFEMParts = UtilsMbDFEM.getMovablePartsWithin(self.mbdFemAssembly, partsAsSolid)
         self.blockSetDragger = True
         for part in MbDFEMParts:
             Gui.Selection.addSelection(part, "")
@@ -809,7 +809,7 @@ class TaskMbDFEMCreateView(QtCore.QObject):
             return
 
         if self.alignMode == "Custom":
-            self.initialDraggerPlc = App.Placement(self.MbDFEM.ViewObject.DraggerPlacement)
+            self.initialDraggerPlc = App.Placement(self.mbdFemAssembly.ViewObject.DraggerPlacement)
         else:
             plc = UtilsMbDFEM.getGlobalPlacement(self.selectedRefs[0], self.selectedObjs[0])
             self.initialDraggerPlc = App.Placement(plc)
@@ -822,15 +822,15 @@ class TaskMbDFEMCreateView(QtCore.QObject):
         self.findDraggerInitialPlc()
 
         self.blockDraggerMove = True
-        self.MbDFEM.ViewObject.DraggerPlacement = self.initialDraggerPlc
+        self.mbdFemAssembly.ViewObject.DraggerPlacement = self.initialDraggerPlc
         self.blockDraggerMove = False
 
     def createExplodedViewObject(self):
 
         Gui.addModule("UtilsMbDFEM")
         commands = (
-            f'MbDFEM = App.ActiveDocument.getObject("{self.MbDFEM.Name}")\n'
-            "view_group = UtilsMbDFEM.getViewGroup(MbDFEM)\n"
+            f'mbdFemAssembly = App.ActiveDocument.getObject("{self.mbdFemAssembly.Name}")\n'
+            "view_group = UtilsMbDFEM.getViewGroup(mbdFemAssembly)\n"
             'viewObj = view_group.newObject("App::FeaturePython", "Exploded View")\n'
             "CommandCreateMbDView.ExplodedView(viewObj)"
         )
@@ -845,8 +845,8 @@ class TaskMbDFEMCreateView(QtCore.QObject):
             moveType_index = 1  # 1 = type_index of "Radial"
 
         commands = (
-            f'MbDFEM = App.ActiveDocument.getObject("{self.MbDFEM.Name}")\n'
-            'currentStep = MbDFEM.newObject("App::FeaturePython", "Move")\n'
+            f'mbdFemAssembly = App.ActiveDocument.getObject("{self.mbdFemAssembly.Name}")\n'
+            'currentStep = mbdFemAssembly.newObject("App::FeaturePython", "Move")\n'
             f"CommandCreateMbDView.ExplodedViewStep(currentStep, {moveType_index})"
         )
         Gui.doCommand(commands)
@@ -891,7 +891,7 @@ class TaskMbDFEMCreateView(QtCore.QObject):
             obj.Placement = init_plc
 
         # we update the move Placement.
-        draggerPlc = self.MbDFEM.ViewObject.DraggerPlacement
+        draggerPlc = self.mbdFemAssembly.ViewObject.DraggerPlacement
         self.currentStep.MovementTransform = draggerPlc * self.initialDraggerPlc.inverse()
 
         # Apply the move
@@ -919,7 +919,7 @@ class TaskMbDFEMCreateView(QtCore.QObject):
         cursor_info = view.getObjectInfo(view.getCursorPos())
 
         if not cursor_info or not self.presel_ref:
-            self.MbDFEM.ViewObject.DraggerVisibility = False
+            self.mbdFemAssembly.ViewObject.DraggerVisibility = False
             return
 
         ref = self.presel_ref
@@ -929,7 +929,7 @@ class TaskMbDFEMCreateView(QtCore.QObject):
             vertex_name = ""
         else:
             newPos = App.Vector(cursor_info["x"], cursor_info["y"], cursor_info["z"])
-            vertex_name = UtilsMbDFEM.findElementClosestVertex(self.MbDFEM, ref, newPos)
+            vertex_name = UtilsMbDFEM.findElementClosestVertex(self.mbdFemAssembly, ref, newPos)
 
         ref = UtilsMbDFEM.addVertexToReference(ref, vertex_name)
 
@@ -938,9 +938,9 @@ class TaskMbDFEMCreateView(QtCore.QObject):
         plc = global_plc * plc
 
         self.blockDraggerMove = True
-        self.MbDFEM.ViewObject.DraggerPlacement = plc
+        self.mbdFemAssembly.ViewObject.DraggerPlacement = plc
         self.blockDraggerMove = False
-        self.MbDFEM.ViewObject.DraggerVisibility = True
+        self.mbdFemAssembly.ViewObject.DraggerVisibility = True
 
     def clickMouse(self, info):
         if info["Button"] == "BUTTON2" and info["State"] == "DOWN":
@@ -993,7 +993,7 @@ class TaskMbDFEMCreateView(QtCore.QObject):
         else:
             rootObj = App.getDocument(doc_name).getObject(obj_name)
             moving_part, new_sub = UtilsMbDFEM.getComponentReference(
-                self.MbDFEM, rootObj, sub_name
+                self.mbdFemAssembly, rootObj, sub_name
             )
             ref = [moving_part, [new_sub]]
             obj = UtilsMbDFEM.getObject(ref)

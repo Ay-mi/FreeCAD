@@ -63,11 +63,11 @@ class CommandInsertLink:
         return UtilsMbDFEM.isMbDFEMCommandActive()
 
     def Activated(self): #consider renaming to MbDFEMAssembly = UtilsMbDFEM.activeMbDFEMAssembly to avoid name clash
-        MbDFEM = UtilsMbDFEM.activeMbDFEM() #fetches currently active MbDAssembly object which was confusingly named MbDFEM during mass rename, wil fix
-        if not MbDFEM:
+        mbdFemAssembly = UtilsMbDFEM.activeMbFEMAssm() #fetches currently active MbDAssembly object which was confusingly named MbDFEM during mass rename, wil fix
+        if not mbdFemAssembly:
             return
         view = Gui.activeDocument().activeView() #gets active 3D viewport, passed to the task panel which for ex, can calculate screen centre
-        self.panel = TaskMbDFEMInsertLink(MbDFEM, view) #creates task panel, stored on self so FreeCAD can call accept()/reject() when user clicks OK/Cancel
+        self.panel = TaskMbDFEMInsertLink(mbdFemAssembly, view) #creates task panel, stored on self so FreeCAD can call accept()/reject() when user clicks OK/Cancel
         Gui.Control.showDialog(self.panel) #hands over panel to FreeCAD's task panel system
 
 
@@ -80,10 +80,10 @@ class InsertLinkObserver:
 
 
 class TaskMbDFEMInsertLink(QtCore.QObject):
-    def __init__(self, MbDFEM, view):
+    def __init__(self, mbdFemAssembly, view):
         super().__init__() #calls QtCore.QObject.__init(), initializes Qt obj machinery which TaskMbDFEMInsertLink inherits from
 
-        self.MbDFEM = MbDFEM
+        self.mbdFemAssembly = mbdFemAssembly
         self.view = view
         self.doc = App.ActiveDocument
         self.showHidden = False
@@ -125,8 +125,8 @@ class TaskMbDFEMInsertLink(QtCore.QObject):
         self.deactivated()
 
         Gui.addModule("UtilsMbDFEM")
-        commands = "MbDFEM = UtilsMbDFEM.activeMbDFEM()\n" #for redo script, fetches assembly
-        commands += "partGroup = UtilsMbDFEM.getPartGroup(MbDFEM)\n" #fetches part group
+        commands = "mbdFemAssembly = UtilsMbDFEM.activeMbFEMAssm()\n" #for redo script, fetches assembly
+        commands += "partGroup = UtilsMbDFEM.getPartGroup(mbdFemAssembly)\n" #fetches part group
         for insertionItem in self.insertionStack: #loop over everything that was inserted in this session, insertionStack holds one entry per part
             addedObject = insertionItem["addedObject"]
             addedLink = insertionItem.get("addedLink", addedObject)
@@ -137,7 +137,7 @@ class TaskMbDFEMInsertLink(QtCore.QObject):
                 if not hasattr(addedLink, "LinkedObject") or not addedLink.LinkedObject or not hasattr(addedLink.LinkedObject, "Name"):
                     continue
                 commands += (
-                    f'item = MbDFEM.newObject("MbDFEM::MbDAssemblyLink", "{addedLink.LinkedObject.Name}")\n'
+                    f'item = mbdFemAssembly.newObject("MbDFEM::MbDAssemblyLink", "{addedLink.LinkedObject.Name}")\n'
                     f'item.LinkedObject = App.ActiveDocument.getObject("{addedLink.LinkedObject.Name}")\n'
                     f'item.Label = "{addedLink.Label}"\n'
                 )
@@ -153,11 +153,11 @@ class TaskMbDFEMInsertLink(QtCore.QObject):
                 cadPartName = cadPart.Name
                 cadPartDocName = cadPart.Document.Name
                 commands += (
-                    f'mbdPart = MbDFEM.Document.addObject("MbDFEM::MbDPart", "MbDPart")\n'
+                    f'mbdPart = mbdFemAssembly.Document.addObject("MbDFEM::MbDPart", "MbDPart")\n'
                     f'mbdPart.cadPart = App.getDocument("{cadPartDocName}").getObject("{cadPartName}")\n'
                     f'mbdPart.Label = "{addedObject.Label}"\n'
                     f'partGroup.addObject(mbdPart)\n'
-                    f'MbDFEM.Document.recompute()\n'
+                    f'mbdFemAssembly.Document.recompute()\n'
                 )
                 if translation != App.Vector():
                     commands += (
@@ -226,10 +226,10 @@ class TaskMbDFEMInsertLink(QtCore.QObject):
             def process_objects(objs, item):
                 onlyParts = self.form.CheckBox_ShowOnlyParts.isChecked()
                 for obj in objs:
-                    if obj == self.MbDFEM:
+                    if obj == self.mbdFemAssembly:
                         continue  # Skip current MbDFEM
 
-                    if obj in self.MbDFEM.InListRecursive:
+                    if obj in self.mbdFemAssembly.InListRecursive:
                         continue  # Prevent dependency loop.
                         # For instance if asm1/asm2 with asm2 active, we don't want to have asm1 in the list
 
@@ -394,19 +394,19 @@ class TaskMbDFEMInsertLink(QtCore.QObject):
                 documentItem.setText(0, f"{newDocName}.FCStd")"""
 
         if selectedPart.isDerivedFrom("MbDFEM::MbDAssembly"): #if user clicks a sub-assembly, an MbDAssemblyLink is created inside the currect assm
-            addedLink = self.MbDFEM.newObject("MbDFEM::MbDAssemblyLink", selectedPart.Label)
+            addedLink = self.mbdFemAssembly.newObject("MbDFEM::MbDAssemblyLink", selectedPart.Label)
             addedLink.LinkedObject = selectedPart 
             addedLink.Label = selectedPart.Label  # non-ASCII characters fails with newObject. #12164
             addedLink.recompute()
             addedObject = addedLink
         else:
-            partGroup = UtilsMbDFEM.getPartGroup(self.MbDFEM) #finds existing PartGroup or creates one if it doesn't exist yet
-            addedObject = self.MbDFEM.Document.addObject("MbDFEM::MbDPart", "MbDPart") # creates the MbDPart in the assembly's document
+            partGroup = UtilsMbDFEM.getPartGroup(self.mbdFemAssembly) #finds existing PartGroup or creates one if it doesn't exist yet
+            addedObject = self.mbdFemAssembly.Document.addObject("MbDFEM::MbDPart", "MbDPart") # creates the MbDPart in the assembly's document
             addedObject.cadPart = selectedPart  # stores a cross-document link back to source cad geometry
             addedObject.Label = "MbD" + selectedPart.Label #prefixes the source part's name with MbD, for labelling purposes only
             addedObject.Placement = selectedPart.Placement #gives the MbDPart the same initial position as source
             partGroup.addObject(addedObject) #registers the MbDPart as a member of the PartGroup
-            self.MbDFEM.Document.recompute() #triggers MbDPart::execute() which copies the Shape from cadPart so geometry appears in view
+            self.mbdFemAssembly.Document.recompute() #triggers MbDPart::execute() which copies the Shape from cadPart so geometry appears in view
             addedLink = addedObject #both variables point to the same MbDPart
         #just to note that addedObject and addedLink point to the same thing and can be redundant, you can clean up later
         # set placement of the added object to the center of the screen.
@@ -579,7 +579,7 @@ class TaskMbDFEMInsertLink(QtCore.QObject):
                 if addedObject.TypeId == "App::Link":
                     selectedPart = addedObject.LinkedObject
 
-                addedObject = self.MbDFEM.newObject("App::Link", selectedPart.Label)
+                addedObject = self.mbdFemAssembly.newObject("App::Link", selectedPart.Label)
                 addedObject.LinkedObject = selectedPart
                 addedObject.Placement.Base = currentPos
 

@@ -378,22 +378,22 @@ class CommandGroupGearBelt:
 
 
 def createGroundedJoint(obj):
-    if not UtilsMbDFEM.activeMbDFEM():
+    if not UtilsMbDFEM.activeMbFEMAssm():
         return
 
     Gui.addModule("UtilsMbDFEM")
     Gui.addModule("MbDJointObject")
     commands = (
         f'obj = App.ActiveDocument.getObject("{obj.Name}")\n'
-        "MbDFEM = UtilsMbDFEM.activeMbDFEM()\n"
-        "joint_group = UtilsMbDFEM.getJointGroup(MbDFEM)\n"
+        "mbdFemAssembly = UtilsMbDFEM.activeMbFEMAssm()\n"
+        "joint_group = UtilsMbDFEM.getJointGroup(mbdFemAssembly)\n"
         'ground = joint_group.newObject("App::FeaturePython", "GroundedJoint")\n'
         "MbDJointObject.GroundedJoint(ground, obj)"
     )
     Gui.doCommand(commands)
     Gui.doCommandGui("MbDJointObject.ViewProviderGroundedJoint(ground.ViewObject)")
 
-    Gui.doCommand("UtilsMbDFEM.activeMbDFEM().Document.recompute()")
+    Gui.doCommand("UtilsMbDFEM.activeMbFEMAssm().Document.recompute()")
     return Gui.doCommandEval("ground")
 
 
@@ -421,11 +421,11 @@ class CommandToggleGrounded:
         )
 
     def Activated(self):
-        MbDFEM = UtilsMbDFEM.activeMbDFEM()
-        if not MbDFEM:
+        mbdFemAssembly = UtilsMbDFEM.activeMbFEMAssm()
+        if not mbdFemAssembly:
             return
 
-        joint_group = UtilsMbDFEM.getJointGroup(MbDFEM)
+        joint_group = UtilsMbDFEM.getJointGroup(mbdFemAssembly)
 
         selection = Gui.Selection.getSelectionEx("*", 0)
         if not selection:
@@ -450,7 +450,7 @@ class CommandToggleGrounded:
                         continue
 
                 moving_part, new_sub = UtilsMbDFEM.getComponentReference(
-                    MbDFEM, sel.Object, sub
+                    mbdFemAssembly, sel.Object, sub
                 )
                 if not moving_part:
                     continue

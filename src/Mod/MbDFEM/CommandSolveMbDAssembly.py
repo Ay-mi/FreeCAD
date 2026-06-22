@@ -35,12 +35,12 @@ class CommandSolveMbDAssembly:
         return UtilsMbDFEM.isMbDFEMCommandActive()
 
     def Activated(self):
-        MbDFEM = UtilsMbDFEM.activeMbDFEM()
-        if not MbDFEM:
+        mbdFemAssembly = UtilsMbDFEM.activeMbFEMAssm()
+        if not mbdFemAssembly:
             return
 
         App.setActiveTransaction("Solve MbDAssembly")
-        MbDFEM.recompute(True)
+        mbdFemAssembly.recompute(True)
         Gui.ActiveDocument.commitCommand()
 
 

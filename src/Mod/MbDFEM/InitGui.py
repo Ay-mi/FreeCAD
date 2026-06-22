@@ -130,8 +130,8 @@ class MbDFEMWorkbench(Workbench):
     def ContextMenu(self, recipient):
         import UtilsMbDFEM
 
-        MbDFEM = UtilsMbDFEM.activeMbDFEM()
-        if MbDFEM is None:
+        mbdFemAssembly = UtilsMbDFEM.activeMbFEMAssm()
+        if mbdFemAssembly is None:
             return
 
         selection = Gui.Selection.getSelectionEx("*", 0)
@@ -140,7 +140,7 @@ class MbDFEMWorkbench(Workbench):
 
         for sel in selection:
             for sub_name in sel.SubElementNames:
-                comp, new_sub = UtilsMbDFEM.getComponentReference(MbDFEM, sel.Object, sub_name)
+                comp, new_sub = UtilsMbDFEM.getComponentReference(mbdFemAssembly, sel.Object, sub_name)
                 if comp:
                     self.appendContextMenu("", ["MbDFEM_SelectJointsOfComponent"])
                     return
@@ -183,21 +183,21 @@ class MbDFEMWorkbench(Workbench):
                             has_MbDFEM = True
                             break
 
-                MbDFEM = UtilsMbDFEM.activeMbDFEM()
+                mbdFemAssembly = UtilsMbDFEM.activeMbFEMAssm()
 
-                return has_MbDFEM and (MbDFEM is None or MbDFEM.Document != doc)
+                return has_MbDFEM and (mbdFemAssembly is None or mbdFemAssembly.Document != doc)
 
         class MbDFEMBaseWatcher:
             """Base class for watchers that require an active MbDFEM."""
 
             def __init__(self):
-                self.MbDFEM = None
+                self.mbdFemAssembly = None
 
             def shouldShow(self):
                 doc = FreeCAD.ActiveDocument
 
-                self.MbDFEM = UtilsMbDFEM.activeMbDFEM()
-                return self.MbDFEM is not None and self.MbDFEM.Document == doc
+                self.mbdFemAssembly = UtilsMbDFEM.activeMbFEMAssm()
+                return self.mbdFemAssembly is not None and self.mbdFemAssembly.Document == doc
 
         class MbDFEMInsertWatcher(MbDFEMBaseWatcher):
             """Shows 'Insert Component' when an MbDFEM is active."""
@@ -279,7 +279,7 @@ class MbDFEMWorkbench(Workbench):
                     return False
 
                 joint_types = ["Revolute", "Slider", "Cylindrical"]
-                joints = UtilsMbDFEM.getJointsOfType(self.MbDFEM, joint_types)
+                joints = UtilsMbDFEM.getJointsOfType(self.mbdFemAssembly, joint_types)
                 return len(joints) > 0
 
         watchers = [

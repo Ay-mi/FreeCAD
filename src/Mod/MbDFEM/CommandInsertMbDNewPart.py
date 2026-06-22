@@ -74,7 +74,7 @@ class TaskMbDFEMNewPart(JointObject.TaskMbDFEMCreateJoint):
     def __init__(self):
         super().__init__(0, None, True)
 
-        self.MbDFEM = UtilsMbDFEM.activeMbDFEM()
+        self.mbdFemAssembly = UtilsMbDFEM.activeMbFEMAssm()
 
         # Retrieve the existing layout of `self.form`
         mainLayout = self.form.layout()
@@ -105,23 +105,23 @@ class TaskMbDFEMNewPart(JointObject.TaskMbDFEMCreateJoint):
         jointLayout.setSpacing(0)
         mainLayout.addWidget(jointGroupBox)
 
-        self.link = self.MbDFEM.newObject("App::Link", "Link")
+        self.link = self.mbdFemAssembly.newObject("App::Link", "Link")
         # add the link as the first object of the joint
         Gui.Selection.addSelection(
-            self.MbDFEM.Document.Name, self.MbDFEM.Name, self.link.Name + "."
+            self.mbdFemAssembly.Document.Name, self.mbdFemAssembly.Name, self.link.Name + "."
         )
 
     def createPart(self):
         partName = self.nameEdit.text()
         newFile = self.createInNewFileCheck.isChecked()
 
-        doc = self.MbDFEM.Document
+        doc = self.mbdFemAssembly.Document
         if newFile:
             doc = App.newDocument(partName)
 
         part, body = UtilsMbDFEM.createPart(partName, doc)
 
-        App.setActiveDocument(self.MbDFEM.Document.Name)
+        App.setActiveDocument(self.mbdFemAssembly.Document.Name)
 
         # Then we need to link the part.
         if newFile:
@@ -155,7 +155,7 @@ class TaskMbDFEMNewPart(JointObject.TaskMbDFEMCreateJoint):
 
         # Set the body as active in the MbDFEM doc
         self.expandLinkManually(self.link)
-        doc = self.MbDFEM.Document
+        doc = self.mbdFemAssembly.Document
         Gui.getDocument(doc).ActiveView.setActiveObject("pdbody", body)
         doc.recompute()
 
@@ -175,7 +175,7 @@ class TaskMbDFEMNewPart(JointObject.TaskMbDFEMCreateJoint):
             # if the joint is not complete we cancel the joint but not the new part!
             self.joint.Document.removeObject(self.joint.Name)
         else:
-            JointObject.solveIfAllowed(self.MbDFEM)
+            JointObject.solveIfAllowed(self.mbdFemAssembly)
             self.joint.Visibility = False
             cmds = UtilsMbDFEM.generatePropertySettings(self.joint)
             Gui.doCommand(cmds)

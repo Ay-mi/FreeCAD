@@ -119,11 +119,11 @@ JointParallelForbidden = [
 ]
 
 
-def solveIfAllowed(MbDFEM, storePrev=False):
-    if MbDFEM.isDerivedFrom("MbDFEM::MbDAssembly") and Preferences.preferences().GetBool(
+def solveIfAllowed(mbdFemAssembly, storePrev=False):
+    if mbdFemAssembly.isDerivedFrom("MbDFEM::MbDAssembly") and Preferences.preferences().GetBool(
         "SolveInJointCreation", True
     ):
-        MbDFEM.solve(storePrev)
+        mbdFemAssembly.solve(storePrev)
 
 
 def getContext(obj):
@@ -675,7 +675,7 @@ class Joint:
         Migrates PropertyXLinkSubHidden (MbDFEM-rooted) to PropertyXLinkSub (Component-rooted).
         """
 
-        def migrate_prop(prop_name, add_method, MbDFEM):
+        def migrate_prop(prop_name, add_method, mbdFemAssembly):
             if not hasattr(joint, prop_name):
                 return
 
@@ -695,7 +695,7 @@ class Joint:
                 old_subs = old_ref[1]
                 if old_subs:
                     comp, first_new_sub = UtilsMbDFEM.getComponentReference(
-                        MbDFEM, root, old_subs[0]
+                        mbdFemAssembly, root, old_subs[0]
                     )
 
                     if comp:
@@ -714,9 +714,9 @@ class Joint:
 
                         setattr(joint, prop_name, [comp, new_subs])
 
-        MbDFEM = self.getMbDFEM(joint)
-        migrate_prop("Reference1", self.addReference1Property, MbDFEM)
-        migrate_prop("Reference2", self.addReference2Property, MbDFEM)
+        mbdFemAssembly = self.getMbDFEM(joint)
+        migrate_prop("Reference1", self.addReference1Property, mbdFemAssembly)
+        migrate_prop("Reference2", self.addReference2Property, mbdFemAssembly)
 
     def dumps(self):
         return None
@@ -813,8 +813,8 @@ class Joint:
 
     def setJointConnectors(self, joint, refs):
         # current selection is a vector of strings like "MbDFEM.MbDFEM1.MbDFEM2.Body.Pad.Edge16" including both what selection return as obj_name and obj_sub
-        MbDFEM = self.getMbDFEM(joint)
-        isMbDFEM = MbDFEM.isDerivedFrom("MbDFEM::MbDAssembly")
+        mbdFemAssembly = self.getMbDFEM(joint)
+        isMbDFEM = mbdFemAssembly.isDerivedFrom("MbDFEM::MbDAssembly")
 
         if len(refs) >= 1:
             joint.Reference1 = refs[0]
@@ -834,7 +834,7 @@ class Joint:
                 self.preventParallel(joint)
 
             if isMbDFEM:
-                solveIfAllowed(MbDFEM, True)
+                solveIfAllowed(mbdFemAssembly, True)
             else:
                 self.updateJCSPlacements(joint)
 
@@ -842,7 +842,7 @@ class Joint:
             joint.Reference2 = None
             joint.Placement2 = App.Placement()
             if isMbDFEM:
-                MbDFEM.undoSolve()
+                mbdFemAssembly.undoSolve()
             self.undoPreSolve(joint)
 
     def updateJCSPlacements(self, joint):
@@ -893,7 +893,7 @@ class Joint:
         self.matchJCS(joint, savePlc)
 
     def matchJCS(self, joint, savePlc=True, reverse=False):
-        MbDFEM = self.getMbDFEM(joint)
+        mbdFemAssembly = self.getMbDFEM(joint)
         sameDir = self.areJcsSameDir(joint)
         if reverse:
             sameDir = not sameDir
@@ -904,11 +904,11 @@ class Joint:
         if not part1 or not part2:
             return False
 
-        isMbDFEM = MbDFEM.isDerivedFrom("MbDFEM::MbDAssembly")
+        isMbDFEM = mbdFemAssembly.isDerivedFrom("MbDFEM::MbDAssembly")
         if isMbDFEM:
             joint.Suppressed = True
-            part1Connected = MbDFEM.isPartConnected(part1)
-            part2Connected = MbDFEM.isPartConnected(part2)
+            part1Connected = mbdFemAssembly.isPartConnected(part1)
+            part2Connected = mbdFemAssembly.isPartConnected(part2)
             joint.Suppressed = False
         else:
             part1Connected = True
@@ -938,7 +938,7 @@ class Joint:
 
         parts_to_move = [moving_part]
         if isMbDFEM:
-            parts_to_move = parts_to_move + MbDFEM.getDownstreamParts(moving_part, joint)
+            parts_to_move = parts_to_move + mbdFemAssembly.getDownstreamParts(moving_part, joint)
 
         if savePlc:
             self.partsMovedByPresolved = {p: p.Placement for p in parts_to_move}
@@ -972,15 +972,15 @@ class Joint:
         if not parallel:
             return
 
-        MbDFEM = self.getMbDFEM(joint)
+        mbdFemAssembly = self.getMbDFEM(joint)
 
         part1 = UtilsMbDFEM.getMovingPart(joint.Reference1)
         part2 = UtilsMbDFEM.getMovingPart(joint.Reference2)
 
-        isMbDFEM = MbDFEM.isDerivedFrom("MbDFEM::MbDAssembly")
+        isMbDFEM = mbdFemAssembly.isDerivedFrom("MbDFEM::MbDAssembly")
         if isMbDFEM:
-            part1ConnectedByJoint = MbDFEM.isJointConnectingPartToGround(joint, "Reference1")
-            part2ConnectedByJoint = MbDFEM.isJointConnectingPartToGround(joint, "Reference2")
+            part1ConnectedByJoint = mbdFemAssembly.isJointConnectingPartToGround(joint, "Reference1")
+            part2ConnectedByJoint = mbdFemAssembly.isJointConnectingPartToGround(joint, "Reference2")
         else:
             part1ConnectedByJoint = False
             part2ConnectedByJoint = True
@@ -1015,8 +1015,8 @@ class Joint:
         # Several joints are not solving properly if the part connected to ground is not the first.
         # See https://github.com/FreeCAD/FreeCAD/issues/29355 for instance.
         # This function swap the references if possible to avoid those issues.
-        MbDFEM = self.getMbDFEM(joint)
-        if not MbDFEM or MbDFEM.Type != "MbDFEM":
+        mbdFemAssembly = self.getMbDFEM(joint)
+        if not mbdFemAssembly or mbdFemAssembly.Type != "MbDFEM":
             return
 
         part1 = UtilsMbDFEM.getMovingPart(joint.Reference1)
@@ -1028,8 +1028,8 @@ class Joint:
         # Temporarily suppress the joint to avoid evaluating it as a valid connection
         suppressed_backup = joint.Suppressed
         joint.Suppressed = True
-        part1Connected = MbDFEM.isPartConnected(part1)
-        part2Connected = MbDFEM.isPartConnected(part2)
+        part1Connected = mbdFemAssembly.isPartConnected(part1)
+        part2Connected = mbdFemAssembly.isPartConnected(part2)
         joint.Suppressed = suppressed_backup
 
         # If only part1 is unconnected and part2 is connected, swap references and related properties
@@ -1118,9 +1118,9 @@ class ViewProviderJoint:
             self.switch_JCS_preview.whichChild = coin.SO_SWITCH_NONE
 
     def setJCSPosition(self, jcs, plc, ref):
-        MbDFEM = self.app_obj.Proxy.getMbDFEM(self.app_obj)
-        if MbDFEM and ref and plc:
-            asm_global_plc = MbDFEM.getGlobalPlacement()
+        mbdFemAssembly = self.app_obj.Proxy.getMbDFEM(self.app_obj)
+        if mbdFemAssembly and ref and plc:
+            asm_global_plc = mbdFemAssembly.getGlobalPlacement()
             if asm_global_plc != App.Placement():
                 global_plc = UtilsMbDFEM.getJcsGlobalPlc(plc, ref)
                 plc = asm_global_plc.inverse() * global_plc
@@ -1190,11 +1190,11 @@ class ViewProviderJoint:
 
         overlays = {}
 
-        MbDFEM = self.app_obj.Proxy.getMbDFEM(self.app_obj)
+        mbdFemAssembly = self.app_obj.Proxy.getMbDFEM(self.app_obj)
         # Assuming Reference1 corresponds to the first part link
         if hasattr(self.app_obj, "Reference1"):
             part = UtilsMbDFEM.getMovingPart(self.app_obj.Reference1)
-            if part is not None and not MbDFEM.isPartConnected(part):
+            if part is not None and not mbdFemAssembly.isPartConnected(part):
                 overlays[Gui.IconPosition.BottomLeft] = "Part_Detached"
 
         return overlays
@@ -1217,13 +1217,13 @@ class ViewProviderJoint:
         if task:
             task.reject()
 
-        MbDFEM = vobj.Object.Proxy.getMbDFEM(vobj.Object)
+        mbdFemAssembly = vobj.Object.Proxy.getMbDFEM(vobj.Object)
 
-        if MbDFEM is None:
+        if mbdFemAssembly is None:
             return False
 
-        if UtilsMbDFEM.activeMbDFEM() != MbDFEM:
-            vobj.Document.setEdit(MbDFEM)
+        if UtilsMbDFEM.activeMbFEMAssm() != mbdFemAssembly:
+            vobj.Document.setEdit(mbdFemAssembly)
 
         panel = TaskMbDFEMCreateJoint(0, vobj.Object)
         dialog = Gui.Control.showDialog(panel)
@@ -1473,9 +1473,9 @@ class ViewProviderGroundedJoint:
 
 
 class MakeJointSelGate:
-    def __init__(self, taskbox, MbDFEM):
+    def __init__(self, taskbox, mbdFemAssembly):
         self.taskbox = taskbox
-        self.MbDFEM = MbDFEM
+        self.mbdFemAssembly = mbdFemAssembly
 
     def allow(self, doc, obj, sub):
         if not sub:
@@ -1483,7 +1483,7 @@ class MakeJointSelGate:
 
         objs_names, element_name = UtilsMbDFEM.getObjsNamesAndElement(obj.Name, sub)
 
-        if self.MbDFEM.Name not in objs_names:
+        if self.mbdFemAssembly.Name not in objs_names:
             # Only objects within the MbDFEM.
             return False
 
@@ -1508,7 +1508,7 @@ class MakeJointSelGate:
                 if parent.isDerivedFrom("App::LocalCoordinateSystem"):
                     datum = parent
 
-            if self.MbDFEM.hasObject(datum) and hasattr(datum, "MapMode"):
+            if self.mbdFemAssembly.hasObject(datum) and hasattr(datum, "MapMode"):
                 # accept only datum that are not attached
                 return datum.MapMode == "Deactivated"
 
@@ -1528,25 +1528,25 @@ class TaskMbDFEMCreateJoint(QtCore.QObject):
         activeTask = self
         self.blockOffsetRotation = False
 
-        self.MbDFEM = UtilsMbDFEM.activeMbDFEM()
-        if not self.MbDFEM:
-            self.MbDFEM = UtilsMbDFEM.activePart()
+        self.mbdFemAssembly = UtilsMbDFEM.activeMbFEMAssm()
+        if not self.mbdFemAssembly:
+            self.mbdFemAssembly = UtilsMbDFEM.activePart()
             self.activeType = "Part"
         else:
             self.activeType = "MbDFEM"
-            self.MbDFEM.ensureIdentityPlacements()
+            self.mbdFemAssembly.ensureIdentityPlacements()
 
-        self.doc = self.MbDFEM.Document
+        self.doc = self.mbdFemAssembly.Document
         self.gui_doc = Gui.getDocument(self.doc)
 
         self.view = self.gui_doc.activeView()
 
-        if not self.MbDFEM or not self.view or not self.doc:
+        if not self.mbdFemAssembly or not self.view or not self.doc:
             return
 
         if self.activeType == "MbDFEM":
-            self.MbDFEM.ViewObject.MoveOnlyPreselected = True
-            self.MbDFEM.ViewObject.MoveInCommand = False
+            self.mbdFemAssembly.ViewObject.MoveOnlyPreselected = True
+            self.mbdFemAssembly.ViewObject.MoveInCommand = False
 
         # Create a top-level container widget for subclasses of TaskMbDFEMCreateJoint
         self.form = QtWidgets.QWidget()
@@ -1651,7 +1651,7 @@ class TaskMbDFEMCreateJoint(QtCore.QObject):
         UtilsMbDFEM.setJointsPickableState(self.doc, False)
 
         Gui.Selection.addSelectionGate(
-            MakeJointSelGate(self, self.MbDFEM), Gui.Selection.ResolveMode.NoResolve
+            MakeJointSelGate(self, self.mbdFemAssembly), Gui.Selection.ResolveMode.NoResolve
         )
         Gui.Selection.addObserver(self, Gui.Selection.ResolveMode.NoResolve)
         Gui.Selection.setSelectionStyle(Gui.Selection.SelectionStyle.GreedySelection)
@@ -1682,7 +1682,7 @@ class TaskMbDFEMCreateJoint(QtCore.QObject):
         cmds = UtilsMbDFEM.generatePropertySettings(self.joint)
         Gui.doCommand(cmds)
 
-        self.MbDFEM.recompute(True)
+        self.mbdFemAssembly.recompute(True)
 
         Gui.ActiveDocument.commitCommand()
         return True
@@ -1690,7 +1690,7 @@ class TaskMbDFEMCreateJoint(QtCore.QObject):
     def reject(self):
         self.deactivate()
         Gui.ActiveDocument.abortCommand()
-        self.MbDFEM.recompute(True)
+        self.mbdFemAssembly.recompute(True)
         return True
 
     def autoClosedOnTransactionChange(self):
@@ -1709,9 +1709,9 @@ class TaskMbDFEMCreateJoint(QtCore.QObject):
         activeTask = None
 
         if self.activeType == "MbDFEM":
-            self.MbDFEM.clearUndo()
-            self.MbDFEM.ViewObject.MoveOnlyPreselected = False
-            self.MbDFEM.ViewObject.MoveInCommand = True
+            self.mbdFemAssembly.clearUndo()
+            self.mbdFemAssembly.ViewObject.MoveOnlyPreselected = False
+            self.mbdFemAssembly.ViewObject.MoveInCommand = True
 
         Gui.Selection.removeSelectionGate()
         Gui.Selection.removeObserver(self)
@@ -1741,7 +1741,7 @@ class TaskMbDFEMCreateJoint(QtCore.QObject):
                 # and in the case of initial selection, both are the same.
 
                 moving_part, new_sub = UtilsMbDFEM.getComponentReference(
-                    self.MbDFEM, sel.Object, sub_name
+                    self.mbdFemAssembly, sel.Object, sub_name
                 )
                 if not moving_part:
                     break
@@ -1773,13 +1773,13 @@ class TaskMbDFEMCreateJoint(QtCore.QObject):
         type_index = self.jForm.jointType.currentIndex()
 
         if self.activeType == "Part":
-            self.joint = self.MbDFEM.newObject("App::FeaturePython", "Temporary joint")
+            self.joint = self.mbdFemAssembly.newObject("App::FeaturePython", "Temporary joint")
         else:
-            joint_group = UtilsMbDFEM.getJointGroup(self.MbDFEM)
+            joint_group = UtilsMbDFEM.getJointGroup(self.mbdFemAssembly)
             self.joint = joint_group.newObject("App::FeaturePython", "Joint")
             self.joint.Label = self.jointName
             joint_group.purgeTouched()
-            self.MbDFEM.purgeTouched()
+            self.mbdFemAssembly.purgeTouched()
 
         Joint(self.joint, type_index)
         ViewProviderJoint(self.joint.ViewObject)
@@ -1973,7 +1973,7 @@ class TaskMbDFEMCreateJoint(QtCore.QObject):
 
         isolate_mode = self.jForm.isolateType.currentIndex()
 
-        MbDFEM_vobj = self.MbDFEM.ViewObject
+        MbDFEM_vobj = self.mbdFemAssembly.ViewObject
 
         # If "Disabled" is selected, clear any active isolation and stop.
         if isolate_mode == 3:
@@ -2204,7 +2204,7 @@ class TaskMbDFEMCreateJoint(QtCore.QObject):
 
         sub_name = UtilsMbDFEM.fixBodyExtraFeatureInSub(doc_name, sub_name)
 
-        comp, new_sub = UtilsMbDFEM.getComponentReference(self.MbDFEM, rootObj, sub_name)
+        comp, new_sub = UtilsMbDFEM.getComponentReference(self.mbdFemAssembly, rootObj, sub_name)
         if not comp:
             # Selection was not valid (not inside MbDFEM or logic failed)
             Gui.Selection.removeSelection(doc_name, obj_name, sub_name)
@@ -2259,7 +2259,7 @@ class TaskMbDFEMCreateJoint(QtCore.QObject):
 
         sub_name = UtilsMbDFEM.fixBodyExtraFeatureInSub(doc_name, sub_name)
 
-        comp, new_sub = UtilsMbDFEM.getComponentReference(self.MbDFEM, rootObj, sub_name)
+        comp, new_sub = UtilsMbDFEM.getComponentReference(self.mbdFemAssembly, rootObj, sub_name)
         if not comp:
             return
 
@@ -2285,7 +2285,7 @@ class TaskMbDFEMCreateJoint(QtCore.QObject):
 
         rootObj = App.getDocument(doc_name).getObject(obj_name)
 
-        comp, new_sub = UtilsMbDFEM.getComponentReference(self.MbDFEM, rootObj, sub_name)
+        comp, new_sub = UtilsMbDFEM.getComponentReference(self.mbdFemAssembly, rootObj, sub_name)
         if not comp:
             return
 

@@ -35,8 +35,8 @@ class CommandExportASMT:
         if not document:
             return
 
-        MbDFEM = UtilsMbDFEM.activeMbDFEM()
-        if not MbDFEM:
+        mbdFemAssembly = UtilsMbDFEM.activeMbFEMAssm()
+        if not mbdFemAssembly:
             return
 
         # Prompt the user for a file location and name
@@ -50,8 +50,8 @@ class CommandExportASMT:
 
         if filePath:
             Gui.addModule("UtilsMbDFEM")
-            Gui.doCommand("MbDFEM = UtilsMbDFEM.activeMbDFEM()")
-            Gui.doCommand(f'MbDFEM.exportAsASMT("{filePath}")')
+            Gui.doCommand("mbdFemAssembly = UtilsMbDFEM.activeMbFEMAssm()")
+            Gui.doCommand(f'mbdFemAssembly.exportAsASMT("{filePath}")')
 
 
 if App.GuiUp:

@@ -12,7 +12,7 @@
 using namespace MbDFEM;
 
 // registers MbDPart with FreeCAD's type system, makes doc.addObject("MbDFEM::MbDPart", ..) work from Python 
-// inheriting Feature gived MbDPart Shape and Placement
+// inheriting Feature gives MbDPart Shape and Placement
 PROPERTY_SOURCE(MbDFEM::MbDPart, Part::Feature)
 
 MbDPart::MbDPart()
@@ -38,15 +38,16 @@ PyObject* MbDPart::getPyObject()
 
 App::DocumentObjectExecReturn* MbDPart::execute()
 {
-    auto* obj = cadPart.getValue();
+    auto* obj = cadPart.getValue(); //gets obj cadPart is pointing to
     if (!obj) {
         return Part::Feature::execute();
     }
 
-    // Copy shape from cadPart so MbDPart has geometry for display and selection.
+    // Copy shape from cadPart so MbDPart has geometry for display and selection, no shape no 3d shape in freecad
     // MbDPart::Placement (set by the solver) positions the shape in the assembly.
+    //getPropertyByName() used to from Shape propetry of original part
     if (auto* shapeProp = dynamic_cast<Part::PropertyPartShape*>(obj->getPropertyByName("Shape"))) {
-        Shape.setValue(shapeProp->getShape());
+        Shape.setValue(shapeProp->getShape()); //shape copied into MbD::Shape using setValue()
     }
 
     return Part::Feature::execute();

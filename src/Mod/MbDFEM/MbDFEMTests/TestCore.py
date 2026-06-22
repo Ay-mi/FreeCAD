@@ -72,9 +72,9 @@ class TestCore(unittest.TestCase):
         App.setActiveDocument(doc_name)
         self.doc = App.ActiveDocument
 
-        self.MbDFEM = App.ActiveDocument.addObject("MbDFEM::MbDAssembly", "MbDFEM")
-        if self.MbDFEM:
-            self.jointgroup = self.MbDFEM.newObject("MbDFEM::JointGroup", "Joints")
+        self.mbdFemAssembly = App.ActiveDocument.addObject("MbDFEM::MbDAssembly", "MbDFEM")
+        if self.mbdFemAssembly:
+            self.jointgroup = self.mbdFemAssembly.newObject("MbDFEM::JointGroup", "Joints")
 
         _msg("  Temporary document '{}'".format(self.doc.Name))
 
@@ -89,7 +89,7 @@ class TestCore(unittest.TestCase):
         """Create an MbDFEM."""
         operation = "Create MbDFEM Object"
         _msg("  Test '{}'".format(operation))
-        self.assertTrue(self.MbDFEM, "'{}' failed".format(operation))
+        self.assertTrue(self.mbdFemAssembly, "'{}' failed".format(operation))
 
     def test_create_jointGroup(self):
         """Create a joint group in an MbDFEM."""
@@ -118,7 +118,7 @@ class TestCore(unittest.TestCase):
             groundedjoint, "'{}' failed (FeaturePython creation failed)".format(operation)
         )
 
-        box = self.MbDFEM.newObject("Part::Box", "Box")
+        box = self.mbdFemAssembly.newObject("Part::Box", "Box")
 
         JointObject.GroundedJoint(groundedjoint, box)
 
@@ -136,7 +136,7 @@ class TestCore(unittest.TestCase):
         operation = "Toggle Grounded Joint"
         _msg("  Test '{}'".format(operation))
 
-        box = self.MbDFEM.newObject("Part::Box", "Box")
+        box = self.mbdFemAssembly.newObject("Part::Box", "Box")
 
         # ground the part
         groundedjoint = self.jointgroup.newObject("App::FeaturePython", "GroundedJoint")
@@ -178,32 +178,32 @@ class TestCore(unittest.TestCase):
         L = 2
         W = 3
         H = 7
-        box = self.MbDFEM.newObject("Part::Box", "Box")
+        box = self.mbdFemAssembly.newObject("Part::Box", "Box")
         box.Length = L
         box.Width = W
         box.Height = H
         box.Placement = App.Placement(App.Vector(10, 20, 30), App.Rotation(15, 25, 35))
 
         # Step 0 : box with placement. No element selected
-        ref = [self.MbDFEM, [box.Name + ".", box.Name + "."]]
+        ref = [self.mbdFemAssembly, [box.Name + ".", box.Name + "."]]
         plc = joint.Proxy.findPlacement(joint, ref)
         targetPlc = App.Placement(App.Vector(), App.Rotation())
         self.assertTrue(plc.isSame(targetPlc, 1e-6), "'{}' failed - Step 0".format(operation))
 
         # Step 1 : box with placement. Face + Vertex
-        ref = [self.MbDFEM, [box.Name + ".Face6", box.Name + ".Vertex7"]]
+        ref = [self.mbdFemAssembly, [box.Name + ".Face6", box.Name + ".Vertex7"]]
         plc = joint.Proxy.findPlacement(joint, ref)
         targetPlc = App.Placement(App.Vector(L, W, H), App.Rotation())
         self.assertTrue(plc.isSame(targetPlc, 1e-6), "'{}' failed - Step 1".format(operation))
 
         # Step 2 : box with placement. Edge + Vertex
-        ref = [self.MbDFEM, [box.Name + ".Edge8", box.Name + ".Vertex8"]]
+        ref = [self.mbdFemAssembly, [box.Name + ".Edge8", box.Name + ".Vertex8"]]
         plc = joint.Proxy.findPlacement(joint, ref)
         targetPlc = App.Placement(App.Vector(L, W, 0), App.Rotation(0, -90, 270))
         self.assertTrue(plc.isSame(targetPlc, 1e-6), "'{}' failed - Step 2".format(operation))
 
         # Step 3 : box with placement. Vertex
-        ref = [self.MbDFEM, [box.Name + ".Vertex3", box.Name + ".Vertex3"]]
+        ref = [self.mbdFemAssembly, [box.Name + ".Vertex3", box.Name + ".Vertex3"]]
         plc = joint.Proxy.findPlacement(joint, ref)
         targetPlc = App.Placement(App.Vector(0, W, H), App.Rotation())
         _msg("  plc '{}'".format(plc))
@@ -211,7 +211,7 @@ class TestCore(unittest.TestCase):
         self.assertTrue(plc.isSame(targetPlc, 1e-6), "'{}' failed - Step 3".format(operation))
 
         # Step 4 : box with placement. Face
-        ref = [self.MbDFEM, [box.Name + ".Face2", box.Name + ".Face2"]]
+        ref = [self.mbdFemAssembly, [box.Name + ".Face2", box.Name + ".Face2"]]
         plc = joint.Proxy.findPlacement(joint, ref)
         targetPlc = App.Placement(App.Vector(L, W / 2, H / 2), App.Rotation(0, -90, 180))
         _msg("  plc '{}'".format(plc))
@@ -223,13 +223,13 @@ class TestCore(unittest.TestCase):
         operation = "Solve MbDFEM"
         _msg("  Test '{}'".format(operation))
 
-        box = self.MbDFEM.newObject("Part::Box", "Box")
+        box = self.mbdFemAssembly.newObject("Part::Box", "Box")
         box.Length = 10
         box.Width = 10
         box.Height = 10
         box.Placement = App.Placement(App.Vector(10, 20, 30), App.Rotation(15, 25, 35))
 
-        box2 = self.MbDFEM.newObject("Part::Box", "Box")
+        box2 = self.mbdFemAssembly.newObject("Part::Box", "Box")
         box2.Length = 10
         box2.Width = 10
         box2.Height = 10
