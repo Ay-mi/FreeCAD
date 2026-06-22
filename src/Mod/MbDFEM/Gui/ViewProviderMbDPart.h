@@ -1,13 +1,13 @@
 #pragma once
 
 #include <Mod/MbDFEM/MbDFEMGlobal.h>
-#include <Gui/ViewProviderDocumentObject.h>
+#include <Mod/Part/Gui/ViewProvider.h>
 
 
 namespace MbDFEMGui
 {
 
-class MbDFEMGuiExport ViewProviderMbDPart: public Gui::ViewProviderDocumentObject
+class MbDFEMGuiExport ViewProviderMbDPart: public PartGui::ViewProviderPart
 {
     PROPERTY_HEADER_WITH_OVERRIDE(MbDFEMGui::ViewProviderMbDPart);
 

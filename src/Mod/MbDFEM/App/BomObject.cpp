@@ -195,7 +195,7 @@ void BomObject::addObjectChildrenToBom(
         bool isMirrored = isObjMirrored(child);
 
         if (auto* asmLink = freecad_cast<MbDAssemblyLink*>(child)) {
-            child = asmLink->getLinkedMbDFEM();
+            child = asmLink->getLinkedMbDAssembly();
             if (!child) {
                 continue;
             }

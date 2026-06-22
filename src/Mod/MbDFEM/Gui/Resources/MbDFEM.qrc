@@ -38,5 +38,7 @@
         <file>preferences/MbDFEM.ui</file>
         <file>icons/MbDFEM_CreateJointDistance.svg</file>
         <file>icons/MbDFEMWorkbench.svg</file>
+        <file>icons/MbDFEM_MbDPart.svg</file>
+        <file>icons/GeoMbDFEM.svg</file>
     </qresource>
 </RCC>

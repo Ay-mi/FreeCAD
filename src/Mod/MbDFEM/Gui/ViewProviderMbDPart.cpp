@@ -8,7 +8,7 @@
 
 using namespace MbDFEMGui;
 
-PROPERTY_SOURCE(MbDFEMGui::ViewProviderMbDPart, Gui::ViewProviderDocumentObject)
+PROPERTY_SOURCE(MbDFEMGui::ViewProviderMbDPart, PartGui::ViewProviderPart)
 
 ViewProviderMbDPart::ViewProviderMbDPart()
 {}

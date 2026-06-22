@@ -43,8 +43,8 @@ class CommandGroupInsert:
         }
 
     def IsActive(self):
-        return UtilsMbDFEM.isMbDFEMCommandActive()
-
+        return UtilsMbDFEM.isMbDFEMCommandActive() #returns true if an assembly is active and no dialog is open
+                #used to enable/diable toolbar button
 
 class CommandInsertLink:
     def __init__(self):
@@ -62,8 +62,8 @@ class CommandInsertLink:
     def IsActive(self):
         return UtilsMbDFEM.isMbDFEMCommandActive()
 
-    def Activated(self):
-        MbDFEM = UtilsMbDFEM.activeMbDFEM() #fetches currently active MbDAssembly object
+    def Activated(self): #consider renaming to MbDFEMAssembly = UtilsMbDFEM.activeMbDFEMAssembly to avoid name clash
+        MbDFEM = UtilsMbDFEM.activeMbDFEM() #fetches currently active MbDAssembly object which was confusingly named MbDFEM during mass rename, wil fix
         if not MbDFEM:
             return
         view = Gui.activeDocument().activeView() #gets active 3D viewport, passed to the task panel which for ex, can calculate screen centre
@@ -121,35 +121,48 @@ class TaskMbDFEMInsertLink(QtCore.QObject):
         self.docObserver = InsertLinkObserver(self.onObjectDeleted) #reaction to user deleting something they just inserted while the panel is still open
         App.addDocumentObserver(self.docObserver)
 
-    def accept(self):
+    def accept(self): #builds a Python command string that gets recorded into the undo/redo history so the action can be replayed
         self.deactivated()
 
         Gui.addModule("UtilsMbDFEM")
-        commands = "MbDFEM = UtilsMbDFEM.activeMbDFEM()\n"
-        for insertionItem in self.insertionStack:
-            object = insertionItem["addedObject"]
+        commands = "MbDFEM = UtilsMbDFEM.activeMbDFEM()\n" #for redo script, fetches assembly
+        commands += "partGroup = UtilsMbDFEM.getPartGroup(MbDFEM)\n" #fetches part group
+        for insertionItem in self.insertionStack: #loop over everything that was inserted in this session, insertionStack holds one entry per part
+            addedObject = insertionItem["addedObject"]
+            addedLink = insertionItem.get("addedLink", addedObject)
             translation = insertionItem["translation"]
 
-            # Check if object.Name & object.LinkedObject.Name exists
-            if (
-                not hasattr(object, "Name")
-                or not hasattr(object, "LinkedObject")
-                or not hasattr(object.LinkedObject, "Name")
-            ):
-                continue
-
-            commands = commands + (
-                f'item = MbDFEM.newObject("App::Link", "{object.Name}")\n'
-                f'item.LinkedObject = App.ActiveDocument.getObject("{object.LinkedObject.Name}")\n'
-                f'item.Label = "{object.Label}"\n'
-            )
-
-            if translation != App.Vector():
-                commands = commands + (
-                    f"item.Placement.base = App.Vector({translation.x},"
-                    f"{translation.y},"
-                    f"{translation.z})\n"
+            if addedObject.isDerivedFrom("MbDFEM::MbDAssemblyLink"): #if the inserted item was a sub-assembly
+                # Sub-assembly: MbDAssemblyLink
+                if not hasattr(addedLink, "LinkedObject") or not addedLink.LinkedObject or not hasattr(addedLink.LinkedObject, "Name"):
+                    continue
+                commands += (
+                    f'item = MbDFEM.newObject("MbDFEM::MbDAssemblyLink", "{addedLink.LinkedObject.Name}")\n'
+                    f'item.LinkedObject = App.ActiveDocument.getObject("{addedLink.LinkedObject.Name}")\n'
+                    f'item.Label = "{addedLink.Label}"\n'
                 )
+                if translation != App.Vector():
+                    commands += (
+                        f"item.Placement.Base = App.Vector({translation.x},{translation.y},{translation.z})\n"
+                    )
+            else:
+                # Regular part: MbDPart in PartGroup pointing directly to source geometry
+                cadPart = addedObject.cadPart
+                if not cadPart:
+                    continue
+                cadPartName = cadPart.Name
+                cadPartDocName = cadPart.Document.Name
+                commands += (
+                    f'mbdPart = MbDFEM.Document.addObject("MbDFEM::MbDPart", "MbDPart")\n'
+                    f'mbdPart.cadPart = App.getDocument("{cadPartDocName}").getObject("{cadPartName}")\n'
+                    f'mbdPart.Label = "{addedObject.Label}"\n'
+                    f'partGroup.addObject(mbdPart)\n'
+                    f'MbDFEM.Document.recompute()\n'
+                )
+                if translation != App.Vector():
+                    commands += (
+                        f"mbdPart.Placement.Base = App.Vector({translation.x},{translation.y},{translation.z})\n"
+                    )
 
         # Ground the first item if that happened
         if self.groundedObj:
@@ -380,28 +393,34 @@ class TaskMbDFEMInsertLink(QtCore.QObject):
                 print(selectedPart.Document.Name)
                 documentItem.setText(0, f"{newDocName}.FCStd")"""
 
-        if selectedPart.isDerivedFrom("MbDFEM::MbDAssembly"):
-            objType = "MbDFEM::MbDAssemblyLink" #if inserting an MbDAssembly, create an MbDAssemblyLink
+        if selectedPart.isDerivedFrom("MbDFEM::MbDAssembly"): #if user clicks a sub-assembly, an MbDAssemblyLink is created inside the currect assm
+            addedLink = self.MbDFEM.newObject("MbDFEM::MbDAssemblyLink", selectedPart.Label)
+            addedLink.LinkedObject = selectedPart 
+            addedLink.Label = selectedPart.Label  # non-ASCII characters fails with newObject. #12164
+            addedLink.recompute()
+            addedObject = addedLink
         else:
-            objType = "App::Link" #otherwise create a regular schmegular App::Link
-
-        addedObject = self.MbDFEM.newObject(objType, selectedPart.Label) #creates the new obj inside the assembly, newObject() is a FreeCAD method
-
+            partGroup = UtilsMbDFEM.getPartGroup(self.MbDFEM) #finds existing PartGroup or creates one if it doesn't exist yet
+            addedObject = self.MbDFEM.Document.addObject("MbDFEM::MbDPart", "MbDPart") # creates the MbDPart in the assembly's document
+            addedObject.cadPart = selectedPart  # stores a cross-document link back to source cad geometry
+            addedObject.Label = "MbD" + selectedPart.Label #prefixes the source part's name with MbD, for labelling purposes only
+            addedObject.Placement = selectedPart.Placement #gives the MbDPart the same initial position as source
+            partGroup.addObject(addedObject) #registers the MbDPart as a member of the PartGroup
+            self.MbDFEM.Document.recompute() #triggers MbDPart::execute() which copies the Shape from cadPart so geometry appears in view
+            addedLink = addedObject #both variables point to the same MbDPart
+        #just to note that addedObject and addedLink point to the same thing and can be redundant, you can clean up later
         # set placement of the added object to the center of the screen.
         view = Gui.activeView()
         x, y = view.getSize()
         screenCenter = view.getPointOnFocalPlane(x // 2, y // 2)
         screenCorner = view.getPointOnFocalPlane(x, y)
 
-        addedObject.LinkedObject = selectedPart #points link at the source geometry
-        addedObject.Label = selectedPart.Label  # non-ASCII characters fails with newObject. #12164
-        addedObject.recompute()
-
-        insertionDict = {} #stores tree item and created obj in a dict
+        insertionDict = {}
         insertionDict["item"] = item
         insertionDict["addedObject"] = addedObject
-        self.insertionStack.append(insertionDict)
-        self.increment_counter(item) #counter to show how many times this part has been inserted
+        # insertionDict["addedLink"] = addedLink #redundant but keep for now
+        self.insertionStack.append(insertionDict) #append to insertionStack
+        self.increment_counter(item) #tree widget counter to show how many parts have been inserted
 
         translation = App.Vector() 
         resetThreshold = (screenCorner - screenCenter).Length * 0.1 #10% distance from screen center to corner, used to detect significant panning
@@ -411,7 +430,8 @@ class TaskMbDFEMInsertLink(QtCore.QObject):
             self.totalTranslation = App.Vector()
             self.prevScreenCenter = screenCenter
         else:
-            translation = self.getTranslationVec(addedObject)
+            #translation = self.getTranslationVec(addedObject)
+            translation = self.getTranslationVec(addedLink)
 
         insertionDict["translation"] = translation
         self.totalTranslation += translation
@@ -419,11 +439,12 @@ class TaskMbDFEMInsertLink(QtCore.QObject):
         originX, originY = view.getPointOnViewport(App.Vector() + translation)
         if originX > 0 and originX < x and originY > 0 and originY < y:
             # If the origin is within view then we insert at the origin.
-            addedObject.Placement.Base = self.totalTranslation
+            #addedObject.Placement.Base = self.totalTranslation
+            addedLink.Placement.Base = self.totalTranslation
         else:
             #
-            bboxCenter = addedObject.ViewObject.getBoundingBox().Center
-            addedObject.Placement.Base = screenCenter - bboxCenter + self.totalTranslation
+            bboxCenter = addedLink.ViewObject.getBoundingBox().Center
+            addedLink.Placement.Base = screenCenter - bboxCenter + self.totalTranslation
 
         self.prevScreenCenter = screenCenter
 
@@ -438,7 +459,7 @@ class TaskMbDFEMInsertLink(QtCore.QObject):
 
         item.setSelected(False)
 
-        if len(self.insertionStack) == 1 and not UtilsMbDFEM.isMbDFEMGrounded():
+        if len(self.insertionStack) == 1 and not UtilsMbDFEM.isMbDAssemblyGrounded():
             self.handleFirstInsertion() #called if this is the first insertion and nothing is grounded yet
 
     def handleFirstInsertion(self):
@@ -477,7 +498,7 @@ class TaskMbDFEMInsertLink(QtCore.QObject):
             if len(self.insertionStack) != 1:
                 return
 
-            targetObj = self.insertionStack[0]["addedObject"] #get actual inserted obj from stack
+            targetObj = self.insertionStack[0]["addedObject"]
 
             # If the object is a flexible MbDFEMLink, we should ground its internal 'base' part
             if targetObj.isDerivedFrom("MbDFEM::MbDAssemblyLink") and not targetObj.Rigid:
@@ -603,7 +624,7 @@ class TaskMbDFEMInsertLink(QtCore.QObject):
                         # ONLY remove the object from the document.
                         # The Observer (onObjectDeleted) will handle the rest.
                         if obj and obj.Document:
-                            UtilsMbDFEM.removeObjAndChilds(obj)
+                            UtilsMbDFEM.removeObjAndChilds(obj) 
 
                         return True
             else:
@@ -676,7 +697,10 @@ class TaskMbDFEMInsertLink(QtCore.QObject):
         for i in reversed(range(len(self.insertionStack))):
             stack_item = self.insertionStack[i]
 
-            if stack_item["addedObject"] == obj:
+            addedObject = stack_item["addedObject"]
+            addedLink = stack_item.get("addedLink", addedObject)
+
+            if addedObject == obj or addedLink == obj:
                 # 1. Revert translation
                 self.totalTranslation -= stack_item["translation"]
 
@@ -685,16 +709,24 @@ class TaskMbDFEMInsertLink(QtCore.QObject):
                 self.decrement_counter(item)
 
                 # 3. Handle Grounded Joint cleanup
-                if self.groundedObj == obj:
+                if self.groundedObj == addedLink:
                     if self.groundedJoint:
                         try:
-                            # Remove the joint if it still exists
                             if self.groundedJoint.Document:
                                 self.groundedJoint.Document.removeObject(self.groundedJoint.Name)
                         except Exception:
                             pass
                     self.groundedObj = None
                     self.groundedJoint = None
+
+                # # 4. Delete the paired object if it wasn't the one deleted
+                # paired = addedLink if addedObject == obj else addedObject
+                # if paired and paired != obj:
+                #     try:
+                #         if paired.Document:
+                #             paired.Document.removeObject(paired.Name)
+                #     except Exception:
+                #         pass
 
                 # 4. Remove from stack
                 del self.insertionStack[i]

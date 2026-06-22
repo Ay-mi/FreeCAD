@@ -265,6 +265,14 @@ int MbDAssembly::generateSimulation(App::DocumentObject* sim)
 {
     mbdAssembly = makeMbdAssembly();
     objectPartMap.clear();
+    // NEW (commented out): Reset transient solver data on all MbDParts so getMbDData() treats them as unseen this pass
+    // if (PartGroup* pg = getGroup<PartGroup>()) {
+    //     for (auto* obj : pg->getObjects()) {
+    //         if (auto* mbdPart = freecad_cast<MbDPart*>(obj)) {
+    //             mbdPart->liveASMTPart = nullptr;
+    //         }
+    //     }
+    // }
 
     motions = getMotionsFromSimulation(sim);
 
@@ -538,6 +546,14 @@ void MbDAssembly::exportAsASMT(std::string fileName)
 {
     mbdAssembly = makeMbdAssembly();
     objectPartMap.clear();
+    // NEW (commented out): Reset transient solver data on all MbDParts so getMbDData() treats them as unseen this pass
+    // if (PartGroup* pg = getGroup<PartGroup>()) {
+    //     for (auto* obj : pg->getObjects()) {
+    //         if (auto* mbdPart = freecad_cast<MbDPart*>(obj)) {
+    //             mbdPart->liveASMTPart = nullptr;
+    //         }
+    //     }
+    // }
     fixGroundedParts();
 
     std::vector<App::DocumentObject*> joints = getJoints();
@@ -549,28 +565,44 @@ void MbDAssembly::exportAsASMT(std::string fileName)
 
 void MbDAssembly::setNewPlacements()
 {
-    for (auto& pair : objectPartMap) {
-        App::DocumentObject* obj = pair.first;
-        std::shared_ptr<ASMTPart> mbdPart = pair.second.part;
+    // OLD: iterate objectPartMap and write to the original CAD part
+    // for (auto& pair : objectPartMap) {
+    //     App::DocumentObject* obj = pair.first;
+    //     std::shared_ptr<ASMTPart> mbdPart = pair.second.part;
+    //     if (!obj || !mbdPart) {
+    //         continue;
+    //     }
+    //     auto* propPlacement = obj->getPlacementProperty();
+    //     if (!propPlacement) {
+    //         continue;
+    //     }
+    //     Base::Placement newPlacement = getMbdPlacement(mbdPart);
+    //     if (!pair.second.offsetPlc.isIdentity()) {
+    //         newPlacement = newPlacement * pair.second.offsetPlc;
+    //     }
+    //     if (!propPlacement->getValue().isSame(newPlacement)) {
+    //         propPlacement->setValue(newPlacement);
+    //         obj->purgeTouched();
+    //     }
+    // }
 
-        if (!obj || !mbdPart) {
+    // NEW: iterate MbDPart objects in PartGroup and write to MbDPart::Placement
+    PartGroup* partGroup = getGroup<PartGroup>();
+    if (!partGroup) {
+        return;
+    }
+    for (auto* obj : partGroup->getObjects()) {
+        auto* mbdPartObj = freecad_cast<MbDPart*>(obj);
+        if (!mbdPartObj || !mbdPartObj->liveASMTPart) {
             continue;
         }
-
-        // Check if the object has a "Placement" property
-        auto* propPlacement = obj->getPlacementProperty();
-        if (!propPlacement) {
-            continue;
+        Base::Placement newPlacement = getMbdPlacement(mbdPartObj->liveASMTPart);
+        if (!mbdPartObj->offsetPlc.isIdentity()) {
+            newPlacement = newPlacement * mbdPartObj->offsetPlc;
         }
-
-
-        Base::Placement newPlacement = getMbdPlacement(mbdPart);
-        if (!pair.second.offsetPlc.isIdentity()) {
-            newPlacement = newPlacement * pair.second.offsetPlc;
-        }
-        if (!propPlacement->getValue().isSame(newPlacement)) {
-            propPlacement->setValue(newPlacement);
-            obj->purgeTouched();
+        if (!mbdPartObj->Placement.getValue().isSame(newPlacement)) {
+            mbdPartObj->Placement.setValue(newPlacement);
+            mbdPartObj->purgeTouched();
         }
     }
 }
@@ -1853,13 +1885,51 @@ MbDAssembly::MbDPartData MbDAssembly::getMbDData(App::DocumentObject* part)
         return it->second;
     }
 
-    // part has not been associated with an ASMTPart before
+    // NEW (commented out): MbDPart-based early return
+    // PartGroup* partGroup = getGroup<PartGroup>();
+    // if (partGroup) {
+    //     for (auto* obj : partGroup->getObjects()) {
+    //         auto* candidate = freecad_cast<MbDPart*>(obj);
+    //         if (candidate && candidate->cadPart.getValue() == part && candidate->liveASMTPart) {
+    //             return {candidate->liveASMTPart, candidate->offsetPlc};
+    //         }
+    //     }
+    // }
+
+    // part has not been set up in this solve pass yet
     std::string str = part->getFullName();
     Base::Placement plc = getPlacementFromProp(part, "Placement"); //name and placement become solver's initial conditions
     std::shared_ptr<ASMTPart> mbdPart = makeMbdPart(str, plc); //creates solver side ASMTPart, OndselSolver's description of a rigid body, lives in solver side
     mbdAssembly->addPart(mbdPart); //register with ASMTAssembly so solver knows it exists
     MbDPartData data = {mbdPart, Base::Placement()}; //new part is being registered
     objectPartMap[part] = data;  // Store the association
+
+    // NEW (commented out): Register/find MbDPart in PartGroup and wire up transient solver data
+    // if (partGroup) {
+    //     MbDPart* foundMbDPart = nullptr;
+    //     for (auto* obj : partGroup->getObjects()) {
+    //         auto* candidate = freecad_cast<MbDPart*>(obj);
+    //         if (candidate && candidate->cadPart.getValue() == part) {
+    //             foundMbDPart = candidate;
+    //             break;
+    //         }
+    //     }
+    //     if (!foundMbDPart) {
+    //         std::string mbdPartName = std::string("MbD_") + part->getNameInDocument();
+    //         auto* newMbDPart = static_cast<MbDPart*>(
+    //             getDocument()->addObject("MbDFEM::MbDPart", mbdPartName.c_str())
+    //         );
+    //         newMbDPart->cadPart.setValue(part);
+    //         // Direct Group.setValues to avoid GroupExtension::addObjects geogrp mechanism
+    //         // which would also add to MbDAssembly.Group causing tree duplication.
+    //         auto grpVals = partGroup->Group.getValues();
+    //         grpVals.push_back(newMbDPart);
+    //         partGroup->Group.setValues(grpVals);
+    //         foundMbDPart = newMbDPart;
+    //     }
+    //     foundMbDPart->liveASMTPart = mbdPart;
+    //     foundMbDPart->offsetPlc = Base::Placement();
+    // }
 
     // Associate other objects connected with fixed joints
     if (bundleFixed) { //if fixed joint bundling is on, define a recursive lambda to walk the fixed-joint graph starting from this part, p.s. part bundling is only by fixed joints
@@ -1877,9 +1947,48 @@ MbDAssembly::MbDPartData MbDAssembly::getMbDData(App::DocumentObject* part)
                         continue;
                     }
 
+                    // NEW (commented out): MbDPart-based already-bundled check
+                    // bool alreadyBundled = false;
+                    // if (partGroup) {
+                    //     for (auto* obj : partGroup->getObjects()) {
+                    //         auto* candidate = freecad_cast<MbDPart*>(obj);
+                    //         if (candidate && candidate->cadPart.getValue() == partToAdd && candidate->liveASMTPart) {
+                    //             alreadyBundled = true;
+                    //             break;
+                    //         }
+                    //     }
+                    // }
+                    // if (alreadyBundled) { continue; }
+
+                    //bundled part shares same ASMTPart as original, offset placement is calculated as relative transform from bundle origin placement to its own
                     Base::Placement plci = getPlacementFromProp(partToAdd, "Placement");
                     MbDPartData partData = {mbdPart, plc.inverse() * plci};
                     objectPartMap[partToAdd] = partData;  // Store the association
+
+                    // NEW (commented out): Wire up the bundled part's MbDPart with solver data
+                    // if (partGroup) {
+                    //     MbDPart* bundledMbDPart = nullptr;
+                    //     for (auto* obj : partGroup->getObjects()) {
+                    //         auto* candidate = freecad_cast<MbDPart*>(obj);
+                    //         if (candidate && candidate->cadPart.getValue() == partToAdd) {
+                    //             bundledMbDPart = candidate;
+                    //             break;
+                    //         }
+                    //     }
+                    //     if (!bundledMbDPart) {
+                    //         std::string mbdPartName = std::string("MbD_") + partToAdd->getNameInDocument();
+                    //         auto* newMbDPart = static_cast<MbDPart*>(
+                    //             getDocument()->addObject("MbDFEM::MbDPart", mbdPartName.c_str())
+                    //         );
+                    //         newMbDPart->cadPart.setValue(partToAdd);
+                    //         auto grpVals = partGroup->Group.getValues();
+                    //         grpVals.push_back(newMbDPart);
+                    //         partGroup->Group.setValues(grpVals);
+                    //         bundledMbDPart = newMbDPart;
+                    //     }
+                    //     bundledMbDPart->liveASMTPart = mbdPart;
+                    //     bundledMbDPart->offsetPlc = plc.inverse() * plci;
+                    // }
 
                     // Recursively call for partToAdd
                     self(partToAdd, self);

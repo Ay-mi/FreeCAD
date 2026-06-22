@@ -4,14 +4,16 @@
 #include <App/PropertyPythonObject.h>
 #include <Base/Console.h>
 #include <Base/Placement.h>
+#include <Mod/Part/App/PartFeature.h>
 
 #include "MbDPart.h"
 #include "MbDPartPy.h"
 
 using namespace MbDFEM;
 
-
-PROPERTY_SOURCE(MbDFEM::MbDPart, App::GeoFeature)
+// registers MbDPart with FreeCAD's type system, makes doc.addObject("MbDFEM::MbDPart", ..) work from Python 
+// inheriting Feature gived MbDPart Shape and Placement
+PROPERTY_SOURCE(MbDFEM::MbDPart, Part::Feature)
 
 MbDPart::MbDPart()
 {
@@ -38,18 +40,16 @@ App::DocumentObjectExecReturn* MbDPart::execute()
 {
     auto* obj = cadPart.getValue();
     if (!obj) {
-        return nullptr;
-    }
-    auto* placementProperty =
-        dynamic_cast<App::PropertyPlacement*>(obj->getPropertyByName("Placement"));
-    if (placementProperty) {
-        placementProperty->setValue(Placement.getValue());
+        return Part::Feature::execute();
     }
 
-    // NEW (commented out): solver writes to MbDPart, MbDPart should not propagate back to CAD part.
-    // return App::GeoFeature::execute();
+    // Copy shape from cadPart so MbDPart has geometry for display and selection.
+    // MbDPart::Placement (set by the solver) positions the shape in the assembly.
+    if (auto* shapeProp = dynamic_cast<Part::PropertyPartShape*>(obj->getPropertyByName("Shape"))) {
+        Shape.setValue(shapeProp->getShape());
+    }
 
-    return nullptr;
+    return Part::Feature::execute();
 }
 
 App::DocumentObject* MbDPart::getCadPart() const

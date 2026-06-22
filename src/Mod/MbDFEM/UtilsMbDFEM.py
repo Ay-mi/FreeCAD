@@ -45,7 +45,7 @@ def activePart():
     return None
 
 
-def isMbDFEMCommandActive():
+def isMbDFEMCommandActive(): #returns true if an assembly is active and no dialog is open
     return activeMbDFEM() is not None and not Gui.Control.activeDialog()
 
 
@@ -67,12 +67,18 @@ def MbDFEM_has_at_least_n_parts(n):
     i = number_of_components_in(MbDFEM)
     return i >= n
 
-
-def number_of_components_in(MbDFEM):
-    if not MbDFEM:
+# counts how many insertable parts are inside MbDAssembly inst., MbDFEM should be renamed to mbDFEMAssembly
+def number_of_components_in(MbDFEM): #takes an MbDAssembly instance, poorly named MbDFEM atm
+    if not MbDFEM: #if no active assembly return 0
         return 0
     i = 0
-    for obj in MbDFEM.Group:
+    for obj in MbDFEM.Group: #if obj is from the PartGroup, go into it and count MbDPart objs
+        if obj.TypeId == "MbDFEM::PartGroup":
+            for part in obj.Group:
+                if part.isDerivedFrom("MbDFEM::MbDPart"):
+                    i += 1
+            continue
+
         if isLinkGroup(obj):
             i = i + obj.ElementCount
             continue
@@ -82,17 +88,17 @@ def number_of_components_in(MbDFEM):
         ):
             i = i + number_of_components_in(obj)
             continue
-
+        #uses App::Link, old method, not used anymore but keep just in case
         if obj.isDerivedFrom("App::Link"):
             obj = obj.getLinkedObject()
 
-        if not obj.isDerivedFrom("App::GeoFeature"):
+        if not obj.isDerivedFrom("App::GeoFeature"): #skip if no geometry aka no joints, simulations etc
             continue
 
         if obj.isDerivedFrom("App::LocalCoordinateSystem"):
             continue
 
-        i = i + 1
+        i = i + 1 #if the obj made it through the ifs and buts, increament
 
     return i
 
@@ -620,6 +626,20 @@ def getBomGroup(MbDFEM):
 
     return bom_group
 
+#mirrors getJointGroup style, MbDFEM should be renamed to mbDFEMAssembly
+def getPartGroup(MbDFEM): #given an MbDAssembly obj, if finds or creates the PartGroup that lives inside it
+    part_group = None
+
+    for obj in MbDFEM.OutList: #OutList is a list of objs that this obj owns/has direct children in the document graph
+        if obj.TypeId == "MbDFEM::PartGroup": #looking through that list for the PartGroup child
+            part_group = obj 
+            break
+
+    if not part_group:
+        part_group = MbDFEM.newObject("MbDFEM::PartGroup", "Parts") #if no PartGroup is found, it is created and registered as MbDFEM child
+        #appears under MbDAssembly in the tree with the label Parts
+    return part_group
+
 
 def getJointGroup(MbDFEM):
     joint_group = None
@@ -662,8 +682,8 @@ def getSimulationGroup(MbDFEM):
 
     return sim_group
 
-
-def isMbDFEMGrounded():
+    #rename to isMbDAssemblyGrounded
+def isMbDAssemblyGrounded(): #checks whether any grounded joint exists
     MbDFEM = activeMbDFEM()
     if not MbDFEM:
         return False
@@ -681,13 +701,13 @@ def removeObjAndChilds(obj):
     removeObjsAndChilds([obj])
 
 
-def removeObjsAndChilds(objs):
+def removeObjsAndChilds(objs): #deleting items in input task panel using right click
     def addsubobjs(obj, toremoveset):
         if obj.TypeId == "App::Origin":  # Origins are already handled
             return
 
-        toremoveset.add(obj)
-        if obj.TypeId != "App::Link":
+        toremoveset.add(obj) #need to make sure the orinal object is not deleted when MbDPart is deleted with rc
+        if obj.TypeId != "App::Link" and not obj.isDerivedFrom("MbDFEM::MbDPart"):
             for subobj in obj.OutList:
                 addsubobjs(subobj, toremoveset)
 

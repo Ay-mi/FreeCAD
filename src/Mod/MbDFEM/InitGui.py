@@ -223,7 +223,7 @@ class MbDFEMWorkbench(Workbench):
                     return False
                 return (
                     UtilsMbDFEM.MbDFEM_has_at_least_n_parts(1)
-                    and not UtilsMbDFEM.isMbDFEMGrounded()
+                    and not UtilsMbDFEM.isMbDAssemblyGrounded()
                 )
 
         class MbDFEMJointsWatcher(MbDFEMBaseWatcher):
