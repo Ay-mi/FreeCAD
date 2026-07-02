@@ -1,14 +1,14 @@
 # Setting up VS Code for development and debugging on a Windows machine
 
-## Installing pixi
+## Instal pixi
 Installing pixi will help take care of all the dependencies. 
 Inside the windows powershell, run the following: 
 
 `iwr -useb https://pixi.sh/install.ps1 | iex`
 
-For more information on pixi in FreeCAD, check this [page](https://freecad.github.io/DevelopersHandbook/gettingstarted/) the official FreeCAD developer's handbook.
+For more information on pixi in FreeCAD, check this [page](https://freecad.github.io/DevelopersHandbook/gettingstarted/) in the official FreeCAD developer's handbook.
 
-## Installing Visual Studio
+## Instal Visual Studio
 1. Download **Visual Studio 2026 Community Edition** from the [Visual Studio website](https://visualstudio.microsoft.com/).
 2. Run the installer. When prompted to select workloads, check **Desktop development with C++**.
 
@@ -22,9 +22,10 @@ Fork the FreeCAD repository into your own github and then clone it into your loc
 `git clone --recurse-submodules https://github.com/YourUsername/FreeCAD FreeCAD-src`
 
 ##	Copy .vscode file out of contrib and into FreeCAD root 
-- Open the repository in VS Code.
-- Inside `/contrib`, there is a folder called `.vscode`. Copy that file to the root directory of the repo.
-- In my experience, I was only able to debug the C++ side of FreeCAD using the `.vscode` file in the original FreeCAD repo. It seems like the settings for Python debugging are for a Mac/Linux environment. So I added a few things to the `.vscode` files so I can debug in both C++ and Python on a Windows environment. They can be found [here](https://github.com/Ay-mi/FreeCAD_extrafiles).
+1. Open the repository in VS Code.
+2. Inside `/contrib`, there is a folder called `.vscode`. Copy that file to the root directory of the repo.
+
+In my experience, when I used the `.vscode` file in the original FreeCAD repo, I was only able to debug the C++ side of FreeCAD. It seems like the settings for Python debugging are for a Mac/Linux environment. So I added a few things to the files inside `.vscode` so I can debug in both C++ and Python on a Windows environment. They can be found [here](https://github.com/Ay-mi/FreeCAD_extrafiles).
 
 ##	Start debugging in VS Code
 1. Navigate to your FreeCAD source directory: 
