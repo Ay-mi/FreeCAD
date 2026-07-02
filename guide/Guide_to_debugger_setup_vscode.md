@@ -58,8 +58,8 @@ Then run the pixi commands.
 For more information, take a look at this [page](https://freecad.github.io/DevelopersHandbook/gettingstarted/VSCode) in the Developer's Handbook.
 
 ##	Start debugging in VS Code
-- Before running debug mode, make sure to run `pixi run build-debug` at least once since VS Code was opened.
-- Set breakpoints and then click the green play button to debug.
+- Before launching debug mode, make sure to run `pixi run build-debug` in the terminal at least once since VS Code was opened.
+- Set breakpoints and then click the green play button to begin debugging.
 - Use the drop-down to switch between the Python and C++ debuggers.
 
 ![Run pixi before debugging](./media/pixirunbeforedebug1.png)
