@@ -2,7 +2,7 @@
 
 ## Installing pixi
 Installing pixi will help take care of all the dependencies. 
-Inside the windows powershell, run the following.
+Inside the windows powershell, run the following. 
 `iwr -useb https://pixi.sh/install.ps1 | iex`
 
 For more information on pixi, check this [link](https://freecad.github.io/DevelopersHandbook/gettingstarted/).
@@ -12,6 +12,8 @@ For more information on pixi, check this [link](https://freecad.github.io/Develo
 2. Run the installer. When prompted to select workloads, check **Desktop development with C++**.
 
 This is required even if Visual Studio is not used as the development IDE, in order for CMake to find the MSVC compiler (`cl.exe`). Pixi will handle CMake and all other dependencies automatically, so no separate CMake installation is needed.
+
+![Desktop development with C++](./media/vscodeinstaller.png)
 
 ##	Clone github repo
 Fork the FreeCAD repository into your own github and then clone it into your local drive using the following command.
@@ -38,3 +40,9 @@ In case the VS Code terminal shows errors, try to run the Pixi commands in the *
 Then run the pixi commands.
 
 ##	Set breakpoints
+- Before running debug mode, make sure to run `pixi run build-debug` at least once since VS Code was opened.
+- Set breakpoints and then click the green play button to debug.
+- Use the drop-down to switch between the Python and C++ debuggers.
+
+![Run pixi before debugging](./media/pixirunbeforedebug1.png)
+![Debug options](./media/debugdropdown.png)
