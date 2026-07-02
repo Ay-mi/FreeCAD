@@ -2,10 +2,11 @@
 
 ## Installing pixi
 Installing pixi will help take care of all the dependencies. 
-Inside the windows powershell, run the following. 
+Inside the windows powershell, run the following: 
+
 `iwr -useb https://pixi.sh/install.ps1 | iex`
 
-For more information on pixi, check this [link](https://freecad.github.io/DevelopersHandbook/gettingstarted/).
+For more information on pixi in FreeCAD, check this [page](https://freecad.github.io/DevelopersHandbook/gettingstarted/) the official FreeCAD developer's handbook.
 
 ## Installing Visual Studio
 1. Download **Visual Studio 2026 Community Edition** from the [Visual Studio website](https://visualstudio.microsoft.com/).
