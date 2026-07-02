@@ -1,14 +1,14 @@
 # Setting up VS Code for development and debugging on a Windows machine
 
-## Instal pixi
+## Install pixi
 Installing pixi will help take care of all the dependencies. 
 Inside the windows powershell, run the following: 
 
 `iwr -useb https://pixi.sh/install.ps1 | iex`
 
-For more information on pixi in FreeCAD, check this [page](https://freecad.github.io/DevelopersHandbook/gettingstarted/) in the official FreeCAD developer's handbook.
+For more information on pixi in FreeCAD, check this [page](https://freecad.github.io/DevelopersHandbook/gettingstarted/) in the official FreeCAD Developer's Handbook.
 
-## Instal Visual Studio
+## Install Visual Studio
 1. Download **Visual Studio 2026 Community Edition** from the [Visual Studio website](https://visualstudio.microsoft.com/).
 2. Run the installer. When prompted to select workloads, check **Desktop development with C++**.
 
@@ -32,14 +32,27 @@ In my experience, when I used the `.vscode` file in the original FreeCAD repo, I
    `cd path\to\FreeCAD-src`
 2. Run configure (only needed once): 
    `pixi run configure`
-3. Build in debug mode: 
+
+3. Install `debugpy` for Python debugging. In the cmd, run: 
+   `pip install debugpy`
+   
+   This installs debugpy into the system. 
+   
+   If Python debugging does not work, try installing it directly into the pixi environment instead: 
+   `path\to\FreeCAD-src\.pixi\envs\default\python.exe -m pip install debugpy`
+
+Step 2 and 3 only need to be done once for a new clone. If debugpy was installed in the system and not in the pixi environment, it does not need to be installed again after this even for new clones.
+
+4. Build in debug mode: 
    `pixi run build-debug`
 
 To build in release mode use `pixi run build`. 
 
 In case the VS Code terminal shows errors, try to run the Pixi commands in the **Developer Command Prompt** as CMake requires the MSVC environment variables to be initialized first. To do this, open **"Developer Command Prompt"** and initialize the MSVC environment by running: 
    `"C:\Program Files\Microsoft Visual Studio\18\Community\VC\Auxiliary\Build\vcvarsall.bat" x64` 
-Then run the pixi commands.
+Then run the pixi commands. 
+
+For more information, take a look at this [page](https://freecad.github.io/DevelopersHandbook/gettingstarted/VSCode) in the Developer's Handbook.
 
 ##	Set breakpoints
 - Before running debug mode, make sure to run `pixi run build-debug` at least once since VS Code was opened.
