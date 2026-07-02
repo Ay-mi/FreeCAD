@@ -27,7 +27,7 @@ Fork the FreeCAD repository into your own github and then clone it into your loc
 
 In my experience, when I used the `.vscode` file in the original FreeCAD repo, I was only able to debug the C++ side of FreeCAD. It seems like the settings for debuggin in Python are for a Mac/Linux environment. So I added a few things to the files inside `.vscode` to debug in both C++ and Python on a Windows environment. The files can be found [here](https://github.com/Ay-mi/FreeCAD_extrafiles).
 
-##	Start debugging in VS Code
+##	Start developing in VS Code
 1. Navigate to your FreeCAD source directory: 
    `cd path\to\FreeCAD-src`
 2. Run configure (only needed once): 
@@ -52,12 +52,12 @@ To build in release mode use `pixi run build`.
 
 In case the VS Code terminal shows errors, try to run the Pixi commands in the **Developer Command Prompt** as CMake requires the MSVC environment variables to be initialized first. To do this, open **"Developer Command Prompt"** and initialize the MSVC environment by running: 
    `"C:\Program Files\Microsoft Visual Studio\18\Community\VC\Auxiliary\Build\vcvarsall.bat" x64` 
-   
+
 Then run the pixi commands. 
 
 For more information, take a look at this [page](https://freecad.github.io/DevelopersHandbook/gettingstarted/VSCode) in the Developer's Handbook.
 
-##	Set breakpoints
+##	Start debugging in VS Code
 - Before running debug mode, make sure to run `pixi run build-debug` at least once since VS Code was opened.
 - Set breakpoints and then click the green play button to debug.
 - Use the drop-down to switch between the Python and C++ debuggers.
