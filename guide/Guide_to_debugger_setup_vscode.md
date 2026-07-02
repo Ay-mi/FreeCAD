@@ -52,6 +52,7 @@ To build in release mode use `pixi run build`.
 
 In case the VS Code terminal shows errors, try to run the Pixi commands in the **Developer Command Prompt** as CMake requires the MSVC environment variables to be initialized first. To do this, open **"Developer Command Prompt"** and initialize the MSVC environment by running: 
    `"C:\Program Files\Microsoft Visual Studio\18\Community\VC\Auxiliary\Build\vcvarsall.bat" x64` 
+   
 Then run the pixi commands. 
 
 For more information, take a look at this [page](https://freecad.github.io/DevelopersHandbook/gettingstarted/VSCode) in the Developer's Handbook.
