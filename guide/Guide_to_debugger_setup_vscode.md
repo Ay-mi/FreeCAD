@@ -34,11 +34,13 @@ In my experience, when I used the `.vscode` file in the original FreeCAD repo, I
    `pixi run configure`
 
 3. Install `debugpy` for Python debugging. In the cmd, run: 
+
    `pip install debugpy`
    
    This installs debugpy into the system. 
    
    If Python debugging does not work, try installing it directly into the pixi environment instead: 
+
    `path\to\FreeCAD-src\.pixi\envs\default\python.exe -m pip install debugpy`
 
 Step 2 and 3 only need to be done once for a new clone. If debugpy was installed in the system and not in the pixi environment, it does not need to be installed again after this even for new clones.
