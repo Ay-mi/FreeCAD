@@ -25,7 +25,7 @@ Fork the FreeCAD repository into your own github and then clone it into your loc
 1. Open the repository in VS Code.
 2. Inside `/contrib`, there is a folder called `.vscode`. Copy that file to the root directory of the repo.
 
-In my experience, when I used the `.vscode` file in the original FreeCAD repo, I was only able to debug the C++ side of FreeCAD. It seems like the settings for Python debugging are for a Mac/Linux environment. So I added a few things to the files inside `.vscode` so I can debug in both C++ and Python on a Windows environment. They can be found [here](https://github.com/Ay-mi/FreeCAD_extrafiles).
+In my experience, when I used the `.vscode` file in the original FreeCAD repo, I was only able to debug the C++ side of FreeCAD. It seems like the settings for debuggin in Python are for a Mac/Linux environment. So I added a few things to the files inside `.vscode` to debug in both C++ and Python on a Windows environment. The files can be found [here](https://github.com/Ay-mi/FreeCAD_extrafiles).
 
 ##	Start debugging in VS Code
 1. Navigate to your FreeCAD source directory: 
